@@ -1,0 +1,48 @@
+.invoice-table {
+  width: 100%;
+  padding: 0;
+  overflow-x:auto;
+  overflow-y:auto;
+  th {
+    font-size: 14px ;
+  }
+}
+
+.edit-header,.del-header,.print-header {
+  width: 15px;
+}
+
+.code-invoice-header {
+  width: 100px;
+}
+.date-invoice-header {
+  width: 100px;
+}
+.name-firm-header {
+  width: 300px;
+}
+.number-doc-supply-header {
+  width: 100px;
+}
+.status-header {
+  width: 100px;
+}
+.is-invoice-vat-header {
+  width: 100px;
+}
+.is-price-vat-header {
+  width: 100px;
+}
+.sum-wares-header {
+  width: 100px;
+}
+.sum-vat-header {
+  width: 100px;
+}
+.sum-doc-supply-header {
+  width: 100px;
+}
+.description-header {
+  width: 100px;
+}
+

@@ -1,0 +1,21 @@
+.content {
+  margin-left: 10px;
+}
+
+.header {
+  text-align: center;
+}
+
+.formInput {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 10px;
+  margin-bottom: 20px;
+}
+
+.buttonPanel {
+  justify-content: right;
+  display: flex;
+  gap: 10px;
+}
+

@@ -1,0 +1,51 @@
+.login-form {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.5);
+  justify-content: center;
+  text-align: center;
+  display: grid;
+  grid-template-rows: 50px 50px;
+}
+
+.login-body{
+  margin-top: 10rem;
+  padding-top: 2rem;
+  width: 300px;
+  border-radius: 5px;
+  background: white;
+  height: 200px;
+  text-align: center;
+  justify-content: center;
+}
+
+.login-error {
+  margin-top: 150px;
+  font-size: 24px ;
+}
+
+.login-input-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    grid-template-rows: 50px 50px;
+}
+
+.label-login {
+    text-align: right;
+}
+
+.input-login {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  width: 200px;
+  height: 32px;
+}
+
+.button-login {
+  width: 150px;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+}

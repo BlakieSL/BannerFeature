@@ -1,0 +1,52 @@
+$rowInput: 50px;
+$rowArea: 70px;
+
+.edit-invent {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    padding-top: 5rem;
+    font-size: medium;
+    color: #000000;
+}
+
+.edit-invent-body{
+    padding-top: 2rem;
+    width: 600px;
+    border-radius: 5px;
+    background: white;
+    height: 380px;
+}
+
+.invent-input-panel {
+    display: grid;
+    grid-template-columns: 1fr 3fr ;
+    grid-template-rows: $rowInput $rowInput $rowInput $rowInput $rowArea;
+    height: 230px;
+}
+
+.label-input {
+    text-align: right;
+}
+
+.invent-ok-cancel {
+    width: 150px;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+.invent-input-div {
+    margin-left: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 32px;
+    }
+    display: flex;
+}
+

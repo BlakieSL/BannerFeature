@@ -1,0 +1,48 @@
+$rowInput: 50px;
+$rowArea: 80px;
+
+.edit-wares-invoice {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    padding-top: 5rem;
+}
+
+.edit-wares-invoice-body{
+    padding: 2rem;
+    width: 630px;
+    border-radius: 5px;
+    background: white;
+    height: 480px;
+}
+
+.wares-invoice-input-panel {
+    align: right;
+    display: grid;
+    grid-template-columns: 1fr 3fr ;
+    grid-template-rows: $rowInput $rowInput $rowInput $rowInput $rowInput $rowArea ;
+    height: 350px;
+}
+
+.wares-invoice-input-div {
+    margin-left: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 32px;
+    }
+    display: flex;
+}
+
+.wares-invoice-ok-cancel {
+    width: 150px;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+

@@ -1,0 +1,187 @@
+.content {
+  margin-left: 10px;
+}
+
+.header {
+  text-align: center;
+  margin: 10px;
+}
+
+.formName {
+  text-align: center;
+}
+
+.mainForm{
+  height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+}
+
+.formInput {
+  overflow-y: auto;
+  padding-top: 5px;
+  flex: 1;
+}
+
+.formPaper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  //row-gap: 10px;
+  gap:20px;
+  margin-bottom: 20px;
+}
+
+.dataInput {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  //row-gap: 10px;
+  gap:20px;
+  margin-bottom: 20px;
+}
+
+.bodyInput {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: start;
+  grid-gap: 0.5rem;
+  grid-row-gap: 1.5rem;
+}
+
+.bodyInputStandart {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  grid-gap: 0.5rem;
+  grid-row-gap: 1.5rem;
+}
+
+.buttonPanel {
+  justify-content: center;
+  display: flex;
+  gap: 10px;
+  padding-top:10px;
+  padding-bottom:10px;
+  margin-bottom: 0;
+  //border: 1px solid;
+  //border-color: #e7e7e7;
+}
+
+
+.tabPanelStyle {
+  min-height: 0;
+  border: 1px solid;
+  border-top: 0;
+  border-color: #e7e7e7;
+  margin-left: 10px;
+  margin-right: 10px;
+  //margin-bottom: 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* Или overflow-y: auto; для вертикальной прокрутки */
+}
+
+.tabContextStyle{
+  border: 1px solid;
+  border-color: #e7e7e7;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.listContainer {
+  align-items: center;
+  text-align: center;
+}
+
+.bottomMenuChild{
+  height: 40px;
+  display: grid;
+  grid-template-columns:  0.5fr 2.5fr 0.5fr;
+  align-items: center;
+  text-align: center;
+  margin-bottom:10px;
+}
+
+.labelStyle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin: 0;
+  text-transform: none;
+}
+
+
+
+
+
+
+
+
+
+
+.wrapper{
+  position: relative;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: justify;
+  /* Свои стили */
+}
+
+.inputContainer {
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+}
+
+.input {
+  justify-content: flex-start;
+  flex: 1;
+  //margin-right: 10px; /* Добавьте отступ между input и Button при необходимости */
+}
+
+
+
+.multiSelect {
+  border: 1px solid;
+  border-radius: 4px;
+  border-color: #c7c7c7;
+
+  white-space: nowrap;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #bec4c4;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.activeUserList {
+  height: 30px;
+  width: 100px;
+  overflow: auto;
+  margin:0;
+  padding:0;
+  background-color: #343a40;
+  scroll-behavior: smooth;
+}
+
+.custom-row-class {
+  color: darkred;
+}

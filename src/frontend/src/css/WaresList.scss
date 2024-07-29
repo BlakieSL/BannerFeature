@@ -1,0 +1,38 @@
+.wares-list-form {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    padding-top: 0rem;
+}
+
+.wares-list-body {
+    padding-top: 2rem;
+    width: 1024px;
+    border-radius: 5px;
+    background: white;
+    height: 800px;
+}
+
+
+.table-wares-list-body {
+    height: 600px;
+    overflow-y: auto;    /* Trigger vertical scroll    */
+    display: block;
+}
+
+.wares-list-cancel-button {
+    width: 150px;
+}
+
+.wares-list-button-panel {
+    text-align: center;
+}
+
+.wares-list-header-panel {
+    text-align: center;
+}

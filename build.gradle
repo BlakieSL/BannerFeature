@@ -1,0 +1,68 @@
+import java.text.SimpleDateFormat
+
+plugins {
+	id 'org.springframework.boot' version '2.2.6.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'com.web'
+version = '2.26.3'
+sourceCompatibility = '1.8'
+
+configurations {
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'com.oracle.database.jdbc:ojdbc8:12.2.0.1'
+	implementation files('D:/Proj/JavaProjects/web/invoice/lib/rtmboot.jar')
+	implementation files('D:/Proj/JavaProjects/web/invoice/lib/vcr.jar')
+	implementation files('D:/Proj/JavaProjects/web/invoice/lib/Common.jar')
+	implementation files('D:/Proj/JavaProjects/web/invoice/lib/ecremulator.jar')
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+
+
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+bootJar {
+	version = project.version
+	doFirst {
+		manifest {
+			attributes("Implementation-Title": project.name,
+					"Implementation-Version": project.version,
+					"Implementation-Timestamp": new SimpleDateFormat('dd.MM.yyyy HH:mm:ss').format(new Date()),
+					'Created-By'     : "Gradle ${gradle.gradleVersion}")
+		}
+	}
+	from('src/frontend/build') {
+		into 'BOOT-INF/classes/static'
+	}
+	baseName('dashboard')
+	archiveFileName  = "${archiveBaseName.get()}.${archiveExtension.get()}"
+}
+
+test {
+	useJUnitPlatform()
+}

@@ -1,0 +1,28 @@
+.choice-result {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  justify-content: center;
+  padding-top: 10rem;
+  font-size: medium;
+  color: #000000;
+}
+
+.choice-result-body{
+  padding-top: 3rem;
+  width: 500px;
+  border-radius: 5px;
+  background: white;
+  height: 160px;
+}
+
+.choice-result-list-block {
+  display: grid;
+  grid-template-columns: 2fr 4fr ;
+  grid-template-rows: 50px ;
+  justify-items: center;
+}

@@ -1,0 +1,52 @@
+$rowInput: 50px;
+$rowArea: 70px;
+
+.edit-invoice {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+    font-size: medium;
+    color: #000000;
+}
+
+.edit-invoice-body{
+    padding-top: 2rem;
+    width: 650px;
+    border-radius: 5px;
+    background: white;
+    height: 630px;
+}
+
+.invoice-input-panel {
+    display: grid;
+    grid-template-columns: 1.75fr 3fr ;
+    grid-template-rows: $rowInput $rowInput $rowInput $rowInput $rowInput $rowInput $rowInput $rowInput $rowArea;
+    height: 490px;
+}
+
+.label-input {
+    text-align: right;
+}
+
+.invoice-ok-cancel {
+    width: 150px;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+.invoice-input-div {
+    margin-left: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 32px;
+    }
+    display: flex;
+}
+

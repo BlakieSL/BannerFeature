@@ -1,0 +1,38 @@
+.message-dialog{
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    padding-top: 5rem;
+    font-size: medium;
+    color: #000000;
+}
+
+.message-dialog-body{
+    padding: 2rem;
+    width: 600px;
+    border-radius: 5px;
+    background: white;
+    height: 230px;
+
+}
+
+.button-message-dialog {
+
+    marginLeft: 1rem;
+    marginRight: 1rem;
+    width: 100px;
+}
+
+.div-button-message-dialog {
+    margin-top: 2rem;
+}
+
+.div-text-message-dialog {
+    font-size: large;
+    margin-top: 2rem;
+}

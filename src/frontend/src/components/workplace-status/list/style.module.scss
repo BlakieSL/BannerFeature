@@ -1,0 +1,31 @@
+.content {
+  margin-left: 10px;
+}
+
+.header {
+  text-align: center;
+  margin: 10px;
+}
+
+.topButtonPanel {
+  //justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  horiz-align: center;
+}
+
+.topButtonPanel > .child {
+  margin: 20px;
+  width: 250px;
+  vertical-align: middle;
+  horiz-align: center;
+}
+
+.custom-row-class {
+  color: darkred;
+}
+

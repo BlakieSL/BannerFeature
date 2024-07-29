@@ -1,0 +1,110 @@
+@import "EditInvoice";
+@import "ButtonEditInvoice";
+@import "ConfirmDelete";
+@import "EditWaresInvoice";
+@import "FindWares";
+@import "ModalMessage";
+@import "Login";
+@import "EditTransferInvoice";
+@import "EditWaresTransferInvoice";
+@import "EditInvent";
+@import "EditWaresInvent";
+@import "WaresList";
+@import "MessageDialog";
+@import "FilterFirm";
+@import "TableInvoice";
+@import "FilterDateInvoice";
+@import "FilterCodeOrderSupply";
+@import "FilterInvoice";
+@import "EditRuleLoyal";
+@import "ChoiceResult";
+@import "Result";
+@import "FindClient";
+@import "RuleLoyalList";
+@import "ImportSetRule";
+@import "WhenTab";
+@import "Navbar";
+@import "WaresPropertyReference";
+@import "AltCatalog";
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  font-family: Helvetica Neue, Arial, sans-serif;
+  font-size: 16px;
+  color: #444;
+}
+
+.user-fio-header {
+  color: white;
+  margin-right: 2rem;
+  font-size: large;
+}
+
+.row-table-prepare {
+  font-size: large;
+  color: #34ce57;
+}
+
+.row-table-nonactive {
+  background: lightpink;
+}
+
+.row-table-edited {
+  background: yellowgreen;
+}
+
+.row-table-old {
+  background:  cyan;
+}
+
+.row-table-end {
+  font-size:large;
+  color: #000000;
+}
+
+.error-field {
+  color: red;
+  margin-left: 10px;
+  font-size: xx-large;
+}
+
+.edit-icon {
+}

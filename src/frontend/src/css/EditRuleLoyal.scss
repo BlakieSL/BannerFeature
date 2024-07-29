@@ -1,0 +1,444 @@
+$rowInput: 50px;
+$rowArea: 110px;
+$rowTimeActivity: 150px;
+$rowCheckBox: 30px;
+
+.edit-rule-loyal {
+    /*
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 2rem;
+    background: rgba(0,0,0,.5);
+    */
+}
+
+.edit-rule-loyal-body{
+/*    padding: 1rem;
+    width: 1024px;
+    border-radius: 5px;
+    background: white;
+*/
+    height: 700px;
+}
+
+
+
+.rule-loyal-when {
+    align: right;
+    display: grid;
+    grid-template-columns: 2fr 3fr ;
+    grid-template-rows: $rowInput $rowInput $rowTimeActivity $rowCheckBox $rowCheckBox $rowCheckBox $rowCheckBox $rowCheckBox $rowCheckBox $rowCheckBox  ;
+    height: 460px;
+    background: red;
+}
+
+.rule-loyal-params {
+    align: center;
+    display: grid;
+    grid-template-columns: 1fr 2fr ;
+    grid-template-rows: $rowInput ;
+    text-align: center;
+    //height: 200px;
+}
+
+.rule-loyal-params-list {
+    align: right;
+    display: grid;
+    grid-template-columns: 3fr ;
+    grid-template-rows: $rowInput $rowInput;
+    //height: 200px;
+}
+
+.rule-loyal-params-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr ;
+    grid-template-rows: $rowInput;
+    text-align: center;
+    //height: 200px;
+}
+
+.rule-loyal-result {
+    align: right;
+    display: grid;
+    grid-template-columns: 1fr 3fr ;
+    grid-template-rows: $rowInput ;
+    //height: 200px;
+}
+
+.expression-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr ;
+   // grid-template-rows: $rowInput;
+//    grid-template-rows:  50px ;
+    text-align: center;
+   // background: #7abaff;
+    //height: 200px;
+}
+
+
+.expression-field {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 32px;
+    }
+    //background: #34ce57;
+   display: flex;
+
+}
+
+.detail-expression {
+    margin-left: 5px;
+    width: 250px;
+}
+
+.rule-loyal-input-div-description {
+/*    margin-left: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 40px;
+    }
+*/
+//    flex-direction: column;
+//    display: flex;
+}
+
+.rule-loyal-ok-cancel {
+    width: 150px;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+}
+
+/* Style the tab */
+.tab {
+/*    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;*/
+}
+
+.tab-button {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.header-include-tab {
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab-button button {
+//    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab-button button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab-button button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 600px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    overflow:auto;
+}
+
+/* Style the tab content */
+.tabcontent-set {
+    display: none;
+   // padding: 6px 12px;
+  //  border: 1px solid #ccc;
+    border-top: none;
+    height: 600px;
+    margin-bottom: 20px;
+}
+
+/* Style the tab content */
+.tabcontent-where {
+    display: none;
+    height: 490px;
+}
+
+.save-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.button-add-save  {
+    width: 180px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.add-result-panel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.input-param-field {
+    height: 20px;
+}
+
+.button-save-cancel-panel {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.warning {
+    color: red;
+    text-align: center;
+}
+
+.edit-rule-dialog-action {
+
+}
+
+.add-tab-set-panel{
+    margin-bottom: 5px;
+}
+
+.edit-set-tab {
+    text-align: center;
+//    height: 200px;
+}
+
+.edit-set-tab-body {
+    display: grid;
+    text-align: center;
+    height: 120px;
+    grid-template-rows: 60px;
+}
+
+.add-set-rule-panel {
+    height: 20px;
+    width: 300px;
+    background: #34ce57;
+    //display: grid;
+    //grid-template-columns: 200px 200px;
+    //grid-template-rows: 20px;
+    //margin-bottom: 5px;
+    //margin-top: 5px;
+}
+
+.edit-set-rule {
+    display: grid;
+//    grid-template-columns: 10fr;
+    grid-template-rows: 50px 50px 50px 50px 50px 50px 50px  ;
+    width: 600px;
+    height: 450px;
+    //text-align: center;
+    margin-left: 150px;
+}
+
+.choose-type-value {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr;
+    margin-bottom: 10px;
+}
+
+.edit-set-rule-type-discount-panel {
+    display: grid;
+    grid-template-columns: 2fr 5fr;
+    margin-bottom: 10px;
+}
+
+.edit-set-rule-type-discount-label {
+    text-align: left;
+}
+
+.edit-set-rule-type-discount-field {
+    width: 300px;
+}
+
+.choose-dealer-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+}
+
+.tree-group-wares {
+    border-top: none;
+    font-size: 22px;
+    height: 500px ;
+    max-height: 500px;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.area-text-node {
+    margin-top: 10px;
+    display: flex;
+    width: 900px;
+    height: 100px;
+}
+
+.form-group-wares {
+
+}
+
+.shop-list-form {
+    height: 700px;
+}
+
+.group-client-list-form {
+    height: 700px;
+}
+
+.set-rule-loyal-list-form {
+    //height: 400px;
+    background: white;
+    overflow: auto;
+}
+
+.panel-button-pos-set-rule {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.loyal-main {
+    align: right;
+    display: grid;
+    grid-template-columns: 1fr 3fr ;
+    grid-template-rows: $rowInput $rowInput $rowInput $rowInput $rowArea ;
+    height: 400px;
+}
+
+.loyal-input-div {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    .field {
+        width: 300px;
+        height: 32px;
+    }
+    display: flex;
+}
+
+.edit-loyal-body{
+    height: 650px;
+}
+
+.tabcontent-loyal {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 550px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    overflow:auto;
+}
+
+.wares-property-list-form {
+    height: 700px;
+}
+
+.form-replace-rule{
+    height: 500px;
+}
+
+.button-edit-text-void {
+
+}
+
+.button-edit-text-filled {
+    background: #20c997;
+}
+
+.template-rule-filter {
+    width: 500px;
+}
+
+.form-edit-rule-input {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    row-gap: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 550px;
+    padding: 12px 12px;
+}
+
+.tabcontent-edit-set-rule {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 550px;
+    width: auto;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    //overflow:auto;
+}
+
+.tabcontent-edit-client {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 600px;
+    width: auto;
+    margin-bottom: 20px;
+    margin-top: 0px;
+    //overflow:auto;
+}
+
+.name-value-set-rule {
+    max-width: 350px;
+    min-width: 350px;
+}
+
+.name-type-value-set-rule {
+    max-width: 190px;
+    min-width: 190px;
+}
+
+.date-time-begin-set-rule{
+    max-width: 180px;
+    min-width: 180px;
+}
+
+.date-time-end-set-rule{
+    max-width: 180px;
+    min-width: 180px;
+}
+
+.day-week-set-rule {
+    max-width: 180px;
+    min-width: 180px;
+}
+
+.time-activity-set-rule {
+    max-width: 200px;
+    min-width: 200px;
+}
+
+.s1-set-rule{
+    max-width: 300px;
+    min-width: 300px;
+}
