@@ -7,13 +7,16 @@ import com.web.invoice.primarydb.dto.BannerDtoRequest;
 import com.web.invoice.primarydb.dto.BannerSummaryDto;
 import com.web.invoice.primarydb.model.Banner;
 import com.web.invoice.primarydb.model.GroupBanner;
+import com.web.invoice.primarydb.model.SetBanner;
 import com.web.invoice.primarydb.model.TypeBanner;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public abstract class BannerMapper {
@@ -29,15 +32,35 @@ public abstract class BannerMapper {
     @Mapping(target = "dateBegin", ignore = true)
     @Mapping(target = "dateEnd", ignore = true)
     @Mapping(target = "signActivity", ignore = true)
-    @Mapping(target = "codeBanner", ignore = true) // Assuming codeBanner is auto-generated or not present in DTO
+    @Mapping(target = "codeBanner", ignore = true)
     public abstract Banner toEntity(BannerDtoRequest dto);
 
     @AfterMapping
-    protected void setDefaultValues(@MappingTarget Banner banner) {
+    protected void setDefaultValues(@MappingTarget Banner banner, BannerDtoRequest dto) {
         banner.setDateCreate(LocalDate.now());
         banner.setDateBegin(LocalDateTime.now());
         banner.setDateEnd(LocalDateTime.now().plusDays(10));
         banner.setSignActivity((short) 1);
+
+        Set<SetBanner> setBanners = new HashSet<>();
+
+        dto.getGroupClients().forEach(groupId -> {
+            SetBanner setBanner = new SetBanner();
+            setBanner.setBanner(banner);
+            setBanner.setCodeValue(groupId);
+            setBanner.setTypeValue((short) 1);
+            setBanners.add(setBanner);
+        });
+
+        dto.getSingleClients().forEach(clientId -> {
+            SetBanner setBanner = new SetBanner();
+            setBanner.setBanner(banner);
+            setBanner.setCodeValue(clientId);
+            setBanner.setTypeValue((short) 0);
+            setBanners.add(setBanner);
+        });
+
+        banner.getSetBanners().addAll(setBanners);
     }
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")

@@ -5,6 +5,7 @@ import lombok.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,4 +25,7 @@ public class BannerDtoRequest {
     private String note;
     @NotNull
     private Integer codeGroupBanner;
+
+    private Set<Integer> groupClients;
+    private Set<Integer> singleClients;
 }

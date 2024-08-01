@@ -1,7 +1,5 @@
 package com.web.invoice.primarydb.model;
 
-import com.web.invoice.primarydb.dao.ClientRepository;
-import com.web.invoice.primarydb.dao.GroupClientRepository;
 import lombok.*;
 
 import javax.persistence.*;

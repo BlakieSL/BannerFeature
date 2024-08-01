@@ -82,9 +82,6 @@ public class Client {
     @Column(name = "version_row", nullable = false)
     private Long versionRow;
 
-    @Column(name = "code_group_client", nullable = false)
-    private Integer codeGroupClient;
-
     @Column(name = "type_card", nullable = false)
     private Short typeCard;
 
