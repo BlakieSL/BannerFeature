@@ -11,6 +11,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "banner", schema = "pos")
@@ -70,5 +72,8 @@ public class Banner {
     private LocalDateTime dateEnd;
 
     @Column(name = "sign_activity", nullable = false)
-    private short signActivity; // 1 - активний; 0 - неактивний
+    private short signActivity;
+
+    @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
+    private final Set<SetBanner> setBanners = new HashSet<>();
 }
