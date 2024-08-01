@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BannerSummaryDto {
     private Integer codeBanner;
-    private LocalDate dateCreated;
+    private LocalDate dateCreate;
     private String title;
-    private Integer typeBanner;
+    private Integer codeTypeBanner;
     private LocalDateTime plannedDate;
     private short status;
 }

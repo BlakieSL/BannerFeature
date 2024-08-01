@@ -2,15 +2,16 @@ package com.web.invoice.primarydb.service;
 
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
 import com.web.invoice.primarydb.dao.TypeBannerRepository;
-import com.web.invoice.primarydb.dto.BannerCreateDto;
+import com.web.invoice.primarydb.dto.BannerDtoRequest;
 import com.web.invoice.primarydb.dto.BannerDetailedDto;
 import com.web.invoice.primarydb.dto.BannerSummaryDto;
 import com.web.invoice.primarydb.model.Banner;
-import com.web.invoice.primarydb.model.GroupBanner;
-import com.web.invoice.primarydb.model.TypeBanner;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Random;
 
 @Service
 public class BannerDtoMapper {
@@ -52,7 +53,7 @@ public class BannerDtoMapper {
         );
     }
 
-    public Banner map(BannerCreateDto dto) {
+    public Banner map(BannerDtoRequest dto) {
         Banner banner = new Banner();
         banner.setTitle(dto.getTitle());
         banner.setBody(dto.getBody());
@@ -69,6 +70,27 @@ public class BannerDtoMapper {
                 .findById(dto.getCodeGroupBanner())
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner group with id: " + dto.getCodeGroupBanner() + " not found")));
+
+        banner.setDateCreate(LocalDate.now());
+        banner.setDateBegin(LocalDateTime.now());
+        banner.setDateEnd(LocalDateTime.now().plusDays(10));
+        banner.setSignActivity((short) 1);
+        banner.setCodeBanner(new Random().nextInt(100000));
+
         return banner;
+    }
+
+    public BannerDtoRequest mapRequest(Banner banner) {
+        return new BannerDtoRequest(
+                banner.getTitle(),
+                banner.getBody(),
+                banner.getPlannedDate(),
+                banner.getStatus(),
+                banner.getSendResult(),
+                banner.getTypeBanner().getCodeTypeBanner(),
+                banner.getExternalId(),
+                banner.getNote(),
+                banner.getGroupBanner().getCodeGroupBanner()
+        );
     }
 }

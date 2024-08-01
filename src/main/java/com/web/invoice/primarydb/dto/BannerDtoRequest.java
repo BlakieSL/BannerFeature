@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BannerCreateDto {
+public class BannerDtoRequest {
     private static final int TITLE_MAX_LENGTH = 70;
     @Size(max = TITLE_MAX_LENGTH)
     private String title;

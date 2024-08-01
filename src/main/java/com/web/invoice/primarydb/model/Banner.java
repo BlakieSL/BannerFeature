@@ -3,6 +3,7 @@ package com.web.invoice.primarydb.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,11 +13,12 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "banner")
+@Table(name = "banner", schema = "pos")
 @Getter
 @Setter
 public class Banner {
-    private static final int TITLE_MAX_LENGTH = 70;
+    private static final int TITLE_MAX_LENGTH = 100;
+
     @Id
     @Column(name = "code_banner", nullable = false)
     private Integer codeBanner;
@@ -29,7 +31,7 @@ public class Banner {
     private String body;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "plannedDate")
+    @Column(name = "date_send")
     private LocalDateTime plannedDate;
 
     @Column(name = "status")
@@ -51,11 +53,22 @@ public class Banner {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "code_type_banner", nullable = false)
+    @JoinColumn(name = "type_banner", nullable = false)
     private TypeBanner typeBanner;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "code_group_banner", nullable = false)
     private GroupBanner groupBanner;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "date_begin")
+    private LocalDateTime dateBegin;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "date_end")
+    private LocalDateTime dateEnd;
+
+    @Column(name = "sign_activity", nullable = false)
+    private short signActivity; // 1 - активний; 0 - неактивний
 }
