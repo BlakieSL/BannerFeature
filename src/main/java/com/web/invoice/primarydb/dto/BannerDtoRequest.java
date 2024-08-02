@@ -25,7 +25,6 @@ public class BannerDtoRequest {
     private String note;
     @NotNull
     private Integer codeGroupBanner;
-
     private Set<Integer> groupClients;
     private Set<Integer> singleClients;
 }

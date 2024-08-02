@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "client", schema = "pos")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,7 +26,6 @@ public class Client {
     @ManyToOne
     @JoinColumn(name = "code_group_client", nullable = false)
     private GroupClient groupClient;
-
 
 
     @Column(name = "surname", nullable = false, length = 70)

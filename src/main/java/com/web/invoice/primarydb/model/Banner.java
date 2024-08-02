@@ -74,6 +74,6 @@ public class Banner {
     @Column(name = "sign_activity", nullable = false)
     private short signActivity;
 
-    @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "banner", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<SetBanner> setBanners = new HashSet<>();
 }

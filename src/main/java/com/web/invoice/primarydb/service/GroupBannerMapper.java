@@ -13,8 +13,12 @@ public interface GroupBannerMapper {
     GroupBannerDtoRequest toRequestDto(GroupBanner groupBanner);
     GroupBannerDto toDto(GroupBanner groupBanner);
 
+    @Mapping(target = "codeGroupBanner", ignore = true)
+    @Mapping(target = "banners", ignore = true)
     GroupBanner toEntity(GroupBannerDtoRequest dto);
 
+    @Mapping(target = "codeGroupBanner", ignore = true)
+    @Mapping(target = "banners", ignore = true)
     void updateEntityFromDto(GroupBannerDtoRequest dto, @MappingTarget GroupBanner entity);
 }
 

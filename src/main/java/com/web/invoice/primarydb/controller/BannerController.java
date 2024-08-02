@@ -22,7 +22,7 @@ public class BannerController {
     private final BannerService bannerService;
 
     public BannerController(
-            BannerService bannerService
+            final BannerService bannerService
     )  {
         this.bannerService = bannerService;
     }

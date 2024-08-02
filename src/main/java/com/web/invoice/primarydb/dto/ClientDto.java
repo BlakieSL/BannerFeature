@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClientDto {
-    private Integer codeGroup;
-    private String nameGroup;
+    private Integer codeClient;
+    private String surname;
 }

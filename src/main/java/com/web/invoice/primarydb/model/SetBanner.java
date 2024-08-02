@@ -3,13 +3,13 @@ package com.web.invoice.primarydb.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
-@Table(name = "set_banner")
-@Getter
-@Setter
+@Table(name = "set_banner", schema = "pos")
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class SetBanner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

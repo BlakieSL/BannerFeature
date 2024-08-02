@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,4 +22,6 @@ public class BannerDetailedDto {
     private String note;
     private LocalDate dateCreate;
     private Integer codeGroupBanner;
+    private Set<Integer> groupClients;
+    private Set<Integer> singleClients;
 }
