@@ -80,6 +80,7 @@ public class BannerService {
         Banner banner = bannerRepository.findById(codeBanner)
                         .orElseThrow(() -> new NoSuchElementException(
                                 "Banner with id: " + codeBanner + " not found"));
+
         bannerRepository.delete(banner);
     }
 
@@ -88,9 +89,11 @@ public class BannerService {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
+
         GroupBanner groupBanner = groupBannerRepository.findById(codeGroupBanner)
                         .orElseThrow(() -> new NoSuchElementException(
                                 "GroupBanner with id: " + codeGroupBanner + " not found"));
+
         banner.setGroupBanner(groupBanner);
         bannerRepository.save(banner);
     }
@@ -99,18 +102,22 @@ public class BannerService {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
+
         return bannerMapper.toDetailedDto(banner);
     }
 
     public List<BannerSummaryDto> getAllBanners() {
         List<Banner> banners = bannerRepository.findAll();
+
         return banners.stream()
                 .map(bannerMapper::toSummaryDto)
                 .collect(Collectors.toList());
     }
 
     public List<BannerSummaryDto> getAllBannersFiltered(BannerFilterDto dto) {
-        List<Banner> banners = bannerRepository.findByTypeAndStatus(dto.getCodeTypeBanner(), dto.getStatus());
+        List<Banner> banners = bannerRepository.findByTypeAndStatus(dto.getCodeTypeBanner(), dto.getStatus())
+                .orElseThrow(() -> new NoSuchElementException("no banners found"));
+
         return banners.stream()
                 .map(bannerMapper::toSummaryDto)
                 .collect(Collectors.toList());

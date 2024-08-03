@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class ClientFindByBarcodeDto {
-    List<Integer> barcodes;
+    String barcodes;
 }
