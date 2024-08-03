@@ -27,6 +27,6 @@ public class GroupClient {
     @Column(name = "code_parent_group", nullable = false)
     private Integer codeParentGroup; //should be filled with some random data as for now
 
-    @OneToMany(mappedBy = "groupClient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "groupClient", cascade = CascadeType.REMOVE)
     private final Set<Client> clients = new HashSet<>();
 }

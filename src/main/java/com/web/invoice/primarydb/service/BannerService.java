@@ -6,6 +6,7 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.web.invoice.primarydb.component.JsonPatchHelper;
 import com.web.invoice.primarydb.dto.BannerDtoRequest;
 import com.web.invoice.primarydb.dto.BannerDetailedDto;
+import com.web.invoice.primarydb.dto.BannerFilterDto;
 import com.web.invoice.primarydb.dto.BannerSummaryDto;
 import com.web.invoice.primarydb.dao.BannerRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
@@ -47,7 +48,6 @@ public class BannerService {
         this.typeBannerRepository = typeBannerRepository;
         this.groupBannerRepository = groupBannerRepository;
     }
-
 
     @Transactional
     public void saveBanner(final BannerDtoRequest dto) {
@@ -109,5 +109,11 @@ public class BannerService {
                 .collect(Collectors.toList());
     }
 
+    public List<BannerSummaryDto> getAllBannersFiltered(BannerFilterDto dto) {
+        List<Banner> banners = bannerRepository.findByTypeAndStatus(dto.getCodeTypeBanner(), dto.getStatus());
+        return banners.stream()
+                .map(bannerMapper::toSummaryDto)
+                .collect(Collectors.toList());
+    }
 }
 

@@ -22,6 +22,6 @@ public class TypeBanner {
     @Column(name = "name_type_banner", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "typeBanner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "typeBanner", cascade = CascadeType.REMOVE)
     private final Set<Banner> banners = new HashSet<>();
 }

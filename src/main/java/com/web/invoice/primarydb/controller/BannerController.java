@@ -5,6 +5,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.web.invoice.primarydb.dto.BannerDtoRequest;
 import com.web.invoice.primarydb.dto.BannerDetailedDto;
+import com.web.invoice.primarydb.dto.BannerFilterDto;
 import com.web.invoice.primarydb.dto.BannerSummaryDto;
 import com.web.invoice.primarydb.exception.ValidationException;
 import com.web.invoice.primarydb.service.BannerService;
@@ -68,5 +69,11 @@ public class BannerController {
     public ResponseEntity<Void> moveBannerToAnotherGroup(@PathVariable int id, @PathVariable int codeGroupBanner) {
         bannerService.moveBannerToAnotherGroup(id, codeGroupBanner);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/filter")
+    public ResponseEntity<List<BannerSummaryDto>> getAllBannersFiltered(@RequestBody BannerFilterDto dto) {
+        List<BannerSummaryDto> banners = bannerService.getAllBannersFiltered(dto);
+        return ResponseEntity.ok(banners);
     }
 }
