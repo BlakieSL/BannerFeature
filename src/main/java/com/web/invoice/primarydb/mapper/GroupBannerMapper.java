@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb.service;
+package com.web.invoice.primarydb.mapper;
 
 import com.web.invoice.primarydb.dto.GroupBannerDto;
 import com.web.invoice.primarydb.dto.GroupBannerDtoRequest;

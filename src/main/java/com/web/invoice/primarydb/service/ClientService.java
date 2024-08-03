@@ -2,6 +2,7 @@ package com.web.invoice.primarydb.service;
 
 import com.web.invoice.primarydb.dao.ClientRepository;
 import com.web.invoice.primarydb.dto.ClientDto;
+import com.web.invoice.primarydb.mapper.ClientMapper;
 import com.web.invoice.primarydb.model.Client;
 import org.springframework.stereotype.Service;
 

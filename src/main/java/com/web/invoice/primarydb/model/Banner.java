@@ -1,6 +1,7 @@
 package com.web.invoice.primarydb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
@@ -37,7 +38,7 @@ public class Banner {
     private LocalDateTime plannedDate;
 
     @Column(name = "status")
-    private short status; // 1 - чернетка, 2 - заплановано 3 - відправлено
+    private short status; // 0 - чернетка, 1 - заплановано 2 - відправлено
 
     @Column(name = "send_result")
     private String sendResult;

@@ -63,4 +63,10 @@ public class BannerController {
         bannerService.modifyBanner(id, patch);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/move/{codeGroupBanner}")
+    public ResponseEntity<Void> moveBannerToAnotherGroup(@PathVariable int id, @PathVariable int codeGroupBanner) {
+        bannerService.moveBannerToAnotherGroup(id, codeGroupBanner);
+        return ResponseEntity.noContent().build();
+    }
 }

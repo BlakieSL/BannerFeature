@@ -7,6 +7,8 @@ import com.web.invoice.primarydb.component.JsonPatchHelper;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
 import com.web.invoice.primarydb.dto.GroupBannerDtoRequest;
 import com.web.invoice.primarydb.dto.GroupBannerDto;
+import com.web.invoice.primarydb.exception.NonEmptyGroupBannerException;
+import com.web.invoice.primarydb.mapper.GroupBannerMapper;
 import com.web.invoice.primarydb.model.GroupBanner;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,8 @@ public class GroupBannerService {
     @Transactional
     public void modifyGroupBanner(final int codeGroupBanner, final JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         GroupBanner groupBanner = groupBannerRepository.findById(codeGroupBanner)
-                        .orElseThrow(() -> new NoSuchElementException("GroupBanner with id: " + codeGroupBanner + " not found"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "GroupBanner with id: " + codeGroupBanner + " not found"));
 
         GroupBannerDtoRequest dto = groupBannerMapper.toRequestDto(groupBanner);
         GroupBannerDtoRequest patchedDto = jsonPatchHelper.applyPatch(patch, dto, GroupBannerDtoRequest.class);
@@ -59,6 +62,10 @@ public class GroupBannerService {
         GroupBanner groupBanner = groupBannerRepository.findById(codeGroupBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "GroupBanner with id: " + codeGroupBanner + " not found"));
+        if (!groupBanner.getBanners().isEmpty()) {
+            throw new NonEmptyGroupBannerException(
+                    "Cannot delete non-empty GroupBanner with id: " + codeGroupBanner);
+        }
         groupBannerRepository.delete(groupBanner);
     }
 
