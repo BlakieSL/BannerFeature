@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb.controller;
+package com.web.invoice.primarydb;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;

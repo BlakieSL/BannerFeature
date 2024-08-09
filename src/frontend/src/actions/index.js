@@ -10,7 +10,7 @@ export const refreshTransferInvoiceList = (actionType, dateRefreshTransferInvoic
 export const setActiveTransferInvoice = (actionType, transferInvoice) => ({type: actionType, transferInvoice: transferInvoice})
 export const refreshWaresTransferInvoiceList = (actionType, dateRefreshWaresTransferInvoiceList) => ({type: actionType, dateRefreshWaresTransferInvoiceList: dateRefreshWaresTransferInvoiceList})
 export const refreshInventList = (actionType, dateRefreshInventList) => ({type: actionType, dateRefreshInventList: dateRefreshInventList})
-export const refreshWaresInventList = (actionType, dateRefreshWaresInventList) => ({type: actionType, dateRefreshWaresInventList: dateRefreshWaresInventList})
+export const refreshWaresInventList = ( actionType, dateRefreshWaresInventList) => ({type: actionType, dateRefreshWaresInventList: dateRefreshWaresInventList})
 export const setActiveInvent = (actionType, invent) => ({type: actionType, invent: invent})
 export const setActiveOrderSupply = (actionType, orderSupply) => ({type: actionType, orderSupply: orderSupply})
 export const refreshOrderSupplyList = (actionType, dateRefreshOrderSupplyList) => ({type: actionType, dateRefreshOrderSupplyList: dateRefreshOrderSupplyList})

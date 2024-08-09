@@ -1,14 +1,14 @@
-import React from 'react'
-import {NavLink} from 'react-router-dom'
-import AuthenticationService, {USER_NAME_SESSION_ATTRIBUTE_NAME} from "../../service/AuthenticationService";
-import {FULL_NAME} from "../config";
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import AuthenticationService, { USER_NAME_SESSION_ATTRIBUTE_NAME } from "../../service/AuthenticationService";
+import { FULL_NAME } from "../config";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 export const checkAccessEvent = (codeEvent) => {
-    const accessEventList = JSON.parse(sessionStorage.getItem("accessEventList")) || []
-    return accessEventList.map(a => a.toString()).includes(codeEvent.toString())
-}
+    const accessEventList = JSON.parse(sessionStorage.getItem("accessEventList")) || [];
+    return accessEventList.map(a => a.toString()).includes(codeEvent.toString());
+};
 
 export const Navbar = () => {
 
@@ -38,8 +38,8 @@ export const Navbar = () => {
 
     const referenceMenu = () => {
         return (
-            <div  className={"nav-item"}>
-                <li onClick={handleClickRef } className={"nav-link"}>
+            <div className={"nav-item"}>
+                <li onClick={handleClickRef} className={"nav-link"}>
                     Справочники
                 </li>
                 <Menu
@@ -50,30 +50,12 @@ export const Navbar = () => {
                     onClose={handleCloseRef}
                 >
                     {workplaceStatus()}
+                    {groupBanners()}
                 </Menu>
             </div>
-        )
-        /*
-        return (
-            <div  className={"nav-item"}>
-                <li onClick={handleClickRef } className={"nav-link"}>
-                    Справочники
-                </li>
-                <Menu
-                    id="reference-menu"
-                    anchorEl={anchorRef}
-                    keepMounted
-                    open={Boolean(anchorRef)}
-                    onClose={handleCloseRef}
-                >
-                    {priceType()}
-                    {priceType()}
-                </Menu>
-            </div>
-        )
+        );
+    };
 
-         */
-    }
     const priceType = () => {
         return checkAccessEvent(173) &&
             <MenuItem onClick={handleCloseRef}>
@@ -81,10 +63,10 @@ export const Navbar = () => {
                     to="/price-type"
                     exact
                 >
-                   Тип цены
+                    Тип цены
                 </NavLink>
-            </MenuItem>
-    }
+            </MenuItem>;
+    };
 
     const workplaceStatus = () => {
         return checkAccessEvent(173) &&
@@ -95,31 +77,41 @@ export const Navbar = () => {
                 >
                     Статус роботи кас
                 </NavLink>
-            </MenuItem>
-    }
+            </MenuItem>;
+    };
+
+    const groupBanners = () => {
+        return checkAccessEvent(173) &&
+            <MenuItem onClick={handleCloseRef}>
+                <NavLink
+                    to="/group-banners"
+                    exact
+                >
+                    Новини
+                </NavLink>
+            </MenuItem>;
+    };
 
     return (
-      <nav className="navbar navbar-dark navbar-expand-lg bg-dark">
-        <ul className="navbar-nav">
-          <li className="nav-item">
-            <NavLink
-              className="nav-link"
-              to="/"
-              exact
-            >
-              Главная
-            </NavLink>
-          </li>
-
-           <li>
-            {referenceMenu()}
-           </li>
-
-        </ul>
-        <ul className="navbar-nav navbar-collapse justify-content-end">
-          <li className="user-fio-header">{FULL_NAME}</li>
-          <button className="btn btn-link" onClick={AuthenticationService.logout}>Выход</button>
-        </ul>
-      </nav>
-      )
-}
+        <nav className="navbar navbar-dark navbar-expand-lg bg-dark">
+            <ul className="navbar-nav">
+                <li className="nav-item">
+                    <NavLink
+                        className="nav-link"
+                        to="/"
+                        exact
+                    >
+                        Главная
+                    </NavLink>
+                </li>
+                <li>
+                    {referenceMenu()}
+                </li>
+            </ul>
+            <ul className="navbar-nav navbar-collapse justify-content-end">
+                <li className="user-fio-header">{FULL_NAME}</li>
+                <button className="btn btn-link" onClick={AuthenticationService.logout}>Выход</button>
+            </ul>
+        </nav>
+    );
+};

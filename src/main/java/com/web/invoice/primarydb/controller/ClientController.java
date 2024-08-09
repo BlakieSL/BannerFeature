@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb.controller;
+package com.web.invoice.primarydb;
 
 import com.web.invoice.primarydb.dto.ClientDto;
 import com.web.invoice.primarydb.dto.ClientFindByBarcodeDto;

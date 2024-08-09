@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb.controller;
+package com.web.invoice.primarydb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
@@ -75,5 +75,11 @@ public class BannerController {
     public ResponseEntity<List<BannerSummaryDto>> getAllBannersFiltered(@RequestBody BannerFilterDto dto) {
         List<BannerSummaryDto> banners = bannerService.getAllBannersFiltered(dto);
         return ResponseEntity.ok(banners);
+    }
+
+    @PostMapping("/{id}/copy/{targetCodeGroupBanner}")
+    public ResponseEntity<Void> copyBanner(@PathVariable int id, @PathVariable int targetCodeGroupBanner) {
+        bannerService.copyBanner(id, targetCodeGroupBanner);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

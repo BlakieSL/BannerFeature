@@ -1,58 +1,47 @@
 import React from 'react';
-import {BrowserRouter, Redirect, Route, Switch} from 'react-router-dom'
-import {Navbar} from "./components/navbar/Navbar";
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Navbar } from "./components/navbar/Navbar";
 import AuthenticationService from "./service/AuthenticationService";
-import Login from './components/login/Login'
-import PriceTypeList from "./components/price-type/list";
-import Home from "./pages/Home";
+import Login from './components/login/Login';
 import WorkplaceStatusList from "./components/workplace-status/list";
+import GroupBannerList from "./components/banner/list/groupBannerList";
+import BannerList from "./components/banner/list/bannerList";
 
 const App = () => {
-    /*
-        const router = () => {
-            return (<BrowserRouter>
-                <Navbar/>
+    const router = () => {
+        return (
+            <BrowserRouter>
+                <Navbar />
                 <div>
-                    <Switch>
-                        <Route path={'/'} exact component={PriceTypeList}/>
-                        <Route path={'/price-type'} component={PriceTypeList}/>
-                    </Switch>
+                    <Routes>
+                        <Route path="/" element={<WorkplaceStatusList />} />
+                        <Route path="/workplace-status" element={<WorkplaceStatusList />} />
+                        <Route path="/group-banners" element={<GroupBannerList />} />
+                        <Route path="/banners/group/:groupId" element={<BannerList />} />
+                    </Routes>
                 </div>
-            </BrowserRouter>)
-        }
-
-    */
-        const router = () => {
-            return (<BrowserRouter>
-                <Navbar/>
-                <div>
-                    <Switch>
-                        <Route path={'/'} exact component={WorkplaceStatusList}/>
-                        <Route path={'/workplace-status'} component={WorkplaceStatusList}/>
-                    </Switch>
-                </div>
-            </BrowserRouter>)
-        }
+            </BrowserRouter>
+        );
+    };
 
     const login = () => {
-        return <React.Fragment>
-            <BrowserRouter>
-                <Switch>
-                    <Redirect to="/" />
-                </Switch>
-            </BrowserRouter>
-            <Login/>
-        </React.Fragment>
-    }
+        return (
+            <React.Fragment>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="*" element={<Navigate to="/" />} />
+                    </Routes>
+                </BrowserRouter>
+                <Login />
+            </React.Fragment>
+        );
+    };
 
-    return(
-      <React.Fragment>
-          {AuthenticationService.isUserLoggedIn() ?
-              router()
-              : login()
-          }
-      </React.Fragment>
-  )
+    return (
+        <React.Fragment>
+            {AuthenticationService.isUserLoggedIn() ? router() : login()}
+        </React.Fragment>
+    );
 }
 
-export default App
+export default App;

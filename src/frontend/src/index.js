@@ -5,10 +5,14 @@ import './css/index.scss';
 import './css/App.scss'
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './reducers/index'
-import { createStore } from 'redux'
+import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux'
 
-const store = createStore(rootReducer)
+const store = configureStore({
+    reducer: rootReducer,
+    devTools: process.env.NODE_ENV !== 'production',
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware()
+});
 
 ReactDOM.render(
     <Provider store={store}>

@@ -36,6 +36,15 @@ import accessEventList from  "./accessEventList";
 import dynamicLists from "./dynamicLists";
 import conditionLists from "./conditionLists";
 import allTemplateRuleList from "./allTemplateRuleList";
+import bannerListReducer from "../bannerReducers/bannerListReducer";
+import clientListReducer from "../bannerReducers/clientReducer";
+import currentBannerReducer from "../bannerReducers/currentBannerReducer";
+import groupBannerListReducer from "../bannerReducers/groupBannerReducer";
+import groupClientListReducer from "../bannerReducers/groupClientReducer";
+import currentGroupBannerReducer from "../bannerReducers/currentGroupBannerReducer";
+import clientReducer from "../bannerReducers/clientReducer";
+import groupBannerReducer from "../bannerReducers/groupBannerReducer";
+import groupClientReducer from "../bannerReducers/groupClientReducer";
 
 const rootReducer = combineReducers({
     activeWindow,
@@ -76,7 +85,13 @@ const rootReducer = combineReducers({
     discountGroupList: discountGroupList,
     dynamicLists,
     conditionLists: conditionLists,
-    allTemplateRuleList: allTemplateRuleList
+    allTemplateRuleList: allTemplateRuleList,
+    bannerListReducer: bannerListReducer,
+    clientReducer: clientReducer,
+    currentBannerReducer: currentBannerReducer,
+    groupBannerReducer: groupBannerReducer,
+    groupClientReducer: groupClientReducer,
+    currentGroupBannerReducer: currentGroupBannerReducer,
 })
 
 export default rootReducer

@@ -37,3 +37,22 @@ export const SET_ACCESS_EVENT_LIST = 'SET_ACCESS_EVENT_LIST'
 export const SET_DYNAMIC_LISTS = 'SET_DYNAMIC_LISTS'
 export const SET_CONDITION_LISTS = 'SET_CONDITION_LISTS'
 export const SET_TEMPLATE_RULE_LIST = 'SET_TEMPLATE_RULE_LIST'
+//Banners feature!!!
+
+// Banner Action Types
+export const SET_BANNERS = 'SET_BANNERS';
+export const SET_BANNER = 'SET_BANNER';
+
+
+//GroupBanner Action Types
+export const SET_GROUP_BANNERS = 'SET_GROUP_BANNERS';
+export const SET_GROUP_BANNER = 'SET_GROUP_BANNER';
+
+
+//Client Action Types
+export const SET_CLIENTS = 'SET_CLIENTS';
+export const SET_CLIENT_BY_PHONE = 'SET_CLIENT_BY_PHONE';
+export const SET_CLIENTS_BY_BARCODES = 'SET_CLIENTS_BY_BARCODE';
+
+//GroupClient Action Types
+export const SET_GROUP_CLIENTS = 'SET_GROUP_CLIENTS';

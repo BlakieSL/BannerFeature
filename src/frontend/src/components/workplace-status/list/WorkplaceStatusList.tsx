@@ -252,12 +252,14 @@ const WorkplaceStatusList: React.FC<WorkplaceStatusListProps> = (props: Workplac
         />)
     }
 
-    return (<div className={styles.content}>
-        <h3 className={styles.header}>Статус роботи кас</h3>
-        {/*buttonPanel()*/}
-        {table()}
-        {showEdit && editItemForm()}
-    </div>)
+    return (
+        <div className={styles.content}>
+            <h3 className={styles.header}>Статус роботи кас</h3>
+                {/*buttonPanel()*/}
+                {table()}
+            {showEdit && editItemForm()}
+        </div>
+    )
 }
 
 export default WorkplaceStatusList

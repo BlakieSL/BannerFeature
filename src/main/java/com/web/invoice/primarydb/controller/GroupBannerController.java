@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb.controller;
+package com.web.invoice.primarydb;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
