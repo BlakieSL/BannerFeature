@@ -15,6 +15,7 @@ import com.web.invoice.primarydb.exception.BannerAlreadySentException;
 import com.web.invoice.primarydb.mapper.BannerMapper;
 import com.web.invoice.primarydb.model.Banner;
 import com.web.invoice.primarydb.model.GroupBanner;
+import com.web.invoice.primarydb.model.TypeBanner;
 import org.springframework.stereotype.Service;
 
 
@@ -52,7 +53,8 @@ public class BannerService {
     @Transactional
     public void saveBanner(final BannerDtoRequest dto) {
         validator.validate(dto);
-        bannerRepository.save(bannerMapper.toEntity(dto));
+        Banner banner = bannerMapper.toEntity(dto);
+        bannerRepository.save(banner);
     }
 
     @Transactional
@@ -71,6 +73,7 @@ public class BannerService {
 
         validator.validate(patchedDto);
         bannerMapper.updateEntityFromDto(patchedDto,banner);
+        bannerMapper.updateSetBanners(patchedDto, banner);
 
         bannerRepository.save(banner);
     }
@@ -98,6 +101,21 @@ public class BannerService {
         bannerRepository.save(banner);
     }
 
+    @Transactional
+    public void copyBanner(final int codeBanner, final int targetCodeGroupBanner) {
+        Banner banner = bannerRepository.findById(codeBanner)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Banner with id: " + codeBanner + " not found"));
+
+        GroupBanner targerGroupBanner = groupBannerRepository.findById(targetCodeGroupBanner)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "GroupBanner with id: " + targetCodeGroupBanner + "not found"));
+
+        Banner copiedBanner = bannerMapper.copyBanner(banner, targerGroupBanner);
+
+        bannerRepository.save(copiedBanner);
+    }
+
     public BannerDetailedDto getBannerDetails(final int codeBanner) {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
@@ -116,6 +134,15 @@ public class BannerService {
 
     public List<BannerSummaryDto> getAllBannersFiltered(BannerFilterDto dto) {
         List<Banner> banners = bannerRepository.findByTypeAndStatus(dto.getCodeTypeBanner(), dto.getStatus())
+                .orElseThrow(() -> new NoSuchElementException("no banners found"));
+
+        return banners.stream()
+                .map(bannerMapper::toSummaryDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<BannerSummaryDto> getAllBannersByGroup(int codeGroupBanner) {
+        List<Banner> banners = bannerRepository.findByGroupBannerCodeGroupBanner(codeGroupBanner)
                 .orElseThrow(() -> new NoSuchElementException("no banners found"));
 
         return banners.stream()

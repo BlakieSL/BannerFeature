@@ -75,4 +75,12 @@ public class GroupBannerService {
                 .map(groupBannerMapper::toDto)
                 .collect(Collectors.toList());
     }
+
+    public GroupBannerDto getGroupBannerByCodeGroupBanner(int codeGroupBanner) {
+        GroupBanner group = groupBannerRepository.findById(codeGroupBanner)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "GroupBanner with id: " + codeGroupBanner + " not found"));
+
+        return groupBannerMapper.toDto(group);
+    }
 }

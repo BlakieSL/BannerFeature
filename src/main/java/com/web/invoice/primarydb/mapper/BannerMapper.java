@@ -14,12 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = { LocalDate.class, LocalDateTime.class, DateTimeFormatter.class })
 public abstract class BannerMapper {
     @Autowired
     private TypeBannerRepository typeBannerRepository;
@@ -27,20 +28,13 @@ public abstract class BannerMapper {
     @Autowired
     private GroupBannerRepository groupBannerRepository;
 
+
+    //mappings
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
     @Mapping(source = "groupBanner", target = "codeGroupBanner", qualifiedByName = "mapGroupBannerToCode")
     @Mapping(target = "groupClients", ignore = true)
     @Mapping(target = "singleClients", ignore = true)
     public abstract BannerDetailedDto toDetailedDto(Banner banner);
-
-    @AfterMapping
-    protected void mapClientsToDetailedDto(@MappingTarget BannerDetailedDto dto, Banner banner) {
-        Set<Integer> groupClients = getClients(banner, (short) 1);
-        Set<Integer> singleClients = getClients(banner, (short) 0);
-
-        dto.setGroupClients(groupClients);
-        dto.setSingleClients(singleClients);
-    }
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
     public abstract BannerSummaryDto toSummaryDto(Banner banner);
@@ -55,48 +49,11 @@ public abstract class BannerMapper {
     @Mapping(target = "setBanners", ignore = true)
     public abstract Banner toEntity(BannerDtoRequest dto);
 
-    @AfterMapping
-    protected void setDefaultValues(@MappingTarget Banner banner, BannerDtoRequest dto) {
-        banner.setDateCreate(LocalDate.now());
-        banner.setDateBegin(LocalDateTime.now());
-        banner.setDateEnd(LocalDateTime.now().plusDays(10));
-        banner.setSignActivity((short) 1);
-
-        Set<SetBanner> setBanners = new HashSet<>();
-
-        dto.getGroupClients().forEach(groupId -> {
-            SetBanner setBanner = new SetBanner();
-            setBanner.setBanner(banner);
-            setBanner.setCodeValue(groupId);
-            setBanner.setTypeValue((short) 1);
-            setBanners.add(setBanner);
-        });
-
-        dto.getSingleClients().forEach(clientId -> {
-            SetBanner setBanner = new SetBanner();
-            setBanner.setBanner(banner);
-            setBanner.setCodeValue(clientId);
-            setBanner.setTypeValue((short) 0);
-            setBanners.add(setBanner);
-        });
-
-        banner.getSetBanners().addAll(setBanners);
-    }
-
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
     @Mapping(source = "groupBanner", target = "codeGroupBanner", qualifiedByName = "mapGroupBannerToCode")
     @Mapping(target = "groupClients", ignore = true)
     @Mapping(target = "singleClients", ignore = true)
     public abstract BannerDtoRequest toRequestDto(Banner banner);
-
-    @AfterMapping
-    protected void mapClients(@MappingTarget BannerDtoRequest dto, Banner banner) {
-        Set<Integer> groupClients = getClients(banner, (short) 1);
-        Set<Integer> singleClients = getClients(banner, (short) 0);
-
-        dto.setGroupClients(groupClients);
-        dto.setSingleClients(singleClients);
-    }
 
     @Mapping(target = "typeBanner", ignore = true)
     @Mapping(target = "groupBanner", ignore = true)
@@ -108,8 +65,77 @@ public abstract class BannerMapper {
     @Mapping(target = "setBanners", ignore = true)
     public abstract void updateEntityFromDto(BannerDtoRequest dto, @MappingTarget Banner banner);
 
+    @Mapping(target = "codeBanner", ignore = true)
+    @Mapping(target = "dateCreate", expression = "java(LocalDate.now())")
+    @Mapping(target = "plannedDate", ignore = true)
+    @Mapping(target = "status", constant = "0") // готово до відправки змінюється(2) на чернетку(0)
+    @Mapping(target = "title", expression = "java(banner.getTitle() + \" - копія \" + LocalDateTime.now().format(DateTimeFormatter.ofPattern(\"dd-MM-yy HH:mm\")))")
+    @Mapping(target = "groupBanner", source = "targetGroupBanner")
+    public abstract Banner copyBanner(Banner banner, GroupBanner targetGroupBanner);
+
+
+    //aftermappings
     @AfterMapping
-    protected void updateSetBanners(@MappingTarget Banner banner, BannerDtoRequest dto) {
+    protected void mapClientsToDetailedDto(@MappingTarget BannerDetailedDto dto, Banner banner) {
+        System.out.println("mapClientsToDetailedDto aftermapping");
+        Set<Integer> groupClients = getClients(banner, (short) 1);
+        Set<Integer> singleClients = getClients(banner, (short) 0);
+
+        dto.setGroupClients(groupClients);
+        dto.setSingleClients(singleClients);
+    }
+
+    @AfterMapping
+    protected void setDefaultValues(@MappingTarget Banner banner, BannerDtoRequest dto) {
+        System.out.println("setDefaultValues aftermapping");
+        banner.setDateCreate(LocalDate.now());
+        banner.setDateBegin(LocalDateTime.now());
+        banner.setDateEnd(LocalDateTime.now().plusDays(10));
+        banner.setSignActivity((short) 1);
+
+        if (dto.getStatus() == 2) {
+            banner.setStatus(dto.getStatus());
+        } else {
+            banner.setStatus((short) 0);
+        }
+
+        if((dto.getSingleClients() != null && !dto.getSingleClients().isEmpty()) ||
+                (dto.getGroupClients() != null && !dto.getGroupClients().isEmpty())) {
+            Set<SetBanner> setBanners = new HashSet<>();
+            dto.getGroupClients().forEach(groupId -> {
+                SetBanner setBanner = new SetBanner();
+                setBanner.setBanner(banner);
+                setBanner.setCodeValue(groupId);
+                setBanner.setTypeValue((short) 1);
+                setBanners.add(setBanner);
+            });
+
+            dto.getSingleClients().forEach(clientId -> {
+                SetBanner setBanner = new SetBanner();
+                setBanner.setBanner(banner);
+                setBanner.setCodeValue(clientId);
+                setBanner.setTypeValue((short) 0);
+                setBanners.add(setBanner);
+            });
+            banner.getSetBanners().addAll(setBanners);
+        }
+    }
+
+    @AfterMapping
+    protected void mapClients(@MappingTarget BannerDtoRequest dto, Banner banner) {
+        System.out.println("mapClients aftermapping");
+        Set<Integer> groupClients = getClients(banner, (short) 1);
+        Set<Integer> singleClients = getClients(banner, (short) 0);
+
+        dto.setGroupClients(groupClients);
+        dto.setSingleClients(singleClients);
+    }
+
+
+    //custom mappers
+    public void updateSetBanners(BannerDtoRequest dto, Banner banner) {
+        System.out.println("Updating set banners for banner with code: " + banner.getCodeBanner());
+
         Set<Integer> newGroupClients = dto.getGroupClients();
         Set<Integer> newSingleClients = dto.getSingleClients();
 
@@ -151,6 +177,7 @@ public abstract class BannerMapper {
     }
 
 
+    //helpers
     @Named("mapTypeBanner")
     TypeBanner mapTypeBanner(Integer codeTypeBanner) {
         return typeBannerRepository.findById(codeTypeBanner)

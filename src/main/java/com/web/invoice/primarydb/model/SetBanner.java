@@ -12,7 +12,8 @@ import java.util.Objects;
 @Data
 public class SetBanner {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqcodesetbanner_generator")
+    @SequenceGenerator(name = "seqcodesetbanner_generator", sequenceName = "pos.seqcodesetbanner", allocationSize = 1)
     @Column(name = "code_set_banner", nullable = false)
     private Integer codeSetBanner;
 

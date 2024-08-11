@@ -13,11 +13,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class BannerDtoRequest {
     private static final int TITLE_MAX_LENGTH = 70;
+    @NotNull
     @Size(max = TITLE_MAX_LENGTH)
     private String title;
     private String body;
     private LocalDateTime plannedDate;
-    private short status;
+    private short status; // коли створюємо банер повинна бути можливість вибрати тільки (2)-готово до відправки,
+    // в інших випадках статус вибирати не буде можливості і він автоматично буде створений (0)-чернетка
     private String sendResult;
     @NotNull
     private Integer codeTypeBanner;
@@ -28,3 +30,12 @@ public class BannerDtoRequest {
     private Set<Integer> groupClients;
     private Set<Integer> singleClients;
 }
+
+
+
+
+
+
+
+
+

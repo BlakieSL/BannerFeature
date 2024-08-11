@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,4 +14,6 @@ import lombok.Setter;
 public class GroupClientDto {
     private Integer codeGroup;
     private String nameGroup;
+    private Integer codeParentGroup;
+    private List<GroupClientDto> children;
 }

@@ -6,13 +6,18 @@ import com.web.invoice.primarydb.mapper.GroupClientMapper;
 import com.web.invoice.primarydb.model.GroupClient;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class GroupClientService {
+
     private final GroupClientMapper groupClientMapper;
     private final GroupClientRepository groupClientRepository;
+
     public GroupClientService(
             final GroupClientMapper groupClientMapper,
             final GroupClientRepository groupClientRepository
@@ -23,8 +28,33 @@ public class GroupClientService {
 
     public List<GroupClientDto> getAllGroupClients() {
         List<GroupClient> groups = groupClientRepository.findAll();
-        return groups.stream()
+
+        List<GroupClientDto> groupDtos = groups.stream()
                 .map(groupClientMapper::toDto)
                 .collect(Collectors.toList());
+
+        GroupClientDto rootGroup = groupDtos.stream()
+                .filter(group -> group.getCodeGroup() == 0)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Root group with codeGroup = 0 not found"));
+
+        rootGroup.setChildren(buildTreeRecursive(groupDtos, rootGroup.getCodeGroup()));
+
+        List<GroupClientDto> treeWithRoot = new ArrayList<>();
+        treeWithRoot.add(rootGroup);
+
+        return treeWithRoot;
+    }
+
+    private List<GroupClientDto> buildTreeRecursive(List<GroupClientDto> flatGroups, Integer parentId) {
+        List<GroupClientDto> children = new ArrayList<>();
+        for (GroupClientDto group : flatGroups) {
+            if (Objects.equals(group.getCodeParentGroup(), parentId)) {
+                group.setChildren(buildTreeRecursive(flatGroups, group.getCodeGroup()));
+                children.add(group);
+            }
+        }
+        children.sort(Comparator.comparingInt(GroupClientDto::getCodeGroup));
+        return children;
     }
 }

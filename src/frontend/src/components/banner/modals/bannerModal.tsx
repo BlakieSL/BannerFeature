@@ -93,28 +93,18 @@ const BannerModal: React.FC<BannerModalProps> = ({open, onClose, onSave, initial
             align: "center",
             disableColumnMenu: true,
         },
-        {
-            field: 'name',
-            headerName: 'Назва',
-            flex: 2,
-            headerAlign: "center",
-            align: "center",
-            disableColumnMenu: true,
-        },
     ];
 
     const rows = [
-        ...Array.from(banner.groupClients ?? []).map(groupId => ({
-            id: `group-${groupId}`,
-            type: 'Группа клієнтів',
-            code: groupId,
-            name: `Group Name for ID ${groupId}`, // Replace with actual group name
+        ...Array.from(banner.groupClients ?? []).map(codeGroup => ({
+            id: `group-${codeGroup}`,
+            type: 'Группа',
+            code: codeGroup,
         })),
-        ...Array.from(banner.singleClients ?? []).map(clientId => ({
-            id: `client-${clientId}`,
+        ...Array.from(banner.singleClients ?? []).map(codeClient => ({
+            id: `client-${codeClient}`,
             type: 'Клієнт',
-            code: clientId,
-            name: `Client Name for ID ${clientId}`, // Replace with actual client name
+            code: codeClient,
         })),
     ];
 
@@ -203,23 +193,25 @@ const BannerModal: React.FC<BannerModalProps> = ({open, onClose, onSave, initial
 
                     <TabPanel value="2">
                         <Button variant="contained" onClick={() => setIsGroupClientModalOpen(true)}>
-                            Вибір груп клієнтів
+                            Вибір груп
                         </Button>
                         <Button variant="contained" onClick={() => setIsClientModalOpen(true)}>
                             Вибір клієнтів
                         </Button>
-                        <Box mt={2} sx={{ height: 300 }}>
-                            <DataGrid
-                                rows={rows}
-                                columns={columns}
-                                pageSizeOptions={[5, 10]}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: { pageSize: 5 },
-                                    },
-                                }}
-                            />
-                        </Box>
+                        {rows.length > 0 && (
+                            <Box mt={2} sx={{ height: 300 }}>
+                                <DataGrid
+                                    rows={rows}
+                                    columns={columns}
+                                    pageSizeOptions={[5, 10]}
+                                    initialState={{
+                                        pagination: {
+                                            paginationModel: { pageSize: 5 },
+                                        },
+                                    }}
+                                />
+                            </Box>
+                        )}
                     </TabPanel>
 
                     <TabPanel value="3">

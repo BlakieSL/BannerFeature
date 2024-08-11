@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb;
+package com.web.invoice.primarydb.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
@@ -38,6 +38,12 @@ public class BannerController {
     public ResponseEntity<BannerDetailedDto> getBannerById(@PathVariable int id) {
         BannerDetailedDto banner = bannerService.getBannerDetails(id);
         return ResponseEntity.ok(banner);
+    }
+
+    @GetMapping("/group/{codeGroupBanner}")
+    public ResponseEntity<List<BannerSummaryDto>> getAllBannersByGroupBanner(@PathVariable int codeGroupBanner) {
+        List<BannerSummaryDto> banners = bannerService.getAllBannersByGroup(codeGroupBanner);
+        return ResponseEntity.ok(banners);
     }
 
     @PostMapping

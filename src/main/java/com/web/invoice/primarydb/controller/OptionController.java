@@ -1,4 +1,4 @@
-package com.web.invoice.primarydb;
+package com.web.invoice.primarydb.controller;
 
 import com.web.invoice.primarydb.model.*;
 import com.web.invoice.primarydb.service.*;

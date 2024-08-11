@@ -1,10 +1,8 @@
 package com.web.invoice.primarydb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -23,6 +21,8 @@ public class Banner {
     private static final int TITLE_MAX_LENGTH = 100;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqcodebanner_generator")
+    @SequenceGenerator(name = "seqcodebanner_generator", sequenceName = "pos.seqcodebanner", allocationSize = 1)
     @Column(name = "code_banner", nullable = false)
     private Integer codeBanner;
 
@@ -38,7 +38,7 @@ public class Banner {
     private LocalDateTime plannedDate;
 
     @Column(name = "status")
-    private short status; // 0 - чернетка, 1 - заплановано 2 - відправлено
+    private short status; // 0 - чернетка, 1 - заплановано, 2 - готово до відправки, 3 - відправлено
 
     @Column(name = "send_result")
     private String sendResult;
@@ -75,6 +75,8 @@ public class Banner {
     @Column(name = "sign_activity", nullable = false)
     private short signActivity;
 
-    @OneToMany(mappedBy = "banner", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "banner",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            orphanRemoval = true)
     private final Set<SetBanner> setBanners = new HashSet<>();
 }

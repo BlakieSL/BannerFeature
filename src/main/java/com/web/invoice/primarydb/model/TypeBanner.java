@@ -14,7 +14,8 @@ import java.util.Set;
 @Setter
 public class TypeBanner {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqcodetypebanner_generator")
+    @SequenceGenerator(name = "seqcodetypebanner_generator", sequenceName = "pos.seqcodetypebanner", allocationSize = 1)
     @Column(name = "code_type_banner", nullable = false)
     private Integer codeTypeBanner;
 

@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class BannerFilterDto {
     private Integer codeTypeBanner;
-    private short status;
+    private Short status;
 }

@@ -12,10 +12,9 @@ import {
     Select,
     FormControl,
     InputLabel,
-    List,
-    ListItem,
     Checkbox,
 } from '@mui/material';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 interface ClientSearchModalProps {
     open: boolean;
@@ -42,23 +41,11 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         }
     }, [open]);
 
-    useEffect(() => {
-        console.log('Clients updated in component:', clients);  // Add this line for debugging
-    }, [clients]);
     const handleSearch = () => {
-        console.log('Search type:', searchType);
-        console.log('Search query:', searchQuery);
-
         if (searchType === 'phone') {
-            // Create the DTO and dispatch the action for finding by phone
-            const dto = { phone: searchQuery };
-            console.log('Dispatching findClientByPhone with DTO:', dto);
-            dispatch(findClientByPhone(dto));
+            dispatch(findClientByPhone({ phone: searchQuery }));
         } else {
-            // Create the DTO and dispatch the action for finding by barcodes
-            const dto = { barcodes: searchQuery };
-            console.log('Dispatching findClientsByBarcodes with DTO:', dto);
-            dispatch(findClientsByBarcodes(dto));
+            dispatch(findClientsByBarcodes({ barcodes: searchQuery }));
         }
     };
 
@@ -75,9 +62,48 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         onClose();
     };
 
+    const columns: GridColDef[] = [
+        {
+            field: 'selected',
+            headerName: 'Обраний',
+            type: 'boolean',
+            width: 150,
+            align: "center",
+            headerAlign: "center",
+            renderCell: (params) => (
+                <Checkbox
+                    checked={selectedClients.includes(params.row.codeClient)}
+                    onChange={() => handleToggle(params.row.codeClient)}
+                />
+            )
+        },
+        {
+            field: 'codeClient',
+            headerName: 'Код',
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            disableColumnMenu: true,
+        },
+        {
+            field: 'surname',
+            headerName: 'Прізвище',
+            flex: 2,
+            headerAlign: "center",
+            align: "center",
+            disableColumnMenu: true,
+        },
+    ];
+
+    const rows = clients.map((client: Client) => ({
+        id: client.codeClient,
+        ...client,
+        selected: selectedClients.includes(client.codeClient),
+    }));
+
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={{ p: 4, bgcolor: 'background.paper', width: 600, margin: 'auto', mt: '20%' }}>
+            <Box sx={{ p: 4, bgcolor: 'background.paper', width: 800, margin: 'auto', mt: '20%' }}>
                 <Typography variant="h6">Пошук клієнтів</Typography>
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Умова пошуку</InputLabel>
@@ -100,17 +126,18 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                 <Button variant="contained" color="primary" onClick={handleSearch}>
                     Пошук
                 </Button>
-                <List>
-                    {clients.map((client: Client) => (
-                        <ListItem key={client.codeClient}>
-                            <Checkbox
-                                checked={selectedClients.includes(client.codeClient)}
-                                onChange={() => handleToggle(client.codeClient)}
-                            />
-                            {client.surname}
-                        </ListItem>
-                    ))}
-                </List>
+                <Box mt={2} sx={{ height: 300 }}>
+                    <DataGrid
+                        rows={rows}
+                        columns={columns}
+                        pageSizeOptions={[5, 10]}
+                        initialState={{
+                            pagination: {
+                                paginationModel: { pageSize: 5 },
+                            },
+                        }}
+                    />
+                </Box>
                 <Box mt={2} display="flex" justifyContent="space-between">
                     <Button variant="contained" onClick={handleSave}>Додати вибрані</Button>
                     <Button variant="outlined" onClick={onClose}>Закрити</Button>

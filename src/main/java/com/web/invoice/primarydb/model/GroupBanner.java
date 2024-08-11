@@ -16,7 +16,8 @@ import java.util.Set;
 @Setter
 public class GroupBanner {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqcodegroupbanner_generator")
+    @SequenceGenerator(name = "seqcodegroupbanner_generator", sequenceName = "pos.seqcodegroupbanner", allocationSize = 1)
     @Column(name = "code_group_banner", nullable = false)
     private Integer codeGroupBanner;
 
