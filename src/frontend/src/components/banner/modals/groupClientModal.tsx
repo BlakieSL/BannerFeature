@@ -88,7 +88,7 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
                 p: 4,
                 bgcolor: 'background.paper',
                 width: 960,
-                height: 755,
+                height: 754,
                 margin: 'auto',
                 position: 'absolute',
                 top: '50%',
@@ -96,6 +96,7 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
                 transform: 'translate(-50%, -50%)',
                 display: 'flex',
                 flexDirection: 'column',
+                borderRadius: 1,
             }}>
                 <Typography variant="h6">Вибір груп клієнтів</Typography>
                 <Box sx={{ mt: 2, flexGrow: 1, overflowY: 'auto' }}>

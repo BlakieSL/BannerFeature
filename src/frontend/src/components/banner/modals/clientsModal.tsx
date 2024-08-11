@@ -65,9 +65,9 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
     const columns: GridColDef[] = [
         {
             field: 'selected',
-            headerName: 'Обраний',
+            headerName: '',
             type: 'boolean',
-            width: 150,
+            maxWidth: 50,
             align: "center",
             headerAlign: "center",
             renderCell: (params) => (
@@ -80,7 +80,7 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         {
             field: 'codeClient',
             headerName: 'Код',
-            flex: 1,
+            maxWidth: 125,
             headerAlign: "center",
             align: "center",
             disableColumnMenu: true,
@@ -88,7 +88,8 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         {
             field: 'surname',
             headerName: 'Прізвище',
-            flex: 2,
+            type: "string",
+            flex: 1,
             headerAlign: "center",
             align: "center",
             disableColumnMenu: true,
@@ -103,42 +104,63 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={{ p: 4, bgcolor: 'background.paper', width: 800, margin: 'auto', mt: '20%' }}>
+            <Box sx={{
+                p: 4,
+                bgcolor: 'background.paper',
+                width: 960,
+                height: 783,
+                margin: 'auto',
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                display: 'flex',
+                flexDirection: 'column',
+                borderRadius: 1,
+            }}>
                 <Typography variant="h6">Пошук клієнтів</Typography>
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Умова пошуку</InputLabel>
-                    <Select
-                        value={searchType}
-                        onChange={(e) => setSearchType(e.target.value as 'barcode' | 'phone')}
-                    >
-                        <MenuItem value="barcode">Штрихкод (или список через запятую)</MenuItem>
-                        <MenuItem value="phone">Номер телефона</MenuItem>
-                    </Select>
-                </FormControl>
-                <TextField
-                    fullWidth
-                    label={searchType === 'phone' ? 'Номер телефона' : 'Штрихкод'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    margin="normal"
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                <Button variant="contained" color="primary" onClick={handleSearch}>
-                    Пошук
-                </Button>
-                <Box mt={2} sx={{ height: 300 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
+                    <FormControl sx={{ minWidth: 200 }}>
+                        <InputLabel>Умова пошуку</InputLabel>
+                        <Select
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value as 'barcode' | 'phone')}
+                        >
+                            <MenuItem value="barcode">Штрихкод (или список через запятую)</MenuItem>
+                            <MenuItem value="phone">Номер телефона</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        sx={{ flexGrow: 1 }}
+                        label={searchType === 'phone' ? 'Условие поиска' : 'Штрихкод'}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleSearch}>
+                        Поиск
+                    </Button>
+                </Box>
+                <Box mt={2} sx={{ flexGrow: 1 }}>
                     <DataGrid
                         rows={rows}
                         columns={columns}
-                        pageSizeOptions={[5, 10]}
-                        initialState={{
-                            pagination: {
-                                paginationModel: { pageSize: 5 },
+                        hideFooterPagination
+                        hideFooter
+                        components={{
+                            NoRowsOverlay: () => null, // Removes the "No rows" message
+                        }}
+                        sx={{
+                            '& .MuiDataGrid-main': {
+                                minHeight: rows.length ? 300 : '0px', // Adjusts height based on rows
+                            },
+                            '& .MuiDataGrid-viewport': {
+                                overflow: 'hidden',
                             },
                         }}
                     />
                 </Box>
-                <Box mt={2} display="flex" justifyContent="space-between">
+                <Box mt={2} display="flex" justifyContent="flex-end" alignItems="center">
                     <Button variant="contained" onClick={handleSave}>Додати вибрані</Button>
                     <Button variant="outlined" onClick={onClose}>Закрити</Button>
                 </Box>
