@@ -45,6 +45,8 @@ import currentGroupBannerReducer from "../bannerReducers/currentGroupBannerReduc
 import clientReducer from "../bannerReducers/clientReducer";
 import groupBannerReducer from "../bannerReducers/groupBannerReducer";
 import groupClientReducer from "../bannerReducers/groupClientReducer";
+import selectedClientsReducer from "../bannerReducers/selectedClientsReducer";
+import selectedGroupClientsReducer from "../bannerReducers/selectedGroupClientsReducer";
 
 const rootReducer = combineReducers({
     activeWindow,
@@ -92,6 +94,8 @@ const rootReducer = combineReducers({
     groupBannerReducer: groupBannerReducer,
     groupClientReducer: groupClientReducer,
     currentGroupBannerReducer: currentGroupBannerReducer,
+    selectedClientsReducer: selectedClientsReducer,
+    selectedGroupClientsReducer: selectedGroupClientsReducer,
 })
 
 export default rootReducer

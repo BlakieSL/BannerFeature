@@ -26,6 +26,11 @@ public class ClientController {
         return ResponseEntity.ok(clients);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ClientDto> getClientById(@PathVariable int id) {
+        ClientDto client = clientService.getClientById(id);
+        return ResponseEntity.ok(client);
+    }
     @PostMapping("/find-by-phone")
     public ResponseEntity<ClientDto> findByPhone(@RequestBody ClientFindByPhoneDto dto) {
         ClientDto client = clientService.findByPhone(dto);

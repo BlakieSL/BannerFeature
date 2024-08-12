@@ -39,6 +39,13 @@ public class ClientService {
                 .collect(Collectors.toList());
     }
 
+    public ClientDto getClientById(final int id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Client with id: " + id + "not found"));
+        return clientMapper.toDto(client);
+    }
+
     public ClientDto findByPhone(ClientFindByPhoneDto dto) {
         Client client =  clientRepository.findByPhone(dto.getPhone())
                 .orElseThrow(() -> new NoSuchElementException(

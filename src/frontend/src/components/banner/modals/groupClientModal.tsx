@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGroupClients } from '../../../actions/groupClientActions';
-import { RootState } from '../../../types';
+import { RootState, SimplifiedGroupClientDto } from '../../../types';
 import {
     Modal,
     Box,
@@ -19,7 +19,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 interface GroupClientModalProps {
     open: boolean;
     onClose: () => void;
-    onSave: (selectedGroups: number[]) => void;
+    onSave: (selectedGroups: SimplifiedGroupClientDto[]) => void;
 }
 
 interface GroupClient {
@@ -29,11 +29,10 @@ interface GroupClient {
     children: GroupClient[];
 }
 
-const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSave }) => {
+const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave }) => {
     const dispatch = useDispatch();
     const groupClients = useSelector((state: RootState) => state.groupClientReducer.groupClients);
-    const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
-    const [selectedGroupNames, setSelectedGroupNames] = useState<string[]>([]);
+    const [selectedGroups, setSelectedGroups] = useState<SimplifiedGroupClientDto[]>([]);
 
     useEffect(() => {
         if (open) {
@@ -41,13 +40,12 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
         }
     }, [dispatch, open]);
 
-    const handleToggle = (groupId: number, groupName: string) => {
-        if (selectedGroups.includes(groupId)) {
-            setSelectedGroups(prev => prev.filter(id => id !== groupId));
-            setSelectedGroupNames(prev => prev.filter(name => name !== groupName));
+    const handleToggle = (group: GroupClient) => {
+        const isSelected = selectedGroups.some(g => g.codeGroup === group.codeGroup);
+        if (isSelected) {
+            setSelectedGroups(prev => prev.filter(g => g.codeGroup !== group.codeGroup));
         } else {
-            setSelectedGroups(prev => [...prev, groupId]);
-            setSelectedGroupNames(prev => [...prev, groupName]);
+            setSelectedGroups(prev => [...prev, { codeGroup: group.codeGroup, nameGroup: group.nameGroup }]);
         }
     };
 
@@ -69,8 +67,8 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
                     )}
                     <Checkbox
                         sx={{ padding: 0, marginRight: 1, '& svg': { fontSize: 16 } }}
-                        checked={selectedGroups.includes(nodes.codeGroup)}
-                        onChange={() => handleToggle(nodes.codeGroup, nodes.nameGroup)}
+                        checked={selectedGroups.some(g => g.codeGroup === nodes.codeGroup)}
+                        onChange={() => handleToggle(nodes)}
                     />
                     <Typography sx={{ fontSize: '0.875rem' }}>{nodes.nameGroup}</Typography>
                 </Box>
@@ -116,7 +114,7 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
                     <TextField
                         variant="outlined"
                         fullWidth
-                        value={selectedGroupNames.join(', ')}
+                        value={selectedGroups.map(g => g.nameGroup).join(', ')}
                         InputProps={{
                             readOnly: true,
                             sx: {
@@ -125,14 +123,14 @@ const GroupClientModal: React.FC<GroupClientModalProps> = ({ open, onClose, onSa
                         }}
                     />
                 </Box>
-                <Box mt={2} display="flex" justifyContent="flex-end" alignItems="center">
+                <Box mt={2} display='flex' justifyContent='flex-end' alignItems='center'>
                     <Typography sx={{ marginRight: 2 }}>Вибрано: {selectedGroups.length}</Typography>
                     {selectedGroups.length > 0 && (
-                        <Button variant="contained" onClick={handleSave} sx={{ marginRight: 1 }}>
+                        <Button variant='contained' onClick={handleSave} sx={{ marginRight: 1 }}>
                             Добавить выбранные
                         </Button>
                     )}
-                    <Button variant="contained" onClick={onClose}>Закрыть</Button>
+                    <Button variant='contained' onClick={onClose}>Закрыть</Button>
                 </Box>
             </Box>
         </Modal>

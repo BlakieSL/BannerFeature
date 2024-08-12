@@ -42,6 +42,7 @@ export const SET_TEMPLATE_RULE_LIST = 'SET_TEMPLATE_RULE_LIST'
 // Banner Action Types
 export const SET_BANNERS = 'SET_BANNERS';
 export const SET_BANNER = 'SET_BANNER';
+export const CLEAR_BANNER = 'CLEAR_BANNER';
 
 
 //GroupBanner Action Types
@@ -53,6 +54,8 @@ export const SET_GROUP_BANNER = 'SET_GROUP_BANNER';
 export const SET_CLIENTS = 'SET_CLIENTS';
 export const SET_CLIENT_BY_PHONE = 'SET_CLIENT_BY_PHONE';
 export const SET_CLIENTS_BY_BARCODES = 'SET_CLIENTS_BY_BARCODE';
+export const SET_CLIENT = 'SET_CLIENT';
 
 //GroupClient Action Types
 export const SET_GROUP_CLIENTS = 'SET_GROUP_CLIENTS';
+export const SET_GROUP_CLIENT = 'SET_GROUP_CLIENT';

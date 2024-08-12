@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClientDto {
+public class SimplifiedClientDto {
     private Integer codeClient;
     private String surname;
-    private String phone;
 }

@@ -27,6 +27,10 @@ const GroupBannerList = () => {
         navigate(`/banners/group/${groupBanner.codeGroupBanner}`);
     };
 
+    const handleViewAllBanners = () => {
+        navigate(`/banners/all`);
+    };
+
     const handleAddGroupBanner = (group: { name: string }) => {
         dispatch(addGroupBanner(group));
         setIsModalOpen(false);
@@ -91,10 +95,13 @@ const GroupBannerList = () => {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={() => setIsModalOpen(true)}>
+            <h3>Групи банерів</h3>
+            <Button variant='contained' color='primary' onClick={() => setIsModalOpen(true)}>
                 Нова група
             </Button>
-            <h3>Групи банерів</h3>
+            <Button variant='contained' color='primary' onClick={handleViewAllBanners}>
+                Всі новини
+            </Button>
             <DataGrid
                 rows={groupBanners}
                 columns={columns}

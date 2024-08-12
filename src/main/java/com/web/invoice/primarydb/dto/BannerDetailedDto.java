@@ -22,6 +22,6 @@ public class BannerDetailedDto {
     private String note;
     private LocalDate dateCreate;
     private Integer codeGroupBanner;
-    private Set<Integer> groupClients;
-    private Set<Integer> singleClients;
+    private Set<SimplifiedGroupClientDto> groupClients;
+    private Set<SimplifiedClientDto> singleClients;
 }

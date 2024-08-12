@@ -36,7 +36,7 @@ export const updateGroupBanner = (id, patch) => async dispatch => {
         await axios.patch(`/api/group-banners/${id}`, patch);
         dispatch(fetchGroupBanners());
     } catch (error) {
-        console.error('Error updating group banner:', error);
+        console.log(error);
     }
 };
 
@@ -45,6 +45,6 @@ export const deleteGroupBanner = (id) => async dispatch => {
         await axios.delete(`/api/group-banners/${id}`);
         dispatch(fetchGroupBanners());
     } catch (error) {
-        console.error('Error deleting group banner:', error);
+        return error.response.data || 'Error deleting group banner';
     }
 };

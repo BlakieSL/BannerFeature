@@ -6,10 +6,7 @@ import com.web.invoice.primarydb.mapper.GroupClientMapper;
 import com.web.invoice.primarydb.model.GroupClient;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +41,14 @@ public class GroupClientService {
         treeWithRoot.add(rootGroup);
 
         return treeWithRoot;
+    }
+
+    public GroupClientDto getGroupClientById(final int id) {
+        GroupClient group = groupClientRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "GroupBanner with id: " + id + " not found"));
+        System.out.println(group.getCodeGroup() + group.getNameGroup());
+        return groupClientMapper.toDto(group);
     }
 
     private List<GroupClientDto> buildTreeRecursive(List<GroupClientDto> flatGroups, Integer parentId) {

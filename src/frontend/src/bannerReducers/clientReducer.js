@@ -16,13 +16,11 @@ const clientReducer = (state = initialState, action) => {
                 clients: action.payload,
             };
         case SET_CLIENT_BY_PHONE:
-            console.log('Updating clients in state:', action.payload);
             return {
                 ...state,
                 clients: [action.payload],
             };
         case SET_CLIENTS_BY_BARCODES:
-            console.log('Updating clients in state:', action.payload);
             return {
                 ...state,
                 clients: action.payload,

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
     SET_BANNERS,
-    SET_BANNER,
+    SET_BANNER, CLEAR_BANNER,
 } from '../constants/ActionTypes';
 
 export const fetchBanners = () => async dispatch => {
@@ -21,6 +21,10 @@ export const fetchBannerById = (id) => async dispatch => {
         console.error('Error fetching banner by ID:', error);
     }
 };
+
+export const clearBanner = () => ({
+    type: CLEAR_BANNER,
+});
 
 export const fetchBannersByGroup = (codeGroupBanner) => async dispatch => {
     try {
@@ -54,7 +58,7 @@ export const updateBanner = (id, patch) => async dispatch => {
         await axios.patch(`/api/banners/${id}`, patch);
         dispatch(fetchBanners());
     } catch (error) {
-        console.error('Error updating banner:', error);
+        return error.response.data || 'Error updating banner';
     }
 };
 
@@ -63,7 +67,7 @@ export const deleteBanner = (id) => async dispatch => {
         await axios.delete(`/api/banners/${id}`);
         dispatch(fetchBanners());
     } catch (error) {
-        console.error('Error deleting banner:', error);
+        return error.response.data || 'Error deleting banner';
     }
 };
 

@@ -64,7 +64,7 @@ public class GroupBannerService {
                         "GroupBanner with id: " + codeGroupBanner + " not found"));
         if (!groupBanner.getBanners().isEmpty()) {
             throw new NonEmptyGroupBannerException(
-                    "Cannot delete non-empty GroupBanner with id: " + codeGroupBanner);
+                    "У групі є активні новини. Видалення заборонено");
         }
         groupBannerRepository.delete(groupBanner);
     }

@@ -18,6 +18,7 @@ const App = () => {
                         <Route path="/workplace-status" element={<WorkplaceStatusList />} />
                         <Route path="/group-banners" element={<GroupBannerList />} />
                         <Route path="/banners/group/:groupId" element={<BannerList />} />
+                        <Route path="/banners/all" element={<BannerList />} />
                     </Routes>
                 </div>
             </BrowserRouter>

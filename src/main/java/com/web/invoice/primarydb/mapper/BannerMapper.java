@@ -1,14 +1,11 @@
 package com.web.invoice.primarydb.mapper;
 
+import com.web.invoice.primarydb.dao.ClientRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
+import com.web.invoice.primarydb.dao.GroupClientRepository;
 import com.web.invoice.primarydb.dao.TypeBannerRepository;
-import com.web.invoice.primarydb.dto.BannerDetailedDto;
-import com.web.invoice.primarydb.dto.BannerDtoRequest;
-import com.web.invoice.primarydb.dto.BannerSummaryDto;
-import com.web.invoice.primarydb.model.Banner;
-import com.web.invoice.primarydb.model.GroupBanner;
-import com.web.invoice.primarydb.model.SetBanner;
-import com.web.invoice.primarydb.model.TypeBanner;
+import com.web.invoice.primarydb.dto.*;
+import com.web.invoice.primarydb.model.*;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,6 +25,11 @@ public abstract class BannerMapper {
     @Autowired
     private GroupBannerRepository groupBannerRepository;
 
+    @Autowired
+    private ClientRepository clientRepository;
+
+    @Autowired
+    private GroupClientRepository groupClientRepository;
 
     //mappings
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
@@ -77,11 +79,11 @@ public abstract class BannerMapper {
     //aftermappings
     @AfterMapping
     protected void mapClientsToDetailedDto(@MappingTarget BannerDetailedDto dto, Banner banner) {
-        System.out.println("mapClientsToDetailedDto aftermapping");
-        Set<Integer> groupClients = getClients(banner, (short) 1);
-        Set<Integer> singleClients = getClients(banner, (short) 0);
-
+        Set<SimplifiedGroupClientDto> groupClients = mapGroupClients(banner);
         dto.setGroupClients(groupClients);
+
+        // Mapping single clients
+        Set<SimplifiedClientDto> singleClients = mapSingleClients(banner);
         dto.setSingleClients(singleClients);
     }
 
@@ -200,10 +202,38 @@ public abstract class BannerMapper {
         return groupBanner != null ? groupBanner.getCodeGroupBanner() : null;
     }
 
-    private Set<Integer> getClients(Banner banner, short typeValue) {
+    private Set<Integer> getClients(Banner banner, short typeValue)  {
         return banner.getSetBanners().stream()
                 .filter(setBanner -> setBanner.getTypeValue() == typeValue)
                 .map(SetBanner::getCodeValue)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<SimplifiedGroupClientDto> mapGroupClients(Banner banner) {
+        return banner.getSetBanners().stream()
+                .filter(setBanner -> setBanner.getTypeValue() == 1)
+                .map(setBanner -> {
+                    GroupClient groupClient = groupClientRepository.findById(setBanner.getCodeValue())
+                            .orElseThrow(() -> new RuntimeException("GroupClient not found with ID " + setBanner.getCodeValue()));
+                    return new SimplifiedGroupClientDto(
+                            groupClient.getCodeGroup(),
+                            groupClient.getNameGroup()
+                    );
+                })
+                .collect(Collectors.toSet());
+    }
+
+    private Set<SimplifiedClientDto> mapSingleClients(Banner banner) {
+        return banner.getSetBanners().stream()
+                .filter(setBanner -> setBanner.getTypeValue() == 0)
+                .map(setBanner -> {
+                    Client client = clientRepository.findById(setBanner.getCodeValue())
+                            .orElseThrow(() -> new RuntimeException("Client not found with ID " + setBanner.getCodeValue()));
+                    return new SimplifiedClientDto(
+                            client.getCodeClient(),
+                            client.getSurname()
+                    );
+                })
                 .collect(Collectors.toSet());
     }
 }

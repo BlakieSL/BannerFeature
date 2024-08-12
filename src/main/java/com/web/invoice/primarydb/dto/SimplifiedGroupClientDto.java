@@ -7,10 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ClientDto {
-    private Integer codeClient;
-    private String surname;
-    private String phone;
+@AllArgsConstructor
+public class SimplifiedGroupClientDto {
+    private Integer codeGroup;
+    private String nameGroup;
 }

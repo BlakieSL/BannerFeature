@@ -12,6 +12,7 @@ import com.web.invoice.primarydb.dao.BannerRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
 import com.web.invoice.primarydb.dao.TypeBannerRepository;
 import com.web.invoice.primarydb.exception.BannerAlreadySentException;
+import com.web.invoice.primarydb.exception.NonEmptyGroupBannerException;
 import com.web.invoice.primarydb.mapper.BannerMapper;
 import com.web.invoice.primarydb.model.Banner;
 import com.web.invoice.primarydb.model.GroupBanner;
@@ -63,9 +64,9 @@ public class BannerService {
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
 
-        if(banner.getStatus() == 2) {
+        if(banner.getStatus() == 3) {
             throw new BannerAlreadySentException(
-                    "Banner with id: " + codeBanner + " already sent");
+                    "Новина вже відправлена(статус відправлено (3)). Редагування заборонено");
         }
 
         BannerDtoRequest dto = bannerMapper.toRequestDto(banner);
@@ -83,7 +84,10 @@ public class BannerService {
         Banner banner = bannerRepository.findById(codeBanner)
                         .orElseThrow(() -> new NoSuchElementException(
                                 "Banner with id: " + codeBanner + " not found"));
-
+        if(banner.getStatus() == 3){
+            throw new BannerAlreadySentException(
+                    "Новина вже відправлена(статус відправлено (3)). Видалення заборонено");
+        }
         bannerRepository.delete(banner);
     }
 

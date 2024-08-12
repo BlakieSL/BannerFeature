@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { findClientByPhone, findClientsByBarcodes } from '../../../actions/clientActions';
-import { RootState } from '../../../types';
+import { RootState, SimplifiedClientDto } from '../../../types';
 import {
     Modal,
     Box,
@@ -19,12 +19,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 interface ClientSearchModalProps {
     open: boolean;
     onClose: () => void;
-    onSave: (selectedClients: number[]) => void;
-}
-
-interface Client {
-    codeClient: number;
-    surname: string;
+    onSave: (selectedClients: SimplifiedClientDto[]) => void; // Save DTOs instead of just IDs
 }
 
 const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }) => {
@@ -32,7 +27,7 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
     const clients = useSelector((state: RootState) => state.clientReducer.clients);
     const [searchType, setSearchType] = useState<'barcode' | 'phone'>('barcode');
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedClients, setSelectedClients] = useState<number[]>([]);
+    const [selectedClients, setSelectedClients] = useState<SimplifiedClientDto[]>([]);
 
     useEffect(() => {
         if (open) {
@@ -49,11 +44,11 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         }
     };
 
-    const handleToggle = (clientId: number) => {
+    const handleToggle = (client: SimplifiedClientDto) => {
         setSelectedClients(prev =>
-            prev.includes(clientId)
-                ? prev.filter(id => id !== clientId)
-                : [...prev, clientId]
+            prev.some(selected => selected.codeClient === client.codeClient)
+                ? prev.filter(selected => selected.codeClient !== client.codeClient)
+                : [...prev, client]
         );
     };
 
@@ -72,8 +67,8 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             headerAlign: "center",
             renderCell: (params) => (
                 <Checkbox
-                    checked={selectedClients.includes(params.row.codeClient)}
-                    onChange={() => handleToggle(params.row.codeClient)}
+                    checked={selectedClients.some(client => client.codeClient === params.row.codeClient)}
+                    onChange={() => handleToggle(params.row)}
                 />
             )
         },
@@ -87,26 +82,35 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         },
         {
             field: 'surname',
-            headerName: 'Прізвище',
+            headerName: 'Назва',
             type: "string",
             flex: 1,
             headerAlign: "center",
             align: "center",
             disableColumnMenu: true,
         },
+        {
+            field: 'phone',
+            headerName: 'Телефон',
+            type: "string",
+            flex: 1,
+            headerAlign: "center",
+            align: "center",
+            disableColumnMenu: true,
+        }
     ];
 
-    const rows = clients.map((client: Client) => ({
+    const rows = clients.map((client: SimplifiedClientDto) => ({
         id: client.codeClient,
         ...client,
-        selected: selectedClients.includes(client.codeClient),
+        selected: selectedClients.some(selected => selected.codeClient === client.codeClient),
     }));
 
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={{
                 p: 4,
-                bgcolor: 'background.paper',
+                bgcolor: "background.paper",
                 width: 960,
                 height: 783,
                 margin: 'auto',
