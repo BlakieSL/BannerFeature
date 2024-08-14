@@ -61,15 +61,15 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
                     />
                     <Box className={classes.modalActions}>
                         <Button variant='contained' onClick={handleSave}>
-                            Зберегти
+                            ЗБЕРЕГТИ
                         </Button>
                         {initialData && (
                             <Button variant='contained' onClick={handleDelete}>
-                                Видалити
+                                ВИДАЛИТИ
                             </Button>
                         )}
                         <Button variant='contained' onClick={onClose}>
-                            Закрити
+                            ЗАКРИТИ
                         </Button>
                     </Box>
                 </Box>

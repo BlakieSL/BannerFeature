@@ -14,8 +14,9 @@ import {
     InputLabel,
     Checkbox,
 } from '@mui/material';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridRowSelectionModel} from '@mui/x-data-grid';
 import classes from '../styles/clientModal.module.scss';
+import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
 
 interface ClientSearchModalProps {
     open: boolean;
@@ -28,14 +29,14 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
     const clients = useSelector((state: RootState) => state.clientReducer.clients);
     const [searchType, setSearchType] = useState<'barcode' | 'phone'>('barcode');
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedClients, setSelectedClients] = useState<SimplifiedClientDto[]>([]);
+    const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             if (open) {
                 dispatch(clearClients());
                 setSearchQuery('');
-                setSelectedClients([]);
+                setSelectedRows([]);
             }
         };
         fetchData();
@@ -49,34 +50,14 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         }
     };
 
-    const handleToggle = (client: SimplifiedClientDto) => {
-        setSelectedClients(prev =>
-            prev.some(selected => selected.codeClient === client.codeClient)
-                ? prev.filter(selected => selected.codeClient !== client.codeClient)
-                : [...prev, client]
-        );
-    };
-
     const handleSave = () => {
+        const selectedClients = clients.filter((client : SimplifiedClientDto ) =>
+            selectedRows.includes(client.codeClient)
+        );
         onSave(selectedClients);
         onClose();
     };
-
     const columns: GridColDef[] = [
-        {
-            field: 'selected',
-            headerName: '',
-            type: 'boolean',
-            maxWidth: 50,
-            align: "center",
-            headerAlign: "center",
-            renderCell: (params) => (
-                <Checkbox
-                    checked={selectedClients.some(client => client.codeClient === params.row.codeClient)}
-                    onChange={() => handleToggle(params.row)}
-                />
-            )
-        },
         {
             field: 'codeClient',
             headerName: 'Код',
@@ -105,49 +86,58 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         }
     ];
 
-    const rows = clients.map((client: SimplifiedClientDto) => ({
-        id: client.codeClient,
-        ...client,
-        selected: selectedClients.some(selected => selected.codeClient === client.codeClient),
-    }));
-
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal
+            open={open}
+            onClose={(_, reason) => {
+                if (reason !== 'backdropClick') {
+                    onClose();
+                }
+            }}
+        >
             <Box className={classes.modalContainer}>
                 <Typography variant="h6">Пошук клієнтів</Typography>
                 <Box className={classes.searchContainer}>
                     <FormControl>
-                        <InputLabel>Умова пошуку</InputLabel>
                         <Select
                             value={searchType}
                             onChange={(e) => setSearchType(e.target.value as 'barcode' | 'phone')}
                         >
-                            <MenuItem value="barcode">Штрихкод (или список через запятую)</MenuItem>
+                            <MenuItem value="barcode">Штрихкод (aбо список через кому)</MenuItem>
                             <MenuItem value="phone">Номер телефона</MenuItem>
                         </Select>
                     </FormControl>
                     <TextField
                         className={classes.textField}
-                        label={searchType === 'phone' ? 'Условие поиска' : 'Штрихкод'}
+                        label={searchType === 'phone' ? 'Номер' : 'Штрихкод'}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
-                    <Button variant="contained" color="primary" onClick={handleSearch}>
-                        Поиск
+                    <Button variant="contained" onClick={handleSearch}>
+                        ПОШУК
                     </Button>
                 </Box>
                 <Box className={classes.dataGridContainer}>
-                    <DataGrid
-                        rows={rows}
+                    <DefaultDataGrid
+                        rows={clients}
                         columns={columns}
+                        getRowId={(row) => row.codeClient}
+                        onSelectionModelChange={(newSelection) => setSelectedRows(newSelection)}
+                        checkboxSelection={true}
                         hideFooterPagination
                         hideFooter
                     />
                 </Box>
                 <Box className={classes.actionsContainer}>
-                    <Button variant="contained" onClick={handleSave} className={classes.button}>Додати вибрані</Button>
-                    <Button variant="contained" onClick={onClose} className={classes.button}>Закрити</Button>
+                    {selectedRows.length > 0 &&(
+                        <Button variant="contained" onClick={handleSave} className={classes.button}>
+                            ДОДАТИ ВИБРАНІ
+                        </Button>
+                    )}
+                    <Button variant="contained" onClick={onClose} className={classes.button}>
+                        ЗАКРИТИ
+                    </Button>
                 </Box>
             </Box>
         </Modal>

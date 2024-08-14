@@ -7,13 +7,15 @@ import {
     updateBanner,
     fetchBannerById,
     clearBanner,
-    fetchBanners
+    fetchBanners, deleteBanners
 } from "../../../actions/bannerActions";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import {DataGrid, GridColDef, GridRowParams, GridRowSelectionModel} from "@mui/x-data-grid";
 import { BannerDtoRequest, RootState } from "../../../types";
 import { fetchGroupBannerById } from "../../../actions/groupBannerActions";
-import {Button, CircularProgress} from "@mui/material";
+import {Box, Button, Checkbox, CircularProgress, FormControlLabel, Typography} from "@mui/material";
 import BannerModal from "../modals/bannerModal";
+import FilterModal from "../modals/filterModal";
+import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
 
 const BannerList = () => {
     const dispatch = useDispatch();
@@ -22,9 +24,12 @@ const BannerList = () => {
     const groupBannerDetails = useSelector((state: RootState) => state.currentGroupBannerReducer.groupBannerDetails);
     const { groupId } = useParams<{ groupId: string }>();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(true);
+    const [groupOperationsEnabled, setGroupOperationsEnabled] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,6 +59,23 @@ const BannerList = () => {
         }
     }, [dispatch, currentBanner, groupId, isEditing]);
 
+    const handleDeleteSelected = async () => {
+        if (selectedRows.length > 0) {
+            try {
+                const ids = selectedRows.map(id => Number(id));
+                await dispatch(deleteBanners(ids));
+                setSelectedRows([]);
+                if (groupId) {
+                    await dispatch(fetchBannersByGroup(groupId));
+                } else {
+                    await dispatch(fetchBanners());
+                }
+            } catch (error) {
+                console.error('This should not be triggered', error);
+            }
+        }
+    };
+
     const handleRowClick = async (params: any) => {
         await dispatch(fetchBannerById(params.row.codeBanner));
         setIsEditing(true);
@@ -67,6 +89,10 @@ const BannerList = () => {
         dispatch(clearBanner());
         setIsModalOpen(false);
         setIsEditing(false);
+    };
+
+    const handleFilterModalClose = () => {
+        setIsFilterModalOpen(false);
     };
 
     const statusMap: { [key: number]: string } = {
@@ -146,20 +172,39 @@ const BannerList = () => {
             <h3>{title}</h3>
             {groupId && (
                 <Button variant='contained' onClick={() => {setIsModalOpen(true)}}>
-                    Додати новину
+                    ДОДАТИ НОВИНУ
                 </Button>
             )}
-            <DataGrid
+            <Button variant='contained' onClick={() => {setIsFilterModalOpen(true)}}>
+                ФІЛЬТР
+            </Button>
+            <FormControlLabel
+                control={
+                    <Checkbox
+                        checked={groupOperationsEnabled}
+                        onChange={() => setGroupOperationsEnabled(!groupOperationsEnabled)}
+                    />
+                }
+                label="Групові операції: "
+                labelPlacement="start"
+            />
+            {groupOperationsEnabled && selectedRows.length > 0 && (
+                <Box ml={2} display="flex" alignItems="center" color="red">
+                    <Typography variant="body1" mr={1}>
+                        {selectedRows.length} вибрано
+                    </Typography>
+                    <Button variant='contained' onClick={handleDeleteSelected}>
+                        Видалити
+                    </Button>
+                </Box>
+            )}
+            <DefaultDataGrid
                 rows={banners}
                 columns={columns}
                 getRowId={(row) => row.codeBanner}
                 onRowClick={handleRowClick}
-                pageSizeOptions={[10, 13]}
-                initialState={{
-                    pagination: {
-                        paginationModel: { pageSize: 10 }
-                    }
-                }}
+                onSelectionModelChange={(newSelectionModel) => setSelectedRows(newSelectionModel)}
+                checkboxSelection={groupOperationsEnabled}
             />
             <BannerModal
                 open={isModalOpen}
@@ -167,6 +212,11 @@ const BannerList = () => {
                 initialData={isEditing ? currentBanner : null}
                 groupBannerDetails={groupBannerDetails}
                 title={isEditing ? "Оновити новину" : "Додати новину"}
+            />
+            <FilterModal
+                open={isFilterModalOpen}
+                onClose={handleFilterModalClose}
+                codeGroupBanner={groupId ? parseInt(groupId) : undefined}
             />
         </div>
     );

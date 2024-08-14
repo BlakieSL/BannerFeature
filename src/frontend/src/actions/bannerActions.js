@@ -68,6 +68,16 @@ export const deleteBanner = (id) => async dispatch => {
     await axios.delete(`/api/banners/${id}`);
 };
 
+export const deleteBanners = (ids) => async dispatch => {
+    const payload = {
+        codeBanners: ids
+    };
+
+    await axios.delete('/api/banners', {
+        data: payload
+    });
+};
+
 export const moveBanner = (id, codeGroupBanner) => async dispatch => {
     await axios.put(`/api/banners/${id}/move/${codeGroupBanner}`);
 };

@@ -1,0 +1,27 @@
+.MuiDataGrid-columnHeader:focus,
+.MuiDataGrid-columnHeader:focus-within {
+  outline: none !important;
+}
+
+.MuiDataGrid-cell:focus,
+.MuiDataGrid-cell:focus-within {
+  outline: none !important;
+}
+
+.MuiDataGrid-footerContainer {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.MuiDataGrid-columnHeaders {
+  background-color: #fafafa;
+}
+
+.row-completed {
+  background-color: #ffb6c1;
+}
+
+.row-ready {
+  background-color: #d3f9d8;
+}
+
+

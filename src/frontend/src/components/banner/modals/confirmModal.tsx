@@ -11,7 +11,7 @@ interface ConfirmDialogProps {
 const ConfirmDialog: FC<ConfirmDialogProps> = ({ open, onClose, onConfirm, description }) => {
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogTitle>Внимание</DialogTitle>
+            <DialogTitle>Увага</DialogTitle>
             <DialogContent>
                 <p>{description}</p>
             </DialogContent>

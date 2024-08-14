@@ -3,6 +3,7 @@ import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
 import { IconButton } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import { GroupBanner } from "../../../types";
+import DefaultDataGrid from "./DefaultDataGrid";
 
 interface GroupBannerDataGridProps {
     groupBanners: GroupBanner[];
@@ -51,17 +52,11 @@ const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({ groupBanners, onRow
     const columns = showEditColumn ? [editColumn, ...baseColumns] : baseColumns;
 
     return (
-        <DataGrid
+        <DefaultDataGrid
             rows={groupBanners}
             columns={columns}
             getRowId={(row) => row.codeGroupBanner}
             onRowClick={onRowClick}
-            pageSizeOptions={[10, 13]}
-            initialState={{
-                pagination: {
-                    paginationModel: { pageSize: 10 }
-                }
-            }}
         />
     );
 };

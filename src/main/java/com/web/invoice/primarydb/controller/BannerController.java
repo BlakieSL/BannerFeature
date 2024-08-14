@@ -3,10 +3,7 @@ package com.web.invoice.primarydb.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.web.invoice.primarydb.dto.BannerDtoRequest;
-import com.web.invoice.primarydb.dto.BannerDetailedDto;
-import com.web.invoice.primarydb.dto.BannerFilterDto;
-import com.web.invoice.primarydb.dto.BannerSummaryDto;
+import com.web.invoice.primarydb.dto.*;
 import com.web.invoice.primarydb.exception.ValidationException;
 import com.web.invoice.primarydb.service.BannerService;
 import org.springframework.http.HttpStatus;
@@ -87,5 +84,11 @@ public class BannerController {
     public ResponseEntity<Void> copyBanner(@PathVariable int id, @PathVariable int targetCodeGroupBanner) {
         bannerService.copyBanner(id, targetCodeGroupBanner);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteBanner(@RequestBody BannersDeletionDto dto) {
+        bannerService.deleteBanners(dto);
+        return ResponseEntity.noContent().build();
     }
 }

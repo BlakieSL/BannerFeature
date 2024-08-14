@@ -8,15 +8,15 @@ import {
     FormControl,
     InputLabel,
     Modal,
-    Tab,
     MenuItem,
+    Checkbox,
+    FormControlLabel,
 } from "@mui/material";
 import {
     TabPanel,
     TabContext,
-    TabList,
 } from "@mui/lab/";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import {
     BannerDto,
     BannerDtoRequest,
@@ -39,10 +39,12 @@ import {
 import ErrorModal from "./errorModal";
 import StyledTabList from "../helperComponents/StyledTabList";
 import classes from '../styles/bannerModal.module.scss';
-import {fetchTypeBanners} from "../../../actions/typeBannerActions";
+import { fetchTypeBanners } from "../../../actions/typeBannerActions";
 import CustomTextField from "../helperComponents/CustomTextField";
 import SelectGroupBannerModal from "./selectGroupBannerModal";
 import ConfirmDialog from "./confirmModal";
+import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
+
 interface BannerModalProps {
     open: boolean;
     onClose: () => void;
@@ -60,11 +62,16 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const [error, setError] = useState('');
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
-
     const [isSelectGroupOpen, setIsSelectGroupOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
     const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
+
+    const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+
+    // Track initial clients/groups and those to be removed
+    const [initialGroupClients, setInitialGroupClients] = useState<Set<SimplifiedGroupClientDto>>(new Set());
+    const [initialSingleClients, setInitialSingleClients] = useState<Set<SimplifiedClientDto>>(new Set());
 
     const initialBannerState: BannerDto = {
         codeGroupBanner: groupBannerDetails.codeGroupBanner,
@@ -75,6 +82,8 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         const fetchData = async () => {
             if (initialData) {
                 setBanner(initialData);
+                setInitialGroupClients(new Set(initialData.groupClients || []));
+                setInitialSingleClients(new Set(initialData.singleClients || []));
             } else {
                 setBanner(initialBannerState);
             }
@@ -95,7 +104,25 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
 
     const handleSingleSelectChange = (event: SelectChangeEvent<number>, key: keyof BannerDto) => {
         const value = event.target.value as number;
-        setBanner({ ...banner, [key]: value || undefined });;
+        setBanner({ ...banner, [key]: value || undefined });
+        setHasChanges(true);
+    };
+
+    const handleRemoveSelectedClients = () => {
+        setBanner((prevBanner) => ({
+            ...prevBanner,
+            singleClients: new Set(
+                Array.from(prevBanner.singleClients || []).filter(
+                    client => !selectedRows.includes(`client-${client.codeClient}`)
+                )
+            ),
+            groupClients: new Set(
+                Array.from(prevBanner.groupClients || []).filter(
+                    group => !selectedRows.includes(`group-${group.codeGroup}`)
+                )
+            )
+        }));
+        setSelectedRows([]);
         setHasChanges(true);
     };
 
@@ -118,13 +145,17 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         if (banner.externalId !== undefined) bannerRequest.externalId = banner.externalId;
         if (banner.note) bannerRequest.note = banner.note;
 
-        if (banner.groupClients && banner.groupClients.size > 0) {
-            bannerRequest.groupClients = Array.from(banner.groupClients).map(gc => gc.codeGroup);
+        if(banner.codeBanner !== undefined) {
+            bannerRequest.groupClients = banner.groupClients ? Array.from(banner.groupClients).map(gc => gc.codeGroup) : [];
+            bannerRequest.singleClients = banner.singleClients ? Array.from(banner.singleClients).map(sc => sc.codeClient) : [];
+        } else {
+            if (banner.groupClients && banner.groupClients.size > 0) {
+                bannerRequest.groupClients = Array.from(banner.groupClients).map(gc => gc.codeGroup);
+            }
+            if (banner.singleClients && banner.singleClients.size > 0) {
+                bannerRequest.singleClients = Array.from(banner.singleClients).map(sc => sc.codeClient);
+            }
         }
-        if (banner.singleClients && banner.singleClients.size > 0) {
-            bannerRequest.singleClients = Array.from(banner.singleClients).map(sc => sc.codeClient);
-        }
-
         return bannerRequest;
     };
 
@@ -139,7 +170,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         setHasChanges(true);
     };
 
-    const handleClientsSave = (selectedClients:  SimplifiedClientDto[]) => {
+    const handleClientsSave = (selectedClients: SimplifiedClientDto[]) => {
         setBanner((prevBanner) => ({
             ...prevBanner,
             singleClients: new Set([
@@ -159,7 +190,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                 await dispatch(createBanner(bannerRequest));
             }
             onClose();
-        } catch (error : any) {
+        } catch (error: any) {
             setError(error.response.data || 'Error saving banner');
             setIsErrorModalOpen(true);
         }
@@ -171,7 +202,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                 await dispatch(deleteBanner(banner.codeBanner));
                 onClose();
             }
-        } catch (error : any) {
+        } catch (error: any) {
             setError(error.response.data || 'Error deleting banner');
             setIsErrorModalOpen(true);
         }
@@ -182,7 +213,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     };
 
     const handleCancel = () => {
-        if(initialData) {
+        if (initialData) {
             setBanner(initialData);
         } else {
             setBanner(initialBannerState);
@@ -202,7 +233,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     };
 
     const handleConfirmAction = async () => {
-        try{
+        try {
             if (selectedGroup && actionType) {
                 if (actionType === 'copy') {
                     await dispatch(copyBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
@@ -210,7 +241,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                     await dispatch(moveBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
                 }
             }
-        } catch (error : any) {
+        } catch (error: any) {
             setError(error.response.data || 'Error copying/moving banner')
             setIsErrorModalOpen(true);
         }
@@ -273,7 +304,6 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                         onClose();
                     }
                 }}
-                disableEnforceFocus={true}
             >
                 <Box className={classes.modalContainer}>
                     <Typography id="banner-modal-title" variant="h6" component="h2">
@@ -358,24 +388,32 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                             </TabPanel>
                             <TabPanel value="2">
                                 <Button variant="contained" onClick={() => setIsGroupClientModalOpen(true)}>
-                                    Вибір груп
+                                    ВИБІР ГРУП
                                 </Button>
                                 <Button variant="contained" onClick={() => setIsClientModalOpen(true)}>
-                                    Вибір клієнтів
+                                    ВИБІР КЛІЄНТІВ
                                 </Button>
                                 {rows.length > 0 && (
-                                    <Box className={classes.dataGridContainer}>
-                                        <DataGrid
-                                            rows={rows}
-                                            columns={columns}
-                                            pageSizeOptions={[5, 10]}
-                                            initialState={{
-                                                pagination: {
-                                                    paginationModel: { pageSize: 5 },
-                                                },
-                                            }}
-                                        />
-                                    </Box>
+                                    <>
+                                        {selectedRows.length > 0 && (
+                                            <Box ml={2} display="flex" alignItems="center" color="red">
+                                                <Typography variant="body1" mr={1}>
+                                                    {selectedRows.length} вибрано
+                                                </Typography>
+                                                <Button variant='contained' onClick={handleRemoveSelectedClients}>
+                                                    Видалити
+                                                </Button>
+                                            </Box>
+                                        )}
+                                        <Box className={classes.dataGridContainer}>
+                                            <DefaultDataGrid
+                                                rows={rows}
+                                                columns={columns}
+                                                onSelectionModelChange={(newSelectionModel) => setSelectedRows(newSelectionModel)}
+                                                checkboxSelection={true}
+                                            />
+                                        </Box>
+                                    </>
                                 )}
                             </TabPanel>
                             <TabPanel value="3">

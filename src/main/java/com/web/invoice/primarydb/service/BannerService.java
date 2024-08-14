@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.web.invoice.primarydb.component.JsonPatchHelper;
-import com.web.invoice.primarydb.dto.BannerDtoRequest;
-import com.web.invoice.primarydb.dto.BannerDetailedDto;
-import com.web.invoice.primarydb.dto.BannerFilterDto;
-import com.web.invoice.primarydb.dto.BannerSummaryDto;
+import com.web.invoice.primarydb.dto.*;
 import com.web.invoice.primarydb.dao.BannerRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
 import com.web.invoice.primarydb.dao.TypeBannerRepository;
@@ -118,6 +115,17 @@ public class BannerService {
         Banner copiedBanner = bannerMapper.copyBanner(banner, targerGroupBanner);
 
         bannerRepository.save(copiedBanner);
+    }
+
+    @Transactional
+    public void deleteBanners(final BannersDeletionDto dto) {
+        for(Integer codeBanner: dto.getCodeBanners()) {
+            try {
+                deleteBanner(codeBanner);
+            } catch (BannerAlreadySentException e) {
+                System.out.println("Could not delete banner with ID " + codeBanner + ": " + e.getMessage());
+            }
+        }
     }
 
     public BannerDetailedDto getBannerDetails(final int codeBanner) {

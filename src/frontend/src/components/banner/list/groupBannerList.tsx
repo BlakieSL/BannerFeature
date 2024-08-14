@@ -82,10 +82,10 @@ const GroupBannerList = () => {
         <div>
             <h3>Групи банерів</h3>
             <Button variant='contained' onClick={() => setIsModalOpen(true)}>
-                Нова група
+                НОВА ГРУПА
             </Button>
             <Button variant='contained' onClick={handleViewAllBanners}>
-                Всі новини
+                ВСІ НОВИНИ
             </Button>
             <GroupBannerDataGrid
                 groupBanners={groupBanners}

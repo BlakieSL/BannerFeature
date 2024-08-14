@@ -20,7 +20,7 @@ const ErrorModal: FC<ErrorModalProps> = ({ open, errorMessage, onClose }) => {
                 }
             }}
         >
-            <DialogTitle>УВАГАф</DialogTitle>
+            <DialogTitle>УВАГА</DialogTitle>
             <DialogContent>
                 <Typography>{errorMessage}</Typography>
             </DialogContent>

@@ -87,7 +87,14 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
     );
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal
+            open={open}
+            onClose={(_, reason) => {
+                if (reason !== 'backdropClick') {
+                    onClose();
+                }
+            }}
+        >
             <Box className={classes.modalContainer}>
                 <Typography variant="h6">Вибір груп клієнтів</Typography>
                 <Box className={classes.treeContainer}>
@@ -117,10 +124,12 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
                     <Typography>Вибрано: {selectedGroups.length}</Typography>
                     {selectedGroups.length > 0 && (
                         <Button variant='contained' onClick={handleSave}>
-                            Добавить выбранные
+                            ДОДАТИ ВИБРАНІ
                         </Button>
                     )}
-                    <Button variant='contained' onClick={onClose}>Закрыть</Button>
+                    <Button variant='contained' onClick={onClose}>
+                        ЗАКРИТИ
+                    </Button>
                 </Box>
             </Box>
         </Modal>
