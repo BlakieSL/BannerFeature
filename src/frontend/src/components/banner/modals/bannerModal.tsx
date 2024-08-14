@@ -17,52 +17,71 @@ import {
     TabList,
 } from "@mui/lab/";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import {BannerDto, BannerDtoRequest, RootState, SimplifiedClientDto, SimplifiedGroupClientDto} from "../../../types";
+import {
+    BannerDto,
+    BannerDtoRequest,
+    BannerType, GroupBanner,
+    RootState,
+    SimplifiedClientDto,
+    SimplifiedGroupClientDto
+} from "../../../types";
 import { SelectChangeEvent } from '@mui/material/Select';
 import GroupClientModal from "../modals/groupClientModal";
 import ClientModal from "./clientsModal";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteBanner, updateBanner } from "../../../actions/bannerActions";
+import {
+    copyBanner,
+    createBanner,
+    deleteBanner,
+    fetchBannersByGroup, moveBanner,
+    updateBanner
+} from "../../../actions/bannerActions";
 import ErrorModal from "./errorModal";
-import { fetchGroupClient } from "../../../actions/groupClientActions";
-import { fetchClient } from "../../../actions/clientActions";
-
+import StyledTabList from "../helperComponents/StyledTabList";
+import classes from '../styles/bannerModal.module.scss';
+import {fetchTypeBanners} from "../../../actions/typeBannerActions";
+import CustomTextField from "../helperComponents/CustomTextField";
+import SelectGroupBannerModal from "./selectGroupBannerModal";
+import ConfirmDialog from "./confirmModal";
 interface BannerModalProps {
     open: boolean;
     onClose: () => void;
-    onSave: (banner: BannerDtoRequest) => void;
-    initialData: BannerDto | null; // Updated to use BannerDto for initial data
-    groupCode: number | null;
+    initialData: BannerDto | null;
+    groupBannerDetails: GroupBanner;
     title: string;
 }
 
-const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData, groupCode, title }) => {
+const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBannerDetails, title }) => {
     const dispatch = useDispatch();
-    const defaultBanner: BannerDto = {
-        codeBanner: 0,
-        title: "",
-        body: "",
-        plannedDate: null,
-        status: 2,
-        sendResult: "",
-        codeTypeBanner: 0,
-        externalId: 0,
-        note: "",
-        codeGroupBanner: 0,
-        groupClients: new Set(), // Use SimplifiedGroupClientDto objects
-        singleClients: new Set(), // Use SimplifiedClientDto objects
-    };
-
+    const typeBanners = useSelector((state: RootState) => state.typeBannerReducer.typeBanners);
     const [tabIndex, setTabIndex] = useState(0);
     const [isGroupClientModalOpen, setIsGroupClientModalOpen] = useState(false);
     const [isClientModalOpen, setIsClientModalOpen] = useState(false);
-    const [banner, setBanner] = useState<BannerDto>(initialData || defaultBanner);
     const [error, setError] = useState('');
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
+
+    const [isSelectGroupOpen, setIsSelectGroupOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
+    const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
+
+    const initialBannerState: BannerDto = {
+        codeGroupBanner: groupBannerDetails.codeGroupBanner,
+    };
+    const [banner, setBanner] = useState<BannerDto>(initialData || initialBannerState);
 
     useEffect(() => {
-        setBanner(initialData || defaultBanner);
-    }, [initialData, groupCode]);
+        const fetchData = async () => {
+            if (initialData) {
+                setBanner(initialData);
+            } else {
+                setBanner(initialBannerState);
+            }
+            await dispatch(fetchTypeBanners())
+        };
+        fetchData();
+    }, [initialData, groupBannerDetails, dispatch, open]);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -70,25 +89,43 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        setBanner({ ...banner, [name]: value });
+        setBanner({ ...banner, [name]: value || undefined });
+        setHasChanges(true);
     };
 
     const handleSingleSelectChange = (event: SelectChangeEvent<number>, key: keyof BannerDto) => {
         const value = event.target.value as number;
-        setBanner({ ...banner, [key]: value });
+        setBanner({ ...banner, [key]: value || undefined });;
+        setHasChanges(true);
     };
 
     const convertBannerToRequest = (banner: BannerDto): BannerDtoRequest => {
-        return {
-            ...banner,
-            groupClients: new Set(Array.from(banner.groupClients || []).map(gc => gc.codeGroup)),
-            singleClients: new Set(Array.from(banner.singleClients || []).map(sc => sc.codeClient)),
-        };
-    };
+        if (!banner.title || !banner.codeTypeBanner) {
+            throw new Error("Required fields are missing");
+        }
 
-    const handleSave = () => {
-        const bannerRequest = convertBannerToRequest(banner);
-        onSave(bannerRequest);
+        const bannerRequest: BannerDtoRequest = {
+            title: banner.title,
+            codeTypeBanner: banner.codeTypeBanner,
+            codeGroupBanner: banner.codeGroupBanner,
+        };
+
+        if (banner.codeBanner !== undefined) bannerRequest.codeBanner = banner.codeBanner;
+        if (banner.body) bannerRequest.body = banner.body;
+        if (banner.plannedDate) bannerRequest.plannedDate = banner.plannedDate;
+        if (banner.status !== undefined) bannerRequest.status = banner.status;
+        if (banner.sendResult) bannerRequest.sendResult = banner.sendResult;
+        if (banner.externalId !== undefined) bannerRequest.externalId = banner.externalId;
+        if (banner.note) bannerRequest.note = banner.note;
+
+        if (banner.groupClients && banner.groupClients.size > 0) {
+            bannerRequest.groupClients = Array.from(banner.groupClients).map(gc => gc.codeGroup);
+        }
+        if (banner.singleClients && banner.singleClients.size > 0) {
+            bannerRequest.singleClients = Array.from(banner.singleClients).map(sc => sc.codeClient);
+        }
+
+        return bannerRequest;
     };
 
     const handleGroupClientsSave = (selectedGroups: SimplifiedGroupClientDto[]) => {
@@ -99,6 +136,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                 ...selectedGroups
             ])
         }));
+        setHasChanges(true);
     };
 
     const handleClientsSave = (selectedClients:  SimplifiedClientDto[]) => {
@@ -109,15 +147,33 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                 ...selectedClients
             ])
         }));
+        setHasChanges(true);
+    };
+
+    const handleSave = async () => {
+        try {
+            const bannerRequest = convertBannerToRequest(banner);
+            if (initialData) {
+                await dispatch(updateBanner(bannerRequest.codeBanner, bannerRequest));
+            } else {
+                await dispatch(createBanner(bannerRequest));
+            }
+            onClose();
+        } catch (error : any) {
+            setError(error.response.data || 'Error saving banner');
+            setIsErrorModalOpen(true);
+        }
     };
 
     const handleDelete = async () => {
-        const result = await dispatch(deleteBanner(banner.codeBanner));
-        if (typeof result === 'string') {
-            setError(result);
+        try {
+            if (banner.codeBanner) {
+                await dispatch(deleteBanner(banner.codeBanner));
+                onClose();
+            }
+        } catch (error : any) {
+            setError(error.response.data || 'Error deleting banner');
             setIsErrorModalOpen(true);
-        } else {
-            onClose();
         }
     };
 
@@ -125,15 +181,45 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
         setIsErrorModalOpen(false);
     };
 
-    const handleUpdate = async () => {
-        const bannerRequest = convertBannerToRequest(banner);
-        const result = await dispatch(updateBanner(bannerRequest.codeBanner, bannerRequest));
-        if (typeof result === 'string') {
-            setError(result);
-            setIsErrorModalOpen(true);
+    const handleCancel = () => {
+        if(initialData) {
+            setBanner(initialData);
         } else {
-            onClose();
+            setBanner(initialBannerState);
         }
+        setHasChanges(true);
+    }
+
+    const handleOpenSelectGroupModal = (type: 'copy' | 'move') => {
+        setActionType(type);
+        setIsSelectGroupOpen(true);
+    };
+
+    const handleGroupSelected = (group: GroupBanner) => {
+        setSelectedGroup(group);
+        setIsSelectGroupOpen(false);
+        setIsConfirmOpen(true);
+    };
+
+    const handleConfirmAction = async () => {
+        try{
+            if (selectedGroup && actionType) {
+                if (actionType === 'copy') {
+                    await dispatch(copyBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
+                } else if (actionType === 'move') {
+                    await dispatch(moveBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
+                }
+            }
+        } catch (error : any) {
+            setError(error.response.data || 'Error copying/moving banner')
+            setIsErrorModalOpen(true);
+        }
+        setIsConfirmOpen(false);
+        onClose();
+    };
+
+    const isFormValid = () => {
+        return banner.title && banner.codeTypeBanner && banner.codeGroupBanner;
     };
 
     const columns: GridColDef[] = [
@@ -141,24 +227,24 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
             field: 'type',
             headerName: 'Тип',
             flex: 1,
-            headerAlign: 'center',
-            align: 'center',
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         },
         {
             field: 'code',
             headerName: 'Код',
             flex: 1,
-            headerAlign: 'center',
-            align: 'center',
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         },
         {
             field: 'title',
             headerName: 'Назва',
             flex: 1,
-            headerAlign: 'center',
-            align: 'center',
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         }
     ];
@@ -189,74 +275,74 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                 }}
                 disableEnforceFocus={true}
             >
-                <Box
-                    sx={{
-                        p: 4,
-                        bgcolor: 'background.paper',
-                        width: 1280,
-                        height: 765,
-                        margin: 'auto',
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        boxShadow: 24,
-                        borderRadius: 1,
-                    }}
-                >
+                <Box className={classes.modalContainer}>
                     <Typography id="banner-modal-title" variant="h6" component="h2">
                         {title}
                     </Typography>
-                    <Box sx={{
-                        borderColor: 'divider',
-                        border: 0.5,
-                        width: 1215,
-                        height: 600,
-                    }}>
+                    <Box className={classes.bannerContent}>
                         <TabContext value={tabIndex.toString()}>
-                            <TabList onChange={handleTabChange} aria-label="banner modal tabs">
-                                <Tab label="Основні" value="0" />
-                                <Tab label="Дата" value="1" />
-                                <Tab label="Клієнти" value="2" />
-                                <Tab label="Додатково" value="3" />
-                            </TabList>
+                            <StyledTabList
+                                onChange={handleTabChange}
+                                tabs={[
+                                    { label: 'Основні', value: '0' },
+                                    { label: 'Дата', value: '1' },
+                                    { label: 'Клієнти', value: '2' },
+                                    { label: 'Додатково', value: '3' },
+                                ]}
+                            />
                             <TabPanel value="0">
-                                <TextField
-                                    fullWidth
+                                <CustomTextField
                                     label="Назва"
                                     name="title"
-                                    value={banner.title}
+                                    value={banner.title ?? ""}
                                     onChange={handleInputChange}
-                                    margin="normal"
+                                    required={true}
                                 />
-                                <TextField
-                                    fullWidth
+                                <CustomTextField
                                     label="Опис"
                                     name="body"
-                                    value={banner.body}
+                                    value={banner.body ?? ""}
                                     onChange={handleInputChange}
-                                    margin="normal"
                                 />
-                                <FormControl fullWidth margin="normal">
-                                    <InputLabel>Тип банера</InputLabel>
+                                <Box className={classes.customBox}>
+                                    <Typography variant="body1" className={classes.customTypography}>
+                                        Тип банера
+                                        <span className={classes.customAsterisk}>*</span>
+                                    </Typography>
                                     <Select
-                                        value={banner.codeTypeBanner}
+                                        value={banner.codeTypeBanner ?? ""}
                                         onChange={(e) => handleSingleSelectChange(e, "codeTypeBanner")}
                                         name="codeTypeBanner"
                                     >
-                                        <MenuItem value={1}>Тип 1</MenuItem>
-                                        <MenuItem value={2}>Тип 2</MenuItem>
+                                        {typeBanners.map((type: BannerType) => (
+                                            <MenuItem key={type.codeTypeBanner} value={type.codeTypeBanner}>
+                                                {type.name}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
-                                </FormControl>
-                                <TextField
-                                    fullWidth
-                                    label="Код групи банерів"
-                                    value={banner.codeGroupBanner}
-                                    disabled
-                                    margin="normal"
+                                </Box>
+                                <CustomTextField
+                                    label="Група банера"
+                                    value={groupBannerDetails.name ?? ""}
+                                    onChange={handleInputChange}
+                                    disabled={true}
+                                    required={true}
                                 />
+                                {!isFormValid() && (
+                                    <Typography color="error" align="center" margin="normal">
+                                        Заповніть всі поля позначені *
+                                    </Typography>
+                                )}
+                                {hasChanges && (
+                                    <Box className={classes.contentActions}>
+                                        <Button variant='contained' onClick={handleSave} disabled={!isFormValid()}>
+                                            ЗБЕРЕГТИ
+                                        </Button>
+                                        <Button variant='contained' onClick={handleCancel}>
+                                            СКАСУВАТИ
+                                        </Button>
+                                    </Box>
+                                )}
                             </TabPanel>
                             <TabPanel value="1">
                                 <TextField
@@ -264,7 +350,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                                     label="Запланована дата"
                                     type="datetime-local"
                                     name="plannedDate"
-                                    value={banner.plannedDate || ""}
+                                    value={banner.plannedDate ?? ""}
                                     onChange={handleInputChange}
                                     margin="normal"
                                     InputLabelProps={{ shrink: true }}
@@ -278,7 +364,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                                     Вибір клієнтів
                                 </Button>
                                 {rows.length > 0 && (
-                                    <Box mt={2} sx={{ height: 300 }}>
+                                    <Box className={classes.dataGridContainer}>
                                         <DataGrid
                                             rows={rows}
                                             columns={columns}
@@ -293,57 +379,43 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                                 )}
                             </TabPanel>
                             <TabPanel value="3">
-                                <TextField
-                                    fullWidth
+                                <CustomTextField
                                     label="Код зовнішньої системи"
                                     name="externalId"
-                                    value={banner.externalId}
+                                    value={banner.externalId ?? ""}
                                     onChange={handleInputChange}
-                                    margin="normal"
                                 />
-                                <TextField
-                                    fullWidth
+                                <CustomTextField
                                     label="Примітка"
                                     name="note"
-                                    value={banner.note}
+                                    value={banner.note ?? ""}
                                     onChange={handleInputChange}
-                                    margin="normal"
                                 />
-                                <TextField
-                                    fullWidth
+                                <CustomTextField
                                     label="Результат відправки"
                                     name="sendResult"
-                                    value={banner.sendResult}
+                                    value={banner.sendResult ?? ""}
                                     onChange={handleInputChange}
-                                    margin="normal"
                                 />
                             </TabPanel>
                         </TabContext>
                     </Box>
-
-                    <Box
-                        sx={{
-                            display:"flex",
-                            justifyContent:"flex-end",
-                            alignItems:"center",
-                            position: 'absolute',
-                            bottom: 16,
-                            right: 16,
-                            width: 'calc(100% - 32px)',
-                            paddingTop: 2,
-                            marginTop: 4,
-                        }}
-                    >
-                        <Button variant="contained" color="primary" onClick={ initialData ? handleUpdate : handleSave}>
-                            Зберегти
-                        </Button>
+                    <Box className={classes.footerActions}>
                         {initialData && (
-                            <Button variant='contained' color='primary' onClick={handleDelete}>
-                                Видалити
-                            </Button>
+                            <>
+                                <Button variant="contained" onClick={() => handleOpenSelectGroupModal('copy')}>
+                                    ДУБЛЮВАТИ
+                                </Button>
+                                <Button variant="contained" onClick={() => handleOpenSelectGroupModal('move')}>
+                                    ПЕРЕМІСТИТИ
+                                </Button>
+                                <Button variant='contained' onClick={handleDelete}>
+                                    ВИДАЛИТИ
+                                </Button>
+                            </>
                         )}
-                        <Button variant="contained" color="primary" onClick={onClose}>
-                            Закрити
+                        <Button variant='contained' onClick={onClose}>
+                            ЗАКРИТИ
                         </Button>
                     </Box>
 
@@ -351,6 +423,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                         open={isGroupClientModalOpen}
                         onClose={() => setIsGroupClientModalOpen(false)}
                         onSave={handleGroupClientsSave}
+                        selectedGroupClients={Array.from(banner.groupClients || new Set())}
                     />
                     <ClientModal
                         open={isClientModalOpen}
@@ -360,6 +433,19 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, onSave, initialData,
                 </Box>
             </Modal>
             <ErrorModal open={isErrorModalOpen} onClose={handleCloseErrorModal} errorMessage={error}/>
+            <SelectGroupBannerModal
+                open={isSelectGroupOpen}
+                onClose={() => setIsSelectGroupOpen(false)}
+                onSelect={(group) => handleGroupSelected(group)}
+            />
+            <ConfirmDialog
+                open={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={handleConfirmAction}
+                description={actionType === 'copy' ?
+                    `Копіювати новину ${banner.codeBanner} "${banner.title}" у папку ${selectedGroup?.codeGroupBanner} "${selectedGroup?.name}"?` :
+                    `Переместить новину ${banner.codeBanner} "${banner.title}" у папку ${selectedGroup?.codeGroupBanner} "${selectedGroup?.name}"?`}
+            />
         </>
     );
 };

@@ -137,7 +137,7 @@ public class BannerService {
     }
 
     public List<BannerSummaryDto> getAllBannersFiltered(BannerFilterDto dto) {
-        List<Banner> banners = bannerRepository.findByTypeAndStatus(dto.getCodeTypeBanner(), dto.getStatus())
+        List<Banner> banners = bannerRepository.findByTypeStatusAndGroup(dto.getCodeGroupBanner(), dto.getCodeTypeBanner(), dto.getStatus())
                 .orElseThrow(() -> new NoSuchElementException("no banners found"));
 
         return banners.stream()

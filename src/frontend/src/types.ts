@@ -2,22 +2,23 @@ import rootReducer from './reducers';
 
 export type RootState = ReturnType<typeof rootReducer>;
 export interface GroupBanner {
+    codeGroupBanner: number;
     name: string;
 }
 
 export interface BannerDtoRequest {
-    codeBanner: number;
+    codeBanner?: number;
     title: string;
     body?: string;
-    plannedDate?: string | null;
-    status: number;
+    plannedDate?: string;
+    status?: number;
     sendResult?: string;
     codeTypeBanner: number;
     externalId?: number;
     note?: string;
     codeGroupBanner: number;
-    groupClients?: Set<number>;
-    singleClients?: Set<number>;
+    groupClients?: number[];
+    singleClients?: number[];
 }
 
 export interface SimplifiedGroupClientDto {
@@ -32,13 +33,13 @@ export interface SimplifiedClientDto {
 }
 
 export interface BannerDto {
-    codeBanner: number;
-    title: string;
+    codeBanner?: number;
+    title?: string;
     body?: string;
-    plannedDate?: string | null;
-    status: number;
+    plannedDate?: string;
+    status?: number;
     sendResult?: string;
-    codeTypeBanner: number;
+    codeTypeBanner?: number;
     externalId?: number;
     note?: string;
     codeGroupBanner: number;
@@ -64,4 +65,9 @@ export interface SelectedGroupClientsState {
 
 export interface SelectedClientsState {
     clients: Client[];
+}
+
+export interface BannerType{
+    codeTypeBanner: number;
+    name: string;
 }

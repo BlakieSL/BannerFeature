@@ -49,12 +49,15 @@ export const CLEAR_BANNER = 'CLEAR_BANNER';
 export const SET_GROUP_BANNERS = 'SET_GROUP_BANNERS';
 export const SET_GROUP_BANNER = 'SET_GROUP_BANNER';
 
+//TypeBanner Action Types
+export const SET_TYPE_BANNERS = 'SET_TYPE_BANNERS';
 
 //Client Action Types
 export const SET_CLIENTS = 'SET_CLIENTS';
 export const SET_CLIENT_BY_PHONE = 'SET_CLIENT_BY_PHONE';
 export const SET_CLIENTS_BY_BARCODES = 'SET_CLIENTS_BY_BARCODE';
 export const SET_CLIENT = 'SET_CLIENT';
+export const CLEAR_CLIENTS = 'CLEAR_CLIENTS';
 
 //GroupClient Action Types
 export const SET_GROUP_CLIENTS = 'SET_GROUP_CLIENTS';

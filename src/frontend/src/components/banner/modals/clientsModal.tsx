@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { findClientByPhone, findClientsByBarcodes } from '../../../actions/clientActions';
+import {clearClients, findClientByPhone, findClientsByBarcodes} from '../../../actions/clientActions';
 import { RootState, SimplifiedClientDto } from '../../../types';
 import {
     Modal,
@@ -15,11 +15,12 @@ import {
     Checkbox,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import classes from '../styles/clientModal.module.scss';
 
 interface ClientSearchModalProps {
     open: boolean;
     onClose: () => void;
-    onSave: (selectedClients: SimplifiedClientDto[]) => void; // Save DTOs instead of just IDs
+    onSave: (selectedClients: SimplifiedClientDto[]) => void;
 }
 
 const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }) => {
@@ -30,17 +31,21 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
     const [selectedClients, setSelectedClients] = useState<SimplifiedClientDto[]>([]);
 
     useEffect(() => {
-        if (open) {
-            setSearchQuery('');
-            setSelectedClients([]);
-        }
+        const fetchData = async () => {
+            if (open) {
+                dispatch(clearClients());
+                setSearchQuery('');
+                setSelectedClients([]);
+            }
+        };
+        fetchData();
     }, [open]);
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (searchType === 'phone') {
-            dispatch(findClientByPhone({ phone: searchQuery }));
+            await dispatch(findClientByPhone({ phone: searchQuery }));
         } else {
-            dispatch(findClientsByBarcodes({ barcodes: searchQuery }));
+            await dispatch(findClientsByBarcodes({ barcodes: searchQuery }));
         }
     };
 
@@ -76,8 +81,8 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             field: 'codeClient',
             headerName: 'Код',
             maxWidth: 125,
-            headerAlign: "center",
-            align: "center",
+            headerAlign: "left",
+            align: "left",
             disableColumnMenu: true,
         },
         {
@@ -85,8 +90,8 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             headerName: 'Назва',
             type: "string",
             flex: 1,
-            headerAlign: "center",
-            align: "center",
+            headerAlign: "left",
+            align: "left",
             disableColumnMenu: true,
         },
         {
@@ -94,8 +99,8 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             headerName: 'Телефон',
             type: "string",
             flex: 1,
-            headerAlign: "center",
-            align: "center",
+            headerAlign: "left",
+            align: "left",
             disableColumnMenu: true,
         }
     ];
@@ -108,23 +113,10 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={{
-                p: 4,
-                bgcolor: "background.paper",
-                width: 960,
-                height: 783,
-                margin: 'auto',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: 1,
-            }}>
+            <Box className={classes.modalContainer}>
                 <Typography variant="h6">Пошук клієнтів</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 2 }}>
-                    <FormControl sx={{ minWidth: 200 }}>
+                <Box className={classes.searchContainer}>
+                    <FormControl>
                         <InputLabel>Умова пошуку</InputLabel>
                         <Select
                             value={searchType}
@@ -135,7 +127,7 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                         </Select>
                     </FormControl>
                     <TextField
-                        sx={{ flexGrow: 1 }}
+                        className={classes.textField}
                         label={searchType === 'phone' ? 'Условие поиска' : 'Штрихкод'}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -145,28 +137,17 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                         Поиск
                     </Button>
                 </Box>
-                <Box mt={2} sx={{ flexGrow: 1 }}>
+                <Box className={classes.dataGridContainer}>
                     <DataGrid
                         rows={rows}
                         columns={columns}
                         hideFooterPagination
                         hideFooter
-                        components={{
-                            NoRowsOverlay: () => null, // Removes the "No rows" message
-                        }}
-                        sx={{
-                            '& .MuiDataGrid-main': {
-                                minHeight: rows.length ? 300 : '0px', // Adjusts height based on rows
-                            },
-                            '& .MuiDataGrid-viewport': {
-                                overflow: 'hidden',
-                            },
-                        }}
                     />
                 </Box>
-                <Box mt={2} display="flex" justifyContent="flex-end" alignItems="center">
-                    <Button variant="contained" onClick={handleSave}>Додати вибрані</Button>
-                    <Button variant="outlined" onClick={onClose}>Закрити</Button>
+                <Box className={classes.actionsContainer}>
+                    <Button variant="contained" onClick={handleSave} className={classes.button}>Додати вибрані</Button>
+                    <Button variant="contained" onClick={onClose} className={classes.button}>Закрити</Button>
                 </Box>
             </Box>
         </Modal>

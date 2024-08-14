@@ -15,11 +15,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import classes from '../styles/groupClientModal.module.scss';
 
 interface GroupClientModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (selectedGroups: SimplifiedGroupClientDto[]) => void;
+    selectedGroupClients?: SimplifiedGroupClientDto[];  // New prop for pre-selected group clients
 }
 
 interface GroupClient {
@@ -29,16 +31,20 @@ interface GroupClient {
     children: GroupClient[];
 }
 
-const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave }) => {
+const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, selectedGroupClients = [] }) => {
     const dispatch = useDispatch();
     const groupClients = useSelector((state: RootState) => state.groupClientReducer.groupClients);
-    const [selectedGroups, setSelectedGroups] = useState<SimplifiedGroupClientDto[]>([]);
+    const [selectedGroups, setSelectedGroups] = useState<SimplifiedGroupClientDto[]>(selectedGroupClients);
 
     useEffect(() => {
-        if (open) {
-            dispatch(fetchGroupClients());
-        }
-    }, [dispatch, open]);
+        const fetchData = async () => {
+            if (open) {
+                dispatch(fetchGroupClients());
+                setSelectedGroups(selectedGroupClients);
+            }
+        };
+        fetchData();
+    }, [dispatch, open, selectedGroupClients]);
 
     const handleToggle = (group: GroupClient) => {
         const isSelected = selectedGroups.some(g => g.codeGroup === group.codeGroup);
@@ -59,14 +65,14 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave }) 
             key={nodes.codeGroup}
             nodeId={nodes.codeGroup.toString()}
             label={
-                <Box sx={{ display: 'flex', alignItems: 'center', fontSize: '0.875rem' }}>
+                <Box className={classes.treeItemLabel}>
                     {nodes.children && nodes.children.length > 0 ? (
-                        <FolderIcon sx={{ fontSize: 16, color: '#3333cc', marginRight: 1 }} />
+                        <FolderIcon className={classes.folderIcon} />
                     ) : (
-                        <InsertDriveFileIcon sx={{ fontSize: 16, color: '#3333cc', marginRight: 1 }} />
+                        <InsertDriveFileIcon className={classes.fileIcon} />
                     )}
                     <Checkbox
-                        sx={{ padding: 0, marginRight: 1, '& svg': { fontSize: 16 } }}
+                        className={classes.checkbox}
                         checked={selectedGroups.some(g => g.codeGroup === nodes.codeGroup)}
                         onChange={() => handleToggle(nodes)}
                     />
@@ -82,27 +88,13 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave }) 
 
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={{
-                p: 4,
-                bgcolor: 'background.paper',
-                width: 960,
-                height: 754,
-                margin: 'auto',
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: 1,
-            }}>
+            <Box className={classes.modalContainer}>
                 <Typography variant="h6">Вибір груп клієнтів</Typography>
-                <Box sx={{ mt: 2, flexGrow: 1, overflowY: 'auto' }}>
+                <Box className={classes.treeContainer}>
                     {groupClients.length > 0 ? (
                         <TreeView
                             defaultCollapseIcon={<ExpandMoreIcon sx={{ fontSize: 16 }} />}
                             defaultExpandIcon={<ChevronRightIcon sx={{ fontSize: 16 }} />}
-                            sx={{ flexGrow: 1, overflowY: 'auto' }}
                         >
                             {groupClients.map((group: GroupClient) => renderTree(group))}
                         </TreeView>
@@ -110,23 +102,21 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave }) 
                         <Typography>Немає даних для відображення.</Typography>
                     )}
                 </Box>
-                <Box sx={{ mt: 2 }}>
+                <Box>
                     <TextField
                         variant="outlined"
                         fullWidth
                         value={selectedGroups.map(g => g.nameGroup).join(', ')}
                         InputProps={{
                             readOnly: true,
-                            sx: {
-                                height: 100
-                            },
+                            className: classes.selectedGroupsInput,
                         }}
                     />
                 </Box>
-                <Box mt={2} display='flex' justifyContent='flex-end' alignItems='center'>
-                    <Typography sx={{ marginRight: 2 }}>Вибрано: {selectedGroups.length}</Typography>
+                <Box className={classes.actionsContainer}>
+                    <Typography>Вибрано: {selectedGroups.length}</Typography>
                     {selectedGroups.length > 0 && (
-                        <Button variant='contained' onClick={handleSave} sx={{ marginRight: 1 }}>
+                        <Button variant='contained' onClick={handleSave}>
                             Добавить выбранные
                         </Button>
                     )}

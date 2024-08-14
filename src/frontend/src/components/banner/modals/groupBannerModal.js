@@ -1,13 +1,9 @@
-// src/components/modals/GroupBannerModal.tsx
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button } from '@mui/material';
 import { deleteGroupBanner } from "../../../actions/groupBannerActions";
-import {useDispatch} from "react-redux";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
+import { useDispatch } from "react-redux";
 import ErrorModal from "./errorModal";
+import classes from '../styles/groupBannerModal.module.scss';
 
 const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
     const [name, setName] = useState('');
@@ -21,7 +17,7 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
         } else {
             setName('');
         }
-    }, [initialData]);
+    }, [initialData, open]);
 
     const handleSave = () => {
         onSave({ name });
@@ -30,7 +26,7 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
 
     const handleDelete = async () => {
         const errorMessage = await dispatch(deleteGroupBanner(initialData.codeGroupBanner));
-        if(errorMessage) {
+        if (errorMessage) {
             setError(errorMessage);
             setIsErrorModalOpen(true);
         } else {
@@ -52,19 +48,7 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
                     }
                 }}
             >
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        border: '2px solid #000',
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
+                <Box className={classes.modalContainer}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         {title}
                     </Typography>
@@ -75,16 +59,16 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1}}>
-                        <Button variant="contained" color="primary" onClick={handleSave}>
+                    <Box className={classes.modalActions}>
+                        <Button variant='contained' onClick={handleSave}>
                             Зберегти
                         </Button>
                         {initialData && (
-                            <Button variant='contained' color='primary' onClick={handleDelete}>
+                            <Button variant='contained' onClick={handleDelete}>
                                 Видалити
                             </Button>
                         )}
-                        <Button variant='contained' color='primary' onClick={onClose}>
+                        <Button variant='contained' onClick={onClose}>
                             Закрити
                         </Button>
                     </Box>

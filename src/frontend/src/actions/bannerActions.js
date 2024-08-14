@@ -9,7 +9,11 @@ export const fetchBanners = () => async dispatch => {
         const response = await axios.get('/api/banners');
         dispatch({ type: SET_BANNERS, payload: response.data });
     } catch (error) {
-        console.error('Error fetching banners:', error);
+        if (error.response && error.response.status === 404) {
+            dispatch({ type: SET_BANNERS, payload: [] });
+        } else {
+            console.error('Error fetching banners:', error);
+        }
     }
 };
 
@@ -31,7 +35,11 @@ export const fetchBannersByGroup = (codeGroupBanner) => async dispatch => {
         const response = await axios.get(`/api/banners/group/${codeGroupBanner}`);
         dispatch({ type: SET_BANNERS, payload: response.data });
     } catch (error) {
-        console.error('Error fetching banners by group:', error);
+        if (error.response && error.response.status === 404) {
+            dispatch({ type: SET_BANNERS, payload: [] });
+        } else {
+            console.error('Error fetching banners:', error);
+        }
     }
 };
 
@@ -40,51 +48,31 @@ export const filterBanners = (filter) => async dispatch => {
         const response = await axios.post('/api/banners/filter', filter);
         dispatch({ type: SET_BANNERS, payload: response.data });
     } catch (error) {
-        console.error('Error filtering banners:', error);
+        if (error.response && error.response.status === 404) {
+            dispatch({type: SET_BANNERS, payload: []});
+        } else {
+            console.error('Error fetching banners:', error);
+        }
     }
 };
 
 export const createBanner = (banner) => async dispatch => {
-    try {
-        await axios.post('/api/banners', banner);
-        dispatch(fetchBanners());
-    } catch (error) {
-        console.error('Error creating banner:', error);
-    }
+    await axios.post('/api/banners', banner);
 };
 
 export const updateBanner = (id, patch) => async dispatch => {
-    try {
-        await axios.patch(`/api/banners/${id}`, patch);
-        dispatch(fetchBanners());
-    } catch (error) {
-        return error.response.data || 'Error updating banner';
-    }
+    await axios.patch(`/api/banners/${id}`, patch);
 };
 
 export const deleteBanner = (id) => async dispatch => {
-    try {
-        await axios.delete(`/api/banners/${id}`);
-        dispatch(fetchBanners());
-    } catch (error) {
-        return error.response.data || 'Error deleting banner';
-    }
+    await axios.delete(`/api/banners/${id}`);
 };
 
 export const moveBanner = (id, codeGroupBanner) => async dispatch => {
-    try {
-        await axios.put(`/api/banners/${id}/move/${codeGroupBanner}`);
-        dispatch(fetchBanners());
-    } catch (error) {
-        console.error('Error moving banner:', error);
-    }
+    await axios.put(`/api/banners/${id}/move/${codeGroupBanner}`);
 };
 
 export const copyBanner = (id, targetCodeGroupBanner) => async dispatch => {
-    try {
-        await axios.post(`/api/banners/${id}/copy/${targetCodeGroupBanner}`);
-        dispatch(fetchBanners());
-    } catch (error) {
-        console.error('Error copying banner:', error);
-    }
-};
+    await axios.post(`/api/banners/${id}/copy/${targetCodeGroupBanner}`);
+}
+

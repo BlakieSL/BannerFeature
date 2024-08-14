@@ -1,4 +1,3 @@
-// src/components/modals/ErrorModal.tsx
 import React, {FC} from 'react';
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -15,14 +14,18 @@ const ErrorModal: FC<ErrorModalProps> = ({ open, errorMessage, onClose }) => {
     return (
         <Dialog
             open={open}
-            onClose={onClose}
+            onClose={(_, reason) => {
+                if (reason !== 'backdropClick') {
+                    onClose();
+                }
+            }}
         >
-            <DialogTitle>Внимание</DialogTitle>
+            <DialogTitle>УВАГАф</DialogTitle>
             <DialogContent>
                 <Typography>{errorMessage}</Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant='contained' color='primary' onClick={onClose}>
+                <Button variant='contained' onClick={onClose}>
                     OK
                 </Button>
             </DialogActions>

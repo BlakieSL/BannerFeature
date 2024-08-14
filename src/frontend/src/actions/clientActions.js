@@ -2,7 +2,7 @@ import axios from 'axios';
 import {
     SET_CLIENTS,
     SET_CLIENT_BY_PHONE,
-    SET_CLIENTS_BY_BARCODES, SET_GROUP_CLIENT, SET_CLIENT
+    SET_CLIENTS_BY_BARCODES, SET_GROUP_CLIENT, SET_CLIENT, CLEAR_CLIENTS
 } from '../constants/ActionTypes';
 
 export const fetchClients = () => async dispatch => {
@@ -39,4 +39,8 @@ export const fetchClient = (id) => async dispatch => {
     } catch(error) {
         console.log('Error fetching groupClient:', error);
     }
-}
+};
+
+export const clearClients = () => ({
+    type: CLEAR_CLIENTS,
+});

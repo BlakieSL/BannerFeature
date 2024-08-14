@@ -6,34 +6,68 @@ import {
     createBanner,
     updateBanner,
     fetchBannerById,
-    clearBanner, fetchBanners
+    clearBanner,
+    fetchBanners
 } from "../../../actions/bannerActions";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { BannerDtoRequest, RootState } from "../../../types";
 import { fetchGroupBannerById } from "../../../actions/groupBannerActions";
-import { Button } from "@mui/material";
+import {Button, CircularProgress} from "@mui/material";
 import BannerModal from "../modals/bannerModal";
 
 const BannerList = () => {
     const dispatch = useDispatch();
     const banners = useSelector((state: RootState) => state.bannerListReducer.banners);
-    const groupBannerDetails = useSelector((state: RootState) => state.currentGroupBannerReducer.groupBannerDetails);
     const currentBanner = useSelector((state: RootState) => state.currentBannerReducer.selectedBanner);
+    const groupBannerDetails = useSelector((state: RootState) => state.currentGroupBannerReducer.groupBannerDetails);
     const { groupId } = useParams<{ groupId: string }>();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (groupId && groupBannerDetails) {
-            dispatch(fetchBannersByGroup(groupId));
-            dispatch(fetchGroupBannerById(groupId));
-            setTitle(`Новини групи: ${groupId} "${groupBannerDetails?.name}"`);
-        }  else {
-            dispatch(fetchBanners());
-            setTitle('Всі новини');
+        const fetchData = async () => {
+            setLoading(true);
+            if (groupId) {
+                await dispatch(fetchBannersByGroup(groupId));
+                await dispatch(fetchGroupBannerById(groupId));
+            } else {
+                await dispatch(fetchBanners());
+                setTitle('Всі новини');
+            }
+            setLoading(false);
+        };
+
+        fetchData();
+    }, [dispatch, groupId]);
+
+    useEffect(() => {
+        if (groupBannerDetails && groupId) {
+            setTitle(`Новини групи: ${groupId} "${groupBannerDetails.name}"`);
         }
-    }, [dispatch, groupId, groupBannerDetails]);
+    }, [groupBannerDetails, groupId]);
+
+    useEffect(() => {
+        if (isEditing && currentBanner && !groupId && currentBanner.codeGroupBanner) {
+            dispatch(fetchGroupBannerById(currentBanner.codeGroupBanner));
+        }
+    }, [dispatch, currentBanner, groupId, isEditing]);
+
+    const handleRowClick = async (params: any) => {
+        await dispatch(fetchBannerById(params.row.codeBanner));
+        setIsEditing(true);
+        setIsModalOpen(true);
+    };
+
+    const handleModalClose = async () => {
+        if(groupId){
+            await dispatch(fetchBannersByGroup(groupId))
+        }
+        dispatch(clearBanner());
+        setIsModalOpen(false);
+        setIsEditing(false);
+    };
 
     const statusMap: { [key: number]: string } = {
         0: 'чернетка',
@@ -58,9 +92,9 @@ const BannerList = () => {
             type: 'date',
             flex: 1,
             disableColumnMenu: true,
-            valueGetter: (params) => new Date(params.row.dateCreate),
             headerAlign: 'left',
             align: 'left',
+            valueGetter: (params) => new Date(params.row.dateCreate),
         },
         {
             field: 'title',
@@ -86,9 +120,9 @@ const BannerList = () => {
             type: 'dateTime',
             flex: 1,
             disableColumnMenu: true,
-            valueGetter: (params) => new Date(params.row.plannedDate),
             headerAlign: 'left',
             align: 'left',
+            valueGetter: (params) => new Date(params.row.plannedDate),
         },
         {
             field: 'status',
@@ -96,72 +130,42 @@ const BannerList = () => {
             type: 'string',
             flex: 1,
             disableColumnMenu: true,
-            valueGetter: (params) => statusMap[params.row.status as number] || 'Unknown',
             headerAlign: 'left',
             align: 'left',
+            valueGetter: (params) => statusMap[params.row.status as number] || 'Unknown',
         }
     ];
 
-    const handleRowClick = (params:   any) => {
-        dispatch(fetchBannerById(params.row.codeBanner));
-        setIsEditing(true);
-        setIsModalOpen(true);
-    };
-
-    const handleAddBanner = (newBanner: BannerDtoRequest) => {
-        dispatch(createBanner(newBanner));
-        setIsModalOpen(false);
-    };
-
-    const handleEditBanner = (updatedBanner: BannerDtoRequest) => {
-        if(currentBanner) {
-            dispatch(updateBanner(currentBanner.codeBanner, updatedBanner))
-        }
-        dispatch(clearBanner());
-        setIsModalOpen(false);
-        setIsEditing(false);
+    if (loading) {
+        return <CircularProgress />;
     }
-
-    const handleModalClose = () => {
-        dispatch(clearBanner());
-        setIsModalOpen(false);
-        setIsEditing(false);
-    };
 
     return (
         <div>
             <Link to="/group-banners">назад до груп</Link>
             <h3>{title}</h3>
-            <Button variant='contained' color='primary' onClick={() => {setIsModalOpen(true)}}>
-                Додати новину
-            </Button>
+            {groupId && (
+                <Button variant='contained' onClick={() => {setIsModalOpen(true)}}>
+                    Додати новину
+                </Button>
+            )}
             <DataGrid
                 rows={banners}
                 columns={columns}
                 getRowId={(row) => row.codeBanner}
                 onRowClick={handleRowClick}
                 pageSizeOptions={[10, 13]}
-
                 initialState={{
                     pagination: {
                         paginationModel: { pageSize: 10 }
                     }
                 }}
-                sx={{
-                    '& .MuiDataGrid-cell:focus': {
-                        outline: 'none',
-                    },
-                    '& .MuiDataGrid-cell:focus-within': {
-                        outline: 'none',
-                    },
-                }}
             />
             <BannerModal
                 open={isModalOpen}
                 onClose={handleModalClose}
-                onSave={isEditing? handleEditBanner : handleAddBanner}
                 initialData={isEditing ? currentBanner : null}
-                groupCode={ groupId ? parseInt(groupId, 10) : null}
+                groupBannerDetails={groupBannerDetails}
                 title={isEditing ? "Оновити новину" : "Додати новину"}
             />
         </div>

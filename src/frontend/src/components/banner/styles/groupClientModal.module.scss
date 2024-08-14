@@ -1,0 +1,56 @@
+.modalContainer {
+  padding: 24px;
+  background-color: white;
+  width: 960px;
+  height: 754px;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.actionsContainer { // similarity
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}
+
+.selectedGroupsInput {
+  margin-top: 16px;
+  width: 100%;
+  height: 100px;
+}
+
+.treeContainer {
+  margin-top: 16px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.treeItemLabel {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.folderIcon,
+.fileIcon {
+  font-size: 16px;
+  color: #3333cc;
+  margin-right: 8px;
+}
+
+.checkbox {
+  padding: 0;
+  margin-right: 8px;
+  & svg {
+    font-size: 16px;
+  }
+}

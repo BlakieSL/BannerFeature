@@ -1,7 +1,7 @@
 import {
     SET_CLIENTS,
     SET_CLIENT_BY_PHONE,
-    SET_CLIENTS_BY_BARCODES
+    SET_CLIENTS_BY_BARCODES, CLEAR_CLIENTS
 } from '../constants/ActionTypes';
 
 const initialState = {
@@ -25,6 +25,11 @@ const clientReducer = (state = initialState, action) => {
                 ...state,
                 clients: action.payload,
             };
+        case CLEAR_CLIENTS:
+            return {
+                ...state,
+                clients: [],
+            }
         default:
             return state;
     }
