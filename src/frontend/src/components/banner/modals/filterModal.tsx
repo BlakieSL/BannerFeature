@@ -1,9 +1,8 @@
 import React, { FC, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel, Box } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Select, MenuItem, FormControl, Checkbox, FormControlLabel, Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { filterBanners } from '../../../actions/bannerActions';
 import {BannerType, RootState} from '../../../types';
-import classes from '../styles/filterModal.module.scss';
 
 interface FilterModalProps {
     open: boolean;
@@ -52,14 +51,14 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
                     handleCancel();
                 }
             }}
-            maxWidth="sm"
+            maxWidth='sm'
             fullWidth
         >
-            <DialogTitle className={classes.title}>
+            <DialogTitle className='title'>
                 Виберіть умови для фільтра
             </DialogTitle>
             <DialogContent>
-                <Box className={classes.filterRow}>
+                <Box className='inputRow'>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -67,15 +66,15 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
                                 onChange={() => setStatusChecked(!statusChecked)}
                             />
                         }
-                        label="Статус:"
-                        labelPlacement="start"
-                        className={classes.label}
+                        label='Статус:'
+                        labelPlacement='start'
+                        className='label'
                     />
                     <FormControl
                         fullWidth
-                        variant="outlined"
+                        variant='outlined'
                         disabled={!statusChecked}
-                        className={classes.text}
+                        className='text'
                     >
                         <Select
                             value={status ?? ''}
@@ -89,7 +88,7 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
                         </Select>
                     </FormControl>
                 </Box>
-                <Box className={classes.filterRow}>
+                <Box className='inputRow'>
                     <FormControlLabel
                         control={
                             <Checkbox
@@ -97,15 +96,15 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
                                 onChange={() => setTypeChecked(!typeChecked)}
                             />
                         }
-                        label="Тип:"
-                        labelPlacement="start"
-                        className={classes.label}
+                        label='Тип:'
+                        labelPlacement='start'
+                        className='label'
                     />
                     <FormControl
                         fullWidth
-                        variant="outlined"
+                        variant='outlined'
                         disabled={!typeChecked}
-                        className={classes.text}
+                        className='text'
                     >
                         <Select
                             value={type ?? ''}
@@ -121,10 +120,10 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} variant="contained">
+                <Button onClick={handleCancel} variant='contained'>
                     СКАСУВАТИ
                 </Button>
-                <Button onClick={handleApply} variant="contained">
+                <Button onClick={handleApply} variant='contained'>
                     ЗАСТОСУВАТИ
                 </Button>
             </DialogActions>

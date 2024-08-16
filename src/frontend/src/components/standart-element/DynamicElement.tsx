@@ -18,6 +18,7 @@ interface CustomTableParams {
     onSelectionChange?: (selection: Array<any>) => void;
     getRowClassName?: (params: GridRowParams) => string;
     getCellClassName?: (params: GridCellParams) => string;
+    onRowClick?: (params: GridRowParams) => void; //added
 }
 
 const StyledDataGrid = styled(DataGrid)(({theme}) => ({
@@ -125,6 +126,7 @@ const customTable = (params: CustomTableParams) => {
                     onRowSelectionModelChange={handleSelectionChange}
                     getRowClassName={params.getRowClassName}
                     getCellClassName={params.getCellClassName}
+                    onRowClick={params.onRowClick}
                 />
             </ThemeProvider>
         </Box>

@@ -21,7 +21,7 @@ interface GroupClientModalProps {
     open: boolean;
     onClose: () => void;
     onSave: (selectedGroups: SimplifiedGroupClientDto[]) => void;
-    selectedGroupClients?: SimplifiedGroupClientDto[];  // New prop for pre-selected group clients
+    selectedGroupClients?: SimplifiedGroupClientDto[];
 }
 
 interface GroupClient {
@@ -37,14 +37,14 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
     const [selectedGroups, setSelectedGroups] = useState<SimplifiedGroupClientDto[]>(selectedGroupClients);
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             if (open) {
-                dispatch(fetchGroupClients());
+                await dispatch(fetchGroupClients());
                 setSelectedGroups(selectedGroupClients);
             }
-        };
-        fetchData();
+        })();
     }, [dispatch, open, selectedGroupClients]);
+
 
     const handleToggle = (group: GroupClient) => {
         const isSelected = selectedGroups.some(g => g.codeGroup === group.codeGroup);
@@ -95,8 +95,8 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
                 }
             }}
         >
-            <Box className={classes.modalContainer}>
-                <Typography variant="h6">Вибір груп клієнтів</Typography>
+            <Box className='groupClientModal'>
+                <Typography variant='h6'>Вибір груп клієнтів</Typography>
                 <Box className={classes.treeContainer}>
                     {groupClients.length > 0 ? (
                         <TreeView
@@ -109,9 +109,9 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
                         <Typography>Немає даних для відображення.</Typography>
                     )}
                 </Box>
-                <Box>
+                <Box className={classes.textContainer}>
                     <TextField
-                        variant="outlined"
+                        variant='outlined'
                         fullWidth
                         value={selectedGroups.map(g => g.nameGroup).join(', ')}
                         InputProps={{
@@ -120,7 +120,7 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
                         }}
                     />
                 </Box>
-                <Box className={classes.actionsContainer}>
+                <Box className='actionsContainer'>
                     <Typography>Вибрано: {selectedGroups.length}</Typography>
                     {selectedGroups.length > 0 && (
                         <Button variant='contained' onClick={handleSave}>

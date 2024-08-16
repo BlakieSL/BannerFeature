@@ -1,7 +1,6 @@
 package com.web.invoice.primarydb.controller;
 
 import com.web.invoice.primarydb.dto.GroupClientDto;
-import com.web.invoice.primarydb.model.GroupClient;
 import com.web.invoice.primarydb.service.GroupClientService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

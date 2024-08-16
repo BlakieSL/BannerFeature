@@ -1,22 +1,20 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, {ChangeEvent, FC, useEffect, useState} from 'react';
 import {
     Button,
     TextField,
     Box,
     Typography,
     Select,
-    FormControl,
-    InputLabel,
     Modal,
     MenuItem,
     Checkbox,
-    FormControlLabel,
-} from "@mui/material";
+    FormControlLabel, IconButton,
+} from '@mui/material';
 import {
     TabPanel,
     TabContext,
-} from "@mui/lab/";
-import { GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
+} from '@mui/lab/';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import {
     BannerDto,
     BannerDtoRequest,
@@ -24,26 +22,27 @@ import {
     RootState,
     SimplifiedClientDto,
     SimplifiedGroupClientDto
-} from "../../../types";
+} from '../../../types';
 import { SelectChangeEvent } from '@mui/material/Select';
-import GroupClientModal from "../modals/groupClientModal";
-import ClientModal from "./clientsModal";
-import { useDispatch, useSelector } from "react-redux";
+import GroupClientModal from '../modals/groupClientModal';
+import ClientModal from './clientsModal';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     copyBanner,
     createBanner,
     deleteBanner,
-    fetchBannersByGroup, moveBanner,
+    moveBanner,
     updateBanner
-} from "../../../actions/bannerActions";
-import ErrorModal from "./errorModal";
-import StyledTabList from "../helperComponents/StyledTabList";
+} from '../../../actions/bannerActions';
+import ErrorModal from './errorModal';
+import StyledTabList from '../helperComponents/StyledTabList';
 import classes from '../styles/bannerModal.module.scss';
-import { fetchTypeBanners } from "../../../actions/typeBannerActions";
-import CustomTextField from "../helperComponents/CustomTextField";
-import SelectGroupBannerModal from "./selectGroupBannerModal";
-import ConfirmDialog from "./confirmModal";
-import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
+import { fetchTypeBanners } from '../../../actions/typeBannerActions';
+import CustomTextField from '../helperComponents/CustomTextField';
+import SelectGroupBannerModal from './selectGroupBannerModal';
+import ConfirmDialog from './confirmModal';
+import DefaultDataGrid from '../helperComponents/DefaultDataGrid';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface BannerModalProps {
     open: boolean;
@@ -66,31 +65,23 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
     const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
-
     const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
-
-    // Track initial clients/groups and those to be removed
-    const [initialGroupClients, setInitialGroupClients] = useState<Set<SimplifiedGroupClientDto>>(new Set());
-    const [initialSingleClients, setInitialSingleClients] = useState<Set<SimplifiedClientDto>>(new Set());
-
     const initialBannerState: BannerDto = {
         codeGroupBanner: groupBannerDetails.codeGroupBanner,
     };
     const [banner, setBanner] = useState<BannerDto>(initialData || initialBannerState);
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             if (initialData) {
                 setBanner(initialData);
-                setInitialGroupClients(new Set(initialData.groupClients || []));
-                setInitialSingleClients(new Set(initialData.singleClients || []));
             } else {
                 setBanner(initialBannerState);
             }
-            await dispatch(fetchTypeBanners())
-        };
-        fetchData();
+            await dispatch(fetchTypeBanners());
+        })();
     }, [initialData, groupBannerDetails, dispatch, open]);
+
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -128,7 +119,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
 
     const convertBannerToRequest = (banner: BannerDto): BannerDtoRequest => {
         if (!banner.title || !banner.codeTypeBanner) {
-            throw new Error("Required fields are missing");
+            throw new Error('Required fields are missing');
         }
 
         const bannerRequest: BannerDtoRequest = {
@@ -142,7 +133,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         if (banner.plannedDate) bannerRequest.plannedDate = banner.plannedDate;
         if (banner.status !== undefined) bannerRequest.status = banner.status;
         if (banner.sendResult) bannerRequest.sendResult = banner.sendResult;
-        if (banner.externalId !== undefined) bannerRequest.externalId = banner.externalId;
+        if (banner.externalId !== undefined) bannerRequest.externalId = Number(banner.externalId);
         if (banner.note) bannerRequest.note = banner.note;
 
         if(banner.codeBanner !== undefined) {
@@ -185,9 +176,9 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         try {
             const bannerRequest = convertBannerToRequest(banner);
             if (initialData) {
-                await dispatch(updateBanner(bannerRequest.codeBanner, bannerRequest));
+                await updateBanner(bannerRequest.codeBanner, bannerRequest);
             } else {
-                await dispatch(createBanner(bannerRequest));
+                await createBanner(bannerRequest);
             }
             onClose();
         } catch (error: any) {
@@ -199,7 +190,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const handleDelete = async () => {
         try {
             if (banner.codeBanner) {
-                await dispatch(deleteBanner(banner.codeBanner));
+                await deleteBanner(banner.codeBanner);
                 onClose();
             }
         } catch (error: any) {
@@ -232,13 +223,20 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         setIsConfirmOpen(true);
     };
 
+    const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const isChecked = event.target.checked;
+        setBanner({ ...banner, status: isChecked ? 2 : undefined });
+        setHasChanges(true);
+    };
+
+
     const handleConfirmAction = async () => {
         try {
             if (selectedGroup && actionType) {
                 if (actionType === 'copy') {
-                    await dispatch(copyBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
+                    await copyBanner(banner.codeBanner, selectedGroup.codeGroupBanner);
                 } else if (actionType === 'move') {
-                    await dispatch(moveBanner(banner.codeBanner, selectedGroup.codeGroupBanner));
+                    await moveBanner(banner.codeBanner, selectedGroup.codeGroupBanner);
                 }
             }
         } catch (error: any) {
@@ -305,8 +303,8 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                     }
                 }}
             >
-                <Box className={classes.modalContainer}>
-                    <Typography id="banner-modal-title" variant="h6" component="h2">
+                <Box className='bannerModal'>
+                    <Typography id='banner-modal-title' variant='h6' component='h2'>
                         {title}
                     </Typography>
                     <Box className={classes.bannerContent}>
@@ -320,29 +318,31 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                                     { label: 'Додатково', value: '3' },
                                 ]}
                             />
-                            <TabPanel value="0">
+                            <TabPanel value='0'>
                                 <CustomTextField
-                                    label="Назва"
-                                    name="title"
-                                    value={banner.title ?? ""}
+                                    label='Назва'
+                                    name='title'
+                                    value={banner.title ?? ''}
                                     onChange={handleInputChange}
                                     required={true}
                                 />
                                 <CustomTextField
-                                    label="Опис"
-                                    name="body"
-                                    value={banner.body ?? ""}
+                                    label='Опис'
+                                    name='body'
+                                    value={banner.body ?? ''}
                                     onChange={handleInputChange}
                                 />
                                 <Box className={classes.customBox}>
-                                    <Typography variant="body1" className={classes.customTypography}>
+                                    <Typography variant='body1' className='label'>
                                         Тип банера
                                         <span className={classes.customAsterisk}>*</span>
                                     </Typography>
                                     <Select
-                                        value={banner.codeTypeBanner ?? ""}
-                                        onChange={(e) => handleSingleSelectChange(e, "codeTypeBanner")}
-                                        name="codeTypeBanner"
+                                        className='text'
+                                        value={banner.codeTypeBanner ?? ''}
+                                        onChange={(e) => handleSingleSelectChange(e, 'codeTypeBanner')}
+                                        name='codeTypeBanner'
+                                        fullWidth
                                     >
                                         {typeBanners.map((type: BannerType) => (
                                             <MenuItem key={type.codeTypeBanner} value={type.codeTypeBanner}>
@@ -352,19 +352,19 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                                     </Select>
                                 </Box>
                                 <CustomTextField
-                                    label="Група банера"
-                                    value={groupBannerDetails.name ?? ""}
+                                    label='Група банера'
+                                    value={groupBannerDetails.name ?? ''}
                                     onChange={handleInputChange}
                                     disabled={true}
                                     required={true}
                                 />
                                 {!isFormValid() && (
-                                    <Typography color="error" align="center" margin="normal">
+                                    <Typography color='error' align='center' margin='normal'>
                                         Заповніть всі поля позначені *
                                     </Typography>
                                 )}
                                 {hasChanges && (
-                                    <Box className={classes.contentActions}>
+                                    <Box className={classes.actionsContainer}>
                                         <Button variant='contained' onClick={handleSave} disabled={!isFormValid()}>
                                             ЗБЕРЕГТИ
                                         </Button>
@@ -374,38 +374,44 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                                     </Box>
                                 )}
                             </TabPanel>
-                            <TabPanel value="1">
+                            <TabPanel value='1'>
                                 <TextField
                                     fullWidth
-                                    label="Запланована дата"
-                                    type="datetime-local"
-                                    name="plannedDate"
-                                    value={banner.plannedDate ?? ""}
+                                    label='Запланована дата'
+                                    type='datetime-local'
+                                    name='plannedDate'
+                                    value={banner.plannedDate ?? ''}
                                     onChange={handleInputChange}
-                                    margin="normal"
+                                    margin='normal'
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </TabPanel>
-                            <TabPanel value="2">
-                                <Button variant="contained" onClick={() => setIsGroupClientModalOpen(true)}>
-                                    ВИБІР ГРУП
-                                </Button>
-                                <Button variant="contained" onClick={() => setIsClientModalOpen(true)}>
-                                    ВИБІР КЛІЄНТІВ
-                                </Button>
+                            <TabPanel value='2'>
+                                <Box className={classes.buttonsContainer}>
+                                    <Button variant='contained' onClick={() => setIsGroupClientModalOpen(true)}>
+                                        ВИБІР ГРУП
+                                    </Button>
+                                    <Button variant='contained' onClick={() => setIsClientModalOpen(true)}>
+                                        ВИБІР КЛІЄНТІВ
+                                    </Button>
+                                </Box>
                                 {rows.length > 0 && (
                                     <>
                                         {selectedRows.length > 0 && (
-                                            <Box ml={2} display="flex" alignItems="center" color="red">
-                                                <Typography variant="body1" mr={1}>
-                                                    {selectedRows.length} вибрано
-                                                </Typography>
-                                                <Button variant='contained' onClick={handleRemoveSelectedClients}>
-                                                    Видалити
-                                                </Button>
+                                            <Box className='selectedItemsContainer'>
+                                                <Box className='textContainer'>
+                                                    <Typography variant='body1'>
+                                                        {selectedRows.length} вибрано
+                                                    </Typography>
+                                                </Box>
+                                                <Box className='deleteIcon'>
+                                                    <IconButton aria-label='delete' onClick={handleRemoveSelectedClients}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Box>
                                             </Box>
                                         )}
-                                        <Box className={classes.dataGridContainer}>
+                                        <Box>
                                             <DefaultDataGrid
                                                 rows={rows}
                                                 columns={columns}
@@ -416,35 +422,55 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                                     </>
                                 )}
                             </TabPanel>
-                            <TabPanel value="3">
+                            <TabPanel value='3'>
+                                {initialData && (
+                                    <CustomTextField
+                                        label='Дата створення'
+                                        value={banner.dateCreate ?? ''}
+                                        disabled={true}
+                                    />
+                                )}
                                 <CustomTextField
-                                    label="Код зовнішньої системи"
-                                    name="externalId"
-                                    value={banner.externalId ?? ""}
+                                    label='Код зовнішньої системи'
+                                    name='externalId'
+                                    value={banner.externalId ?? ''}
                                     onChange={handleInputChange}
                                 />
                                 <CustomTextField
-                                    label="Примітка"
-                                    name="note"
-                                    value={banner.note ?? ""}
+                                    label='Примітка'
+                                    name='note'
+                                    value={banner.note ?? ''}
                                     onChange={handleInputChange}
                                 />
                                 <CustomTextField
-                                    label="Результат відправки"
-                                    name="sendResult"
-                                    value={banner.sendResult ?? ""}
+                                    label='Результат відправки'
+                                    name='sendResult'
+                                    value={banner.sendResult ?? ''}
                                     onChange={handleInputChange}
                                 />
+                                {!initialData && (
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={banner.status === 2}
+                                                onChange={handleCheckboxChange}
+                                            />
+                                        }
+                                        label='Готово до відправки:'
+                                        labelPlacement='start'
+                                        className='label'
+                                    />
+                                )}
                             </TabPanel>
                         </TabContext>
                     </Box>
                     <Box className={classes.footerActions}>
                         {initialData && (
                             <>
-                                <Button variant="contained" onClick={() => handleOpenSelectGroupModal('copy')}>
+                                <Button variant='contained' onClick={() => handleOpenSelectGroupModal('copy')}>
                                     ДУБЛЮВАТИ
                                 </Button>
-                                <Button variant="contained" onClick={() => handleOpenSelectGroupModal('move')}>
+                                <Button variant='contained' onClick={() => handleOpenSelectGroupModal('move')}>
                                     ПЕРЕМІСТИТИ
                                 </Button>
                                 <Button variant='contained' onClick={handleDelete}>
@@ -481,8 +507,8 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                 onClose={() => setIsConfirmOpen(false)}
                 onConfirm={handleConfirmAction}
                 description={actionType === 'copy' ?
-                    `Копіювати новину ${banner.codeBanner} "${banner.title}" у папку ${selectedGroup?.codeGroupBanner} "${selectedGroup?.name}"?` :
-                    `Переместить новину ${banner.codeBanner} "${banner.title}" у папку ${selectedGroup?.codeGroupBanner} "${selectedGroup?.name}"?`}
+                    `Копіювати новину ${banner.codeBanner} '${banner.title}' у папку ${selectedGroup?.codeGroupBanner} '${selectedGroup?.name}'?` :
+                    `Переместить новину ${banner.codeBanner} '${banner.title}' у папку ${selectedGroup?.codeGroupBanner} '${selectedGroup?.name}'?`}
             />
         </>
     );

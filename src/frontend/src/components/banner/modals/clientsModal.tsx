@@ -11,12 +11,10 @@ import {
     MenuItem,
     Select,
     FormControl,
-    InputLabel,
-    Checkbox,
 } from '@mui/material';
-import {DataGrid, GridColDef, GridRowSelectionModel} from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel} from '@mui/x-data-grid';
 import classes from '../styles/clientModal.module.scss';
-import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
+import DefaultDataGrid from '../helperComponents/DefaultDataGrid';
 
 interface ClientSearchModalProps {
     open: boolean;
@@ -32,15 +30,15 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
     const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             if (open) {
                 dispatch(clearClients());
                 setSearchQuery('');
                 setSelectedRows([]);
             }
-        };
-        fetchData();
+        })();
     }, [open]);
+
 
     const handleSearch = async () => {
         if (searchType === 'phone') {
@@ -62,26 +60,26 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             field: 'codeClient',
             headerName: 'Код',
             maxWidth: 125,
-            headerAlign: "left",
-            align: "left",
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         },
         {
             field: 'surname',
             headerName: 'Назва',
-            type: "string",
+            type: 'string',
             flex: 1,
-            headerAlign: "left",
-            align: "left",
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         },
         {
             field: 'phone',
             headerName: 'Телефон',
-            type: "string",
+            type: 'string',
             flex: 1,
-            headerAlign: "left",
-            align: "left",
+            headerAlign: 'left',
+            align: 'left',
             disableColumnMenu: true,
         }
     ];
@@ -95,16 +93,16 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                 }
             }}
         >
-            <Box className={classes.modalContainer}>
-                <Typography variant="h6">Пошук клієнтів</Typography>
+            <Box className='clientModal'>
+                <Typography variant='h6'>Пошук клієнтів</Typography>
                 <Box className={classes.searchContainer}>
                     <FormControl>
                         <Select
                             value={searchType}
                             onChange={(e) => setSearchType(e.target.value as 'barcode' | 'phone')}
                         >
-                            <MenuItem value="barcode">Штрихкод (aбо список через кому)</MenuItem>
-                            <MenuItem value="phone">Номер телефона</MenuItem>
+                            <MenuItem value='barcode'>Штрихкод (aбо список через кому)</MenuItem>
+                            <MenuItem value='phone'>Номер телефона</MenuItem>
                         </Select>
                     </FormControl>
                     <TextField
@@ -114,7 +112,7 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     />
-                    <Button variant="contained" onClick={handleSearch}>
+                    <Button variant='contained' onClick={handleSearch}>
                         ПОШУК
                     </Button>
                 </Box>
@@ -125,17 +123,15 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                         getRowId={(row) => row.codeClient}
                         onSelectionModelChange={(newSelection) => setSelectedRows(newSelection)}
                         checkboxSelection={true}
-                        hideFooterPagination
-                        hideFooter
                     />
                 </Box>
-                <Box className={classes.actionsContainer}>
+                <Box className='actionsContainer'>
                     {selectedRows.length > 0 &&(
-                        <Button variant="contained" onClick={handleSave} className={classes.button}>
+                        <Button variant='contained' onClick={handleSave} className={classes.button}>
                             ДОДАТИ ВИБРАНІ
                         </Button>
                     )}
-                    <Button variant="contained" onClick={onClose} className={classes.button}>
+                    <Button variant='contained' onClick={onClose} className={classes.button}>
                         ЗАКРИТИ
                     </Button>
                 </Box>

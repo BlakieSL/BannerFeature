@@ -16,10 +16,10 @@ const ConfirmDialog: FC<ConfirmDialogProps> = ({ open, onClose, onConfirm, descr
                 <p>{description}</p>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} variant="contained">
+                <Button onClick={onClose} variant='contained'>
                     ВІДМІНА
                 </Button>
-                <Button onClick={onConfirm} variant="contained">
+                <Button onClick={onConfirm} variant='contained'>
                     ОК
                 </Button>
             </DialogActions>

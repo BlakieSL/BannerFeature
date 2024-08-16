@@ -5,26 +5,26 @@ interface CustomTextFieldProps {
     label: string;
     name?: string;
     value: string | number;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     disabled?: boolean;
     required?: boolean;
 }
 
 const CustomTextField: FC<CustomTextFieldProps> = ({ label, name, value, onChange, disabled = false, required = false }) => {
     return (
-        <Box className={classes.customBox}>
-            <Typography variant="body1"  className={classes.customTypography}>
+        <Box className='inputRow'>
+            <Typography variant='body1'  className='label'>
                 {label}
                 {required && (
                     <span className={classes.customAsterisk}>*</span>
                 )}
             </Typography>
             <TextField
+                className='text'
                 name={name}
                 fullWidth
                 value={value}
                 onChange={onChange}
-                margin="normal"
                 disabled={disabled}
             />
         </Box>

@@ -22,9 +22,9 @@ public class ClientService {
     private final ClientRepository clientRepository;
 
     public ClientService(
-            final ClientMapper clientMapper,
-            final BarcodeClientRepository barcodeClientRepository,
-            final ClientRepository clientRepository
+            ClientMapper clientMapper,
+            BarcodeClientRepository barcodeClientRepository,
+            ClientRepository clientRepository
     ) {
         this.clientMapper = clientMapper;
         this.barcodeClientRepository = barcodeClientRepository;
@@ -39,7 +39,7 @@ public class ClientService {
                 .collect(Collectors.toList());
     }
 
-    public ClientDto getClientById(final int id) {
+    public ClientDto getClientById(int id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Client with id: " + id + "not found"));

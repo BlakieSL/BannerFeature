@@ -25,10 +25,10 @@ public class GroupBannerService {
     private final GroupBannerRepository groupBannerRepository;
 
     public GroupBannerService(
-            final ValidationHelper validationHelper,
-            final GroupBannerMapper groupBannerMapper,
-            final JsonPatchHelper jsonPatchHelper,
-            final GroupBannerRepository groupBannerRepository
+            ValidationHelper validationHelper,
+            GroupBannerMapper groupBannerMapper,
+            JsonPatchHelper jsonPatchHelper,
+            GroupBannerRepository groupBannerRepository
     ) {
         this.validationHelper = validationHelper;
         this.groupBannerMapper = groupBannerMapper;
@@ -37,13 +37,13 @@ public class GroupBannerService {
     }
 
     @Transactional
-    public void saveGroupBanner(final GroupBannerDtoRequest dto) {
+    public void saveGroupBanner(GroupBannerDtoRequest dto) {
         validationHelper.validate(dto);
         groupBannerRepository.save(groupBannerMapper.toEntity(dto));
     }
 
     @Transactional
-    public void modifyGroupBanner(final int codeGroupBanner, final JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
+    public void modifyGroupBanner(int codeGroupBanner, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         GroupBanner groupBanner = groupBannerRepository.findById(codeGroupBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "GroupBanner with id: " + codeGroupBanner + " not found"));
@@ -58,7 +58,7 @@ public class GroupBannerService {
     }
 
     @Transactional
-    public void deleteGroupBanner(final int codeGroupBanner) {
+    public void deleteGroupBanner(int codeGroupBanner) {
         GroupBanner groupBanner = groupBannerRepository.findById(codeGroupBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "GroupBanner with id: " + codeGroupBanner + " not found"));

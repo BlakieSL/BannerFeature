@@ -15,8 +15,8 @@ public class TypeBannerService {
     private final TypeBannerRepository typeBannerRepository;
 
     public TypeBannerService(
-            final TypeBannerMapper typeBannerMapper,
-            final TypeBannerRepository typeBannerRepository
+            TypeBannerMapper typeBannerMapper,
+            TypeBannerRepository typeBannerRepository
     ) {
         this.typeBannerMapper = typeBannerMapper;
         this.typeBannerRepository = typeBannerRepository;

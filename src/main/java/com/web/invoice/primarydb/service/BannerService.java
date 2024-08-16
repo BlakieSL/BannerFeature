@@ -7,13 +7,10 @@ import com.web.invoice.primarydb.component.JsonPatchHelper;
 import com.web.invoice.primarydb.dto.*;
 import com.web.invoice.primarydb.dao.BannerRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
-import com.web.invoice.primarydb.dao.TypeBannerRepository;
 import com.web.invoice.primarydb.exception.BannerAlreadySentException;
-import com.web.invoice.primarydb.exception.NonEmptyGroupBannerException;
 import com.web.invoice.primarydb.mapper.BannerMapper;
 import com.web.invoice.primarydb.model.Banner;
 import com.web.invoice.primarydb.model.GroupBanner;
-import com.web.invoice.primarydb.model.TypeBanner;
 import org.springframework.stereotype.Service;
 
 
@@ -29,34 +26,31 @@ public class BannerService {
     private final BannerMapper bannerMapper;
     private final JsonPatchHelper jsonPatchHelper;
     private final BannerRepository bannerRepository;
-    private final TypeBannerRepository typeBannerRepository;
     private final GroupBannerRepository groupBannerRepository;
 
     public BannerService(
-            final ValidationHelper validator,
-            final BannerMapper bannerMapper,
-            final JsonPatchHelper jsonPatchHelper,
-            final BannerRepository bannerRepository,
-            final TypeBannerRepository typeBannerRepository,
-            final GroupBannerRepository groupBannerRepository
+            ValidationHelper validator,
+            BannerMapper bannerMapper,
+            JsonPatchHelper jsonPatchHelper,
+            BannerRepository bannerRepository,
+            GroupBannerRepository groupBannerRepository
     ) {
         this.validator = validator;
         this.bannerMapper = bannerMapper;
         this.jsonPatchHelper = jsonPatchHelper;
         this.bannerRepository = bannerRepository;
-        this.typeBannerRepository = typeBannerRepository;
         this.groupBannerRepository = groupBannerRepository;
     }
 
     @Transactional
-    public void saveBanner(final BannerDtoRequest dto) {
+    public void saveBanner(BannerDtoRequest dto) {
         validator.validate(dto);
         Banner banner = bannerMapper.toEntity(dto);
         bannerRepository.save(banner);
     }
 
     @Transactional
-    public void modifyBanner(final int codeBanner, final JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
+    public void modifyBanner(int codeBanner, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
@@ -77,7 +71,7 @@ public class BannerService {
     }
 
     @Transactional
-    public void deleteBanner(final int codeBanner) {
+    public void deleteBanner(int codeBanner) {
         Banner banner = bannerRepository.findById(codeBanner)
                         .orElseThrow(() -> new NoSuchElementException(
                                 "Banner with id: " + codeBanner + " not found"));
@@ -89,7 +83,7 @@ public class BannerService {
     }
 
     @Transactional
-    public void moveBannerToAnotherGroup(final int codeBanner, final int codeGroupBanner) {
+    public void moveBannerToAnotherGroup(int codeBanner, int codeGroupBanner) {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
@@ -103,7 +97,7 @@ public class BannerService {
     }
 
     @Transactional
-    public void copyBanner(final int codeBanner, final int targetCodeGroupBanner) {
+    public void copyBanner(int codeBanner, int targetCodeGroupBanner) {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
@@ -128,7 +122,7 @@ public class BannerService {
         }
     }
 
-    public BannerDetailedDto getBannerDetails(final int codeBanner) {
+    public BannerDetailedDto getBannerDetails(int codeBanner) {
         Banner banner = bannerRepository.findById(codeBanner)
                 .orElseThrow(() -> new NoSuchElementException(
                         "Banner with id: " + codeBanner + " not found"));
@@ -146,7 +140,8 @@ public class BannerService {
 
     public List<BannerSummaryDto> getAllBannersFiltered(BannerFilterDto dto) {
         List<Banner> banners = bannerRepository.findByTypeStatusAndGroup(dto.getCodeGroupBanner(), dto.getCodeTypeBanner(), dto.getStatus())
-                .orElseThrow(() -> new NoSuchElementException("no banners found"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "no banners found"));
 
         return banners.stream()
                 .map(bannerMapper::toSummaryDto)
@@ -155,7 +150,8 @@ public class BannerService {
 
     public List<BannerSummaryDto> getAllBannersByGroup(int codeGroupBanner) {
         List<Banner> banners = bannerRepository.findByGroupBannerCodeGroupBanner(codeGroupBanner)
-                .orElseThrow(() -> new NoSuchElementException("no banners found"));
+                .orElseThrow(() -> new NoSuchElementException(
+                        "no banners found"));
 
         return banners.stream()
                 .map(bannerMapper::toSummaryDto)

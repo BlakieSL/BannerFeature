@@ -36,10 +36,10 @@ const DefaultDataGrid: FC<DefaultDataGridProps> = ({
             onRowSelectionModelChange={onSelectionModelChange}
             checkboxSelection={checkboxSelection}
             disableRowSelectionOnClick
-            pageSizeOptions={[10, 25, 50, 100]}
+            pageSizeOptions={[10, 25, 50, 100, 200]}
             initialState={{
                 pagination: {
-                    paginationModel: { pageSize: 10 }
+                    paginationModel: { pageSize: 50 }
                 }
             }}
             { ...dataGridProps}

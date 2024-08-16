@@ -1,9 +1,11 @@
-import React, { FC } from "react";
-import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
-import { IconButton } from "@mui/material";
+import React, { FC } from 'react';
+import { GridColDef, GridRowParams } from '@mui/x-data-grid';
+import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { GroupBanner } from "../../../types";
 import DefaultDataGrid from "./DefaultDataGrid";
+import {customTable} from "../../standart-element/DynamicElement";
+import {DbSearchToolbar, quickSearchToolbar} from '../../standart-element/SearchToolbar';
 
 interface GroupBannerDataGridProps {
     groupBanners: GroupBanner[];
@@ -12,7 +14,12 @@ interface GroupBannerDataGridProps {
     showEditColumn?: boolean;
 }
 
-const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({ groupBanners, onRowClick, onEditClick, showEditColumn = true }) => {
+const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({
+                                                               groupBanners,
+                                                               onRowClick,
+                                                               onEditClick,
+                                                               showEditColumn = true
+}) => {
     const baseColumns: GridColDef[] = [
         {
             field: 'codeGroupBanner',
@@ -52,13 +59,31 @@ const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({ groupBanners, onRow
     const columns = showEditColumn ? [editColumn, ...baseColumns] : baseColumns;
 
     return (
+
         <DefaultDataGrid
             rows={groupBanners}
             columns={columns}
             getRowId={(row) => row.codeGroupBanner}
             onRowClick={onRowClick}
         />
-    );
+    )
 };
 
 export default GroupBannerDataGrid;
+/*
+    function toolbar() {
+        return quickSearchToolbar([
+            {func: () => {}, text: "Додати чек", disabled: false},
+            //func: editFilter, text: "Фільтр", disabled: false}
+        ])
+    }
+
+    return customTable({
+        height: 'calc(100vh - 190px)',
+        columns: columns,
+        rows: groupBanners,
+        toolbar: toolbar,
+        loading: false,
+
+    })
+ */

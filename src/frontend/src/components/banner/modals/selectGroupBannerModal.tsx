@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button, Box} from "@mui/material";
-import { RootState, GroupBanner } from "../../../types";
-import { fetchGroupBanners } from "../../../actions/groupBannerActions";
-import GroupBannerDataGrid from "../helperComponents/GroupBannerDataGrid";
-import classes from "../styles/selectGroupBannerModal.module.scss"
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {Dialog, DialogTitle, DialogContent, DialogActions, Button} from '@mui/material';
+import { RootState, GroupBanner } from '../../../types';
+import { fetchGroupBanners } from '../../../actions/groupBannerActions';
+import GroupBannerDataGrid from '../helperComponents/GroupBannerDataGrid';
+
 interface SelectGroupBannerModalProps {
     open: boolean;
     onClose: () => void;
@@ -16,13 +16,13 @@ const SelectGroupBannerModal: React.FC<SelectGroupBannerModalProps> = ({ open, o
     const groupBanners = useSelector((state: RootState) => state.groupBannerReducer.groupBanners);
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             if (open) {
-                dispatch(fetchGroupBanners());
+                await dispatch(fetchGroupBanners());
             }
-        };
-        fetchData();
+        })();
     }, [dispatch, open]);
+
 
     const handleRowClick = (params: any) => {
         const selectedGroup = params.row as GroupBanner;
@@ -38,7 +38,7 @@ const SelectGroupBannerModal: React.FC<SelectGroupBannerModalProps> = ({ open, o
                     onClose();
                 }
             }}
-            fullWidth maxWidth="lg"
+            fullWidth maxWidth='lg'
         >
                 <DialogTitle>Виберіть групу банерів</DialogTitle>
                 <DialogContent>
@@ -49,7 +49,7 @@ const SelectGroupBannerModal: React.FC<SelectGroupBannerModalProps> = ({ open, o
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose} variant="contained">
+                    <Button onClick={onClose} variant='contained'>
                         ВІДМІНА
                     </Button>
                 </DialogActions>

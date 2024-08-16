@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button } from '@mui/material';
-import { deleteGroupBanner } from "../../../actions/groupBannerActions";
-import { useDispatch } from "react-redux";
-import ErrorModal from "./errorModal";
-import classes from '../styles/groupBannerModal.module.scss';
+import { deleteGroupBanner } from '../../../actions/groupBannerActions';
+import { useDispatch } from 'react-redux';
+import ErrorModal from './errorModal';
 
 const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
     const [name, setName] = useState('');
@@ -21,7 +20,7 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
 
     const handleSave = () => {
         onSave({ name });
-        setName("");
+        setName('');
     };
 
     const handleDelete = async () => {
@@ -48,18 +47,18 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
                     }
                 }}
             >
-                <Box className={classes.modalContainer}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                <Box className='groupBannerModal'>
+                    <Typography id='modal-modal-title' variant='h6' component='h2'>
                         {title}
                     </Typography>
                     <TextField
-                        label="Назва"
+                        label='Назва'
                         fullWidth
-                        margin="normal"
+                        margin='normal'
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
-                    <Box className={classes.modalActions}>
+                    <Box className='actionsContainer'>
                         <Button variant='contained' onClick={handleSave}>
                             ЗБЕРЕГТИ
                         </Button>

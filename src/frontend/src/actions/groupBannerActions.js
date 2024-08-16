@@ -36,7 +36,7 @@ export const updateGroupBanner = (id, patch) => async dispatch => {
         await axios.patch(`/api/group-banners/${id}`, patch);
         dispatch(fetchGroupBanners());
     } catch (error) {
-        console.log(error);
+        console.error('Error updating group banner:', error);
     }
 };
 

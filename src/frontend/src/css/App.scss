@@ -26,7 +26,11 @@
 @import "Navbar";
 @import "WaresPropertyReference";
 @import "AltCatalog";
+
 @import "bannerStyles/DataGrid";
+@import "bannerStyles/BannerCommonStyles";
+@import "bannerStyles/ComponentsStyles";
+@import "bannerStyles/StyledTabList";
 .App {
   text-align: center;
 }

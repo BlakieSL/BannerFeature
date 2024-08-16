@@ -1,0 +1,22 @@
+.tab-list {
+  border-bottom: 1px solid #cccccc;
+  background-color: #f1f1f1;
+}
+
+.tab-list .MuiTabs-indicator {
+  display: none;
+}
+
+.tab-list .MuiTab-root {
+  text-transform: none;
+  background-color: #f1f1f1;
+}
+
+.tab-list .MuiTab-root.Mui-selected {
+  background-color: #cccccc;
+  color: black;
+}
+
+.tab-list .MuiTab-root:hover {
+  background-color: #e0e0e0;
+}

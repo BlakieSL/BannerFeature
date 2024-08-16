@@ -36,6 +36,7 @@ export interface BannerDto {
     codeBanner?: number;
     title?: string;
     body?: string;
+    dateCreate?: string;
     plannedDate?: string;
     status?: number;
     sendResult?: string;

@@ -56,19 +56,19 @@ export const filterBanners = (filter) => async dispatch => {
     }
 };
 
-export const createBanner = (banner) => async dispatch => {
+export const createBanner = async (banner) => {
     await axios.post('/api/banners', banner);
 };
 
-export const updateBanner = (id, patch) => async dispatch => {
+export const updateBanner = async (id, patch) => {
     await axios.patch(`/api/banners/${id}`, patch);
 };
 
-export const deleteBanner = (id) => async dispatch => {
+export const deleteBanner = async (id) => {
     await axios.delete(`/api/banners/${id}`);
 };
 
-export const deleteBanners = (ids) => async dispatch => {
+export const deleteBanners = async (ids) => {
     const payload = {
         codeBanners: ids
     };
@@ -78,11 +78,11 @@ export const deleteBanners = (ids) => async dispatch => {
     });
 };
 
-export const moveBanner = (id, codeGroupBanner) => async dispatch => {
+export const moveBanner = async (id, codeGroupBanner) => {
     await axios.put(`/api/banners/${id}/move/${codeGroupBanner}`);
 };
 
-export const copyBanner = (id, targetCodeGroupBanner) => async dispatch => {
+export const copyBanner = async (id, targetCodeGroupBanner) => {
     await axios.post(`/api/banners/${id}/copy/${targetCodeGroupBanner}`);
 }
 

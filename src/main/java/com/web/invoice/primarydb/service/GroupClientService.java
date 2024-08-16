@@ -16,8 +16,8 @@ public class GroupClientService {
     private final GroupClientRepository groupClientRepository;
 
     public GroupClientService(
-            final GroupClientMapper groupClientMapper,
-            final GroupClientRepository groupClientRepository
+            GroupClientMapper groupClientMapper,
+            GroupClientRepository groupClientRepository
     ) {
         this.groupClientMapper = groupClientMapper;
         this.groupClientRepository = groupClientRepository;
@@ -43,7 +43,7 @@ public class GroupClientService {
         return treeWithRoot;
     }
 
-    public GroupClientDto getGroupClientById(final int id) {
+    public GroupClientDto getGroupClientById(int id) {
         GroupClient group = groupClientRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(
                         "GroupBanner with id: " + id + " not found"));

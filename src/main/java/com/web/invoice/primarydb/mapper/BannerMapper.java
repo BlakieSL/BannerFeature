@@ -49,6 +49,7 @@ public abstract class BannerMapper {
     @Mapping(target = "signActivity", ignore = true)
     @Mapping(target = "codeBanner", ignore = true)
     @Mapping(target = "setBanners", ignore = true)
+    @Mapping(target = "status", ignore = true)
     public abstract Banner toEntity(BannerDtoRequest dto);
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
@@ -82,15 +83,14 @@ public abstract class BannerMapper {
         Set<SimplifiedGroupClientDto> groupClients = mapGroupClients(banner);
         dto.setGroupClients(groupClients);
 
-        // Mapping single clients
         Set<SimplifiedClientDto> singleClients = mapSingleClients(banner);
         dto.setSingleClients(singleClients);
     }
 
     @AfterMapping
     protected void setDefaultValues(@MappingTarget Banner banner, BannerDtoRequest dto) {
-        System.out.println("setDefaultValues aftermapping");
         banner.setDateCreate(LocalDate.now());
+        //random data!!!
         banner.setDateBegin(LocalDateTime.now());
         banner.setDateEnd(LocalDateTime.now().plusDays(10));
         banner.setSignActivity((short) 1);
@@ -125,7 +125,6 @@ public abstract class BannerMapper {
 
     @AfterMapping
     protected void mapClients(@MappingTarget BannerDtoRequest dto, Banner banner) {
-        System.out.println("mapClients aftermapping");
         Set<Integer> groupClients = getClients(banner, (short) 1);
         Set<Integer> singleClients = getClients(banner, (short) 0);
 
@@ -136,8 +135,6 @@ public abstract class BannerMapper {
 
     //custom mappers
     public void updateSetBanners(BannerDtoRequest dto, Banner banner) {
-        System.out.println("Updating set banners for banner with code: " + banner.getCodeBanner());
-
         Set<Integer> newGroupClients = dto.getGroupClients();
         Set<Integer> newSingleClients = dto.getSingleClients();
 
@@ -159,23 +156,8 @@ public abstract class BannerMapper {
             setBanner.setTypeValue((short) 0);
             newSetBanners.add(setBanner);
         });
-
-        // Debug: Print current and new setBanners before updating
-        System.out.println("Current SetBanners:");
-        currentSetBanners.forEach(setBanner ->
-                System.out.println("Type: " + setBanner.getTypeValue() + ", Code: " + setBanner.getCodeValue()));
-
-        System.out.println("New SetBanners:");
-        newSetBanners.forEach(setBanner ->
-                System.out.println("Type: " + setBanner.getTypeValue() + ", Code: " + setBanner.getCodeValue()));
-
         currentSetBanners.removeIf(setBanner -> !newSetBanners.contains(setBanner));
         currentSetBanners.addAll(newSetBanners);
-
-        // Debug: Print current setBanners after updating
-        System.out.println("Updated Current SetBanners:");
-        currentSetBanners.forEach(setBanner ->
-                System.out.println("Type: " + setBanner.getTypeValue() + ", Code: " + setBanner.getCodeValue()));
     }
 
 
@@ -214,7 +196,8 @@ public abstract class BannerMapper {
                 .filter(setBanner -> setBanner.getTypeValue() == 1)
                 .map(setBanner -> {
                     GroupClient groupClient = groupClientRepository.findById(setBanner.getCodeValue())
-                            .orElseThrow(() -> new RuntimeException("GroupClient not found with ID " + setBanner.getCodeValue()));
+                            .orElseThrow(() -> new RuntimeException(
+                                    "GroupClient not found with ID " + setBanner.getCodeValue()));
                     return new SimplifiedGroupClientDto(
                             groupClient.getCodeGroup(),
                             groupClient.getNameGroup()
@@ -228,7 +211,8 @@ public abstract class BannerMapper {
                 .filter(setBanner -> setBanner.getTypeValue() == 0)
                 .map(setBanner -> {
                     Client client = clientRepository.findById(setBanner.getCodeValue())
-                            .orElseThrow(() -> new RuntimeException("Client not found with ID " + setBanner.getCodeValue()));
+                            .orElseThrow(() -> new RuntimeException(
+                                    "Client not found with ID " + setBanner.getCodeValue()));
                     return new SimplifiedClientDto(
                             client.getCodeClient(),
                             client.getSurname()

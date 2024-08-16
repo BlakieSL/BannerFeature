@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
 import {
     fetchBannersByGroup,
-    createBanner,
-    updateBanner,
     fetchBannerById,
     clearBanner,
     fetchBanners, deleteBanners
-} from "../../../actions/bannerActions";
-import {DataGrid, GridColDef, GridRowParams, GridRowSelectionModel} from "@mui/x-data-grid";
-import { BannerDtoRequest, RootState } from "../../../types";
-import { fetchGroupBannerById } from "../../../actions/groupBannerActions";
-import {Box, Button, Checkbox, CircularProgress, FormControlLabel, Typography} from "@mui/material";
-import BannerModal from "../modals/bannerModal";
-import FilterModal from "../modals/filterModal";
-import DefaultDataGrid from "../helperComponents/DefaultDataGrid";
+} from '../../../actions/bannerActions';
+import {GridColDef, GridRowSelectionModel} from '@mui/x-data-grid';
+import {RootState } from '../../../types';
+import {fetchGroupBannerById } from '../../../actions/groupBannerActions';
+import {Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, Typography} from '@mui/material';
+import BannerModal from '../modals/bannerModal';
+import FilterModal from '../modals/filterModal';
+import DefaultDataGrid from '../helperComponents/DefaultDataGrid';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const BannerList = () => {
     const dispatch = useDispatch();
@@ -32,7 +31,7 @@ const BannerList = () => {
     const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
             setLoading(true);
             if (groupId) {
                 await dispatch(fetchBannersByGroup(groupId));
@@ -42,28 +41,30 @@ const BannerList = () => {
                 setTitle('Всі новини');
             }
             setLoading(false);
-        };
 
-        fetchData();
+        })();
     }, [dispatch, groupId]);
 
     useEffect(() => {
         if (groupBannerDetails && groupId) {
-            setTitle(`Новини групи: ${groupId} "${groupBannerDetails.name}"`);
+            setTitle(`Новини групи: ${groupId} '${groupBannerDetails.name}'`);
         }
     }, [groupBannerDetails, groupId]);
 
     useEffect(() => {
-        if (isEditing && currentBanner && !groupId && currentBanner.codeGroupBanner) {
-            dispatch(fetchGroupBannerById(currentBanner.codeGroupBanner));
-        }
+        (async () => {
+            if (isEditing && currentBanner && !groupId && currentBanner.codeGroupBanner) {
+                await dispatch(fetchGroupBannerById(currentBanner.codeGroupBanner));
+            }
+        })();
     }, [dispatch, currentBanner, groupId, isEditing]);
+
 
     const handleDeleteSelected = async () => {
         if (selectedRows.length > 0) {
             try {
                 const ids = selectedRows.map(id => Number(id));
-                await dispatch(deleteBanners(ids));
+                await deleteBanners(ids);
                 setSelectedRows([]);
                 if (groupId) {
                     await dispatch(fetchBannersByGroup(groupId));
@@ -143,12 +144,14 @@ const BannerList = () => {
         {
             field: 'plannedDate',
             headerName: 'Запланована дата',
-            type: 'dateTime',
             flex: 1,
             disableColumnMenu: true,
             headerAlign: 'left',
             align: 'left',
-            valueGetter: (params) => new Date(params.row.plannedDate),
+            renderCell: (params) => {
+                const plannedDate = params.row.plannedDate;
+                return params.row.plannedDate ? new Date(plannedDate).toLocaleString() : 'Не назначено';
+            },
         },
         {
             field: 'status',
@@ -167,35 +170,43 @@ const BannerList = () => {
     }
 
     return (
-        <div>
-            <Link to="/group-banners">назад до груп</Link>
-            <h3>{title}</h3>
-            {groupId && (
-                <Button variant='contained' onClick={() => {setIsModalOpen(true)}}>
-                    ДОДАТИ НОВИНУ
-                </Button>
-            )}
-            <Button variant='contained' onClick={() => {setIsFilterModalOpen(true)}}>
-                ФІЛЬТР
-            </Button>
-            <FormControlLabel
-                control={
-                    <Checkbox
-                        checked={groupOperationsEnabled}
-                        onChange={() => setGroupOperationsEnabled(!groupOperationsEnabled)}
-                    />
-                }
-                label="Групові операції: "
-                labelPlacement="start"
-            />
-            {groupOperationsEnabled && selectedRows.length > 0 && (
-                <Box ml={2} display="flex" alignItems="center" color="red">
-                    <Typography variant="body1" mr={1}>
-                        {selectedRows.length} вибрано
-                    </Typography>
-                    <Button variant='contained' onClick={handleDeleteSelected}>
-                        Видалити
+        <Box>
+            <Link to='/group-banners'>назад до груп</Link>
+            <Box className='headerContainerBase'>
+                <Typography variant='h4'>{title}</Typography>
+                <Box className='listsActions'>
+                    {groupId && (
+                        <Button variant='contained' onClick={() => {setIsModalOpen(true)}}>
+                            ДОДАТИ НОВИНУ
+                        </Button>
+                    )}
+                    <Button variant='contained' onClick={() => {setIsFilterModalOpen(true)}}>
+                        ФІЛЬТР
                     </Button>
+                </Box>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={groupOperationsEnabled}
+                            onChange={() => setGroupOperationsEnabled(!groupOperationsEnabled)}
+                        />
+                    }
+                    label='Групові операції: '
+                    labelPlacement='start'
+                />
+            </Box>
+            {groupOperationsEnabled && selectedRows.length > 0 && (
+                <Box className='selectedItemsContainer'>
+                    <Box className='textContainer'>
+                        <Typography variant='body1'>
+                            {selectedRows.length} вибрано
+                        </Typography>
+                    </Box>
+                    <Box className='deleteIcon'>
+                        <IconButton aria-label='delete' onClick={handleDeleteSelected}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
                 </Box>
             )}
             <DefaultDataGrid
@@ -211,14 +222,14 @@ const BannerList = () => {
                 onClose={handleModalClose}
                 initialData={isEditing ? currentBanner : null}
                 groupBannerDetails={groupBannerDetails}
-                title={isEditing ? "Оновити новину" : "Додати новину"}
+                title={isEditing ? 'Оновити новину' : 'Додати новину'}
             />
             <FilterModal
                 open={isFilterModalOpen}
                 onClose={handleFilterModalClose}
                 codeGroupBanner={groupId ? parseInt(groupId) : undefined}
             />
-        </div>
+        </Box>
     );
 };
 

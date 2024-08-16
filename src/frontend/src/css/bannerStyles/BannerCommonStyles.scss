@@ -1,0 +1,78 @@
+.modalContainerBase {
+  padding: 24px;
+  background-color: white;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.bannerModal{
+  @extend .modalContainerBase;
+  width: 1280px;
+  height: 765px;
+}
+
+.groupClientModal {
+  @extend .modalContainerBase;
+  width: 960px;
+  height: 754px;
+}
+
+.clientModal {
+  @extend .modalContainerBase;
+  width: 960px;
+  height: 783px;
+}
+
+.groupBannerModal {
+  @extend .modalContainerBase;
+  width: 400px;
+}
+
+.actionBase {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.actionsContainer {
+  @extend .actionBase;
+  margin-top: auto;
+  justify-content: flex-end;
+}
+
+.listsActions {
+  @extend .actionBase;
+  justify-content: center;
+}
+
+.headerContainerBase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.selectedItemsContainer {
+  display: flex;
+  align-items: center;
+  background-color: #ffcccc;
+  height: 65px;
+}
+
+.textContainer {
+  flex: 1;
+  text-align: center;
+}
+
+.deleteIcon {
+  margin-left: auto;
+}
