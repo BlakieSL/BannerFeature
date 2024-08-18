@@ -2,7 +2,7 @@ import { SET_GROUP_CLIENTS } from '../constants/ActionTypes';
 
 const initialState = {
     groupClients: [],
-};
+}
 
 const groupClientReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -10,10 +10,10 @@ const groupClientReducer = (state = initialState, action) => {
             return {
                 ...state,
                 groupClients: action.payload,
-            };
+            }
         default:
             return state;
     }
-};
+}
 
 export default groupClientReducer;

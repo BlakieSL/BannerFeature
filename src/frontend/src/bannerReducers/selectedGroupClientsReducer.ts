@@ -10,7 +10,7 @@ type SelectedGroupClientsActionTypes = SetGroupClientAction;
 
 const initialState: SelectedGroupClientsState = {
     groupClients: [],
-};
+}
 
 const selectedGroupClientsReducer = (
     state = initialState,
@@ -21,7 +21,7 @@ const selectedGroupClientsReducer = (
             return {
                 ...state,
                 groupClients: [...state.groupClients, action.payload],
-            };
+            }
         default:
             return state;
     }

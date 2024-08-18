@@ -9,8 +9,6 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class GroupBannerDtoRequest {
     @NotNull
     private String name;

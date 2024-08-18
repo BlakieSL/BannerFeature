@@ -25,6 +25,6 @@ const ConfirmDialog: FC<ConfirmDialogProps> = ({ open, onClose, onConfirm, descr
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default ConfirmDialog;

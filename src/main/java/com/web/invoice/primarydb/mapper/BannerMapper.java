@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", imports = { LocalDate.class, LocalDateTime.class, DateTimeFormatter.class })
@@ -36,6 +34,8 @@ public abstract class BannerMapper {
     @Mapping(source = "groupBanner", target = "codeGroupBanner", qualifiedByName = "mapGroupBannerToCode")
     @Mapping(target = "groupClients", ignore = true)
     @Mapping(target = "singleClients", ignore = true)
+    @Mapping(target = "barcode", ignore = true)
+    @Mapping(target = "link", ignore = true)
     public abstract BannerDetailedDto toDetailedDto(Banner banner);
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
@@ -49,7 +49,7 @@ public abstract class BannerMapper {
     @Mapping(target = "signActivity", ignore = true)
     @Mapping(target = "codeBanner", ignore = true)
     @Mapping(target = "setBanners", ignore = true)
-    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "detailData", ignore = true)
     public abstract Banner toEntity(BannerDtoRequest dto);
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
@@ -66,6 +66,7 @@ public abstract class BannerMapper {
     @Mapping(target = "signActivity", ignore = true)
     @Mapping(target = "codeBanner", ignore = true)
     @Mapping(target = "setBanners", ignore = true)
+    @Mapping(target = "detailData", ignore = true)
     public abstract void updateEntityFromDto(BannerDtoRequest dto, @MappingTarget Banner banner);
 
     @Mapping(target = "codeBanner", ignore = true)
@@ -79,27 +80,20 @@ public abstract class BannerMapper {
 
     //aftermappings
     @AfterMapping
-    protected void mapClientsToDetailedDto(@MappingTarget BannerDetailedDto dto, Banner banner) {
+    protected void mapToDetailedDto(@MappingTarget BannerDetailedDto dto, Banner banner) {
         Set<SimplifiedGroupClientDto> groupClients = mapGroupClients(banner);
         dto.setGroupClients(groupClients);
 
         Set<SimplifiedClientDto> singleClients = mapSingleClients(banner);
         dto.setSingleClients(singleClients);
+
+        mapDetailDataToDto(banner, dto);
     }
 
     @AfterMapping
     protected void setDefaultValues(@MappingTarget Banner banner, BannerDtoRequest dto) {
-        banner.setDateCreate(LocalDate.now());
-        //random data!!!
-        banner.setDateBegin(LocalDateTime.now());
-        banner.setDateEnd(LocalDateTime.now().plusDays(10));
         banner.setSignActivity((short) 1);
-
-        if (dto.getStatus() == 2) {
-            banner.setStatus(dto.getStatus());
-        } else {
-            banner.setStatus((short) 0);
-        }
+        banner.setDateCreate(LocalDate.now());
 
         if((dto.getSingleClients() != null && !dto.getSingleClients().isEmpty()) ||
                 (dto.getGroupClients() != null && !dto.getGroupClients().isEmpty())) {
@@ -121,20 +115,24 @@ public abstract class BannerMapper {
             });
             banner.getSetBanners().addAll(setBanners);
         }
+
+        banner.setDetailData(createDetailData(dto));
     }
 
     @AfterMapping
-    protected void mapClients(@MappingTarget BannerDtoRequest dto, Banner banner) {
+    protected void mapToRequestDto(@MappingTarget BannerDtoRequest dto, Banner banner) {
         Set<Integer> groupClients = getClients(banner, (short) 1);
         Set<Integer> singleClients = getClients(banner, (short) 0);
 
         dto.setGroupClients(groupClients);
         dto.setSingleClients(singleClients);
+
+        mapDetailDataToDto(banner, dto);
     }
 
 
     //custom mappers
-    public void updateSetBanners(BannerDtoRequest dto, Banner banner) {
+    public void customUpdate(BannerDtoRequest dto, Banner banner) {
         Set<Integer> newGroupClients = dto.getGroupClients();
         Set<Integer> newSingleClients = dto.getSingleClients();
 
@@ -158,6 +156,8 @@ public abstract class BannerMapper {
         });
         currentSetBanners.removeIf(setBanner -> !newSetBanners.contains(setBanner));
         currentSetBanners.addAll(newSetBanners);
+
+        banner.setDetailData(createDetailData(dto));
     }
 
 
@@ -219,5 +219,42 @@ public abstract class BannerMapper {
                     );
                 })
                 .collect(Collectors.toSet());
+    }
+
+    private DetailData createDetailData(BannerDtoRequest dto) {
+        DetailData detailData = new DetailData();
+        boolean hasData = false;
+
+        if (dto.getBarcode() != null) {
+            detailData.setBarcode(dto.getBarcode());
+            hasData = true;
+        }
+
+        if (dto.getLink() != null) {
+            detailData.setLink(dto.getLink());
+            hasData = true;
+        }
+
+        return hasData ? detailData : null;
+    }
+
+    private <T> void mapDetailDataToDto(Banner banner, T dto) {
+        DetailData detailData = banner.getDetailData();
+        if (detailData != null) {
+            if (detailData.getLink() != null) {
+                if (dto instanceof BannerDtoRequest) {
+                    ((BannerDtoRequest) dto).setLink(detailData.getLink());
+                } else if (dto instanceof BannerDetailedDto) {
+                    ((BannerDetailedDto) dto).setLink(detailData.getLink());
+                }
+            }
+            if (detailData.getBarcode() != null) {
+                if (dto instanceof BannerDtoRequest) {
+                    ((BannerDtoRequest) dto).setBarcode(detailData.getBarcode());
+                } else if (dto instanceof BannerDetailedDto) {
+                    ((BannerDetailedDto) dto).setBarcode(detailData.getBarcode());
+                }
+            }
+        }
     }
 }

@@ -33,7 +33,7 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
         };
         await dispatch(filterBanners(filters));
         onClose();
-    };
+    }
 
     const handleCancel = () => {
         setStatus(undefined);
@@ -41,7 +41,7 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
         setType(undefined);
         setTypeChecked(false);
         onClose();
-    };
+    }
 
     return (
         <Dialog
@@ -129,6 +129,6 @@ const FilterModal: FC<FilterModalProps> = ({ open, onClose, codeGroupBanner }) =
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default FilterModal;

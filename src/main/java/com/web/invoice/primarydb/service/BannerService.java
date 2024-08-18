@@ -65,7 +65,7 @@ public class BannerService {
 
         validator.validate(patchedDto);
         bannerMapper.updateEntityFromDto(patchedDto,banner);
-        bannerMapper.updateSetBanners(patchedDto, banner);
+        bannerMapper.customUpdate(patchedDto, banner);
 
         bannerRepository.save(banner);
     }

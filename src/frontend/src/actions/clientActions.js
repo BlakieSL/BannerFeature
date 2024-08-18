@@ -12,7 +12,7 @@ export const fetchClients = () => async dispatch => {
     } catch (error) {
         console.error('Error fetching clients:', error);
     }
-};
+}
 
 export const findClientByPhone = (phoneDto) => async dispatch => {
     try {
@@ -21,7 +21,7 @@ export const findClientByPhone = (phoneDto) => async dispatch => {
     } catch (error) {
         console.error('Error finding client by phone:', error);
     }
-};
+}
 
 export const findClientsByBarcodes = (barcodeDto) => async dispatch => {
     try {
@@ -30,7 +30,7 @@ export const findClientsByBarcodes = (barcodeDto) => async dispatch => {
     } catch (error) {
         console.error('Error finding clients by barcodes:', error);
     }
-};
+}
 
 export const fetchClient = (id) => async dispatch => {
     try{
@@ -39,8 +39,6 @@ export const fetchClient = (id) => async dispatch => {
     } catch(error) {
         console.log('Error fetching groupClient:', error);
     }
-};
+}
 
-export const clearClients = () => ({
-    type: CLEAR_CLIENTS,
-});
+export const clearClients = () => ({ type: CLEAR_CLIENTS });

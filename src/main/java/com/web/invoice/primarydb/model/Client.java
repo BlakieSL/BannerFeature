@@ -16,8 +16,6 @@ import java.util.Set;
 @Table(name = "client", schema = "pos")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Client {
     @Id
     @Column(name = "code_client")

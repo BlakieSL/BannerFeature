@@ -7,8 +7,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "set_banner", schema = "pos")
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
 public class SetBanner {
     @Id

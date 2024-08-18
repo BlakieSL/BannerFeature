@@ -9,8 +9,6 @@ import java.util.List;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
 public class BannersDeletionDto {
     private List<Integer> codeBanners;
 }

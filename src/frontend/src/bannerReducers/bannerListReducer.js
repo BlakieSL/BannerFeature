@@ -4,7 +4,7 @@ import {
 
 const initialState = {
     banners: [],
-};
+}
 
 const bannerListReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -12,10 +12,10 @@ const bannerListReducer = (state = initialState, action) => {
             return {
                 ...state,
                 banners: action.payload,
-            };
+            }
         default:
             return state;
     }
-};
+}
 
 export default bannerListReducer;

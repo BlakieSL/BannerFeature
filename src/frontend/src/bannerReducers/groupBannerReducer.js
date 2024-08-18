@@ -2,7 +2,7 @@ import { SET_GROUP_BANNERS } from '../constants/ActionTypes';
 
 const initialState = {
     groupBanners: [],
-};
+}
 
 const groupBannerReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -10,10 +10,10 @@ const groupBannerReducer = (state = initialState, action) => {
             return {
                 ...state,
                 groupBanners: action.payload,
-            };
+            }
         default:
             return state;
     }
-};
+}
 
 export default groupBannerReducer;

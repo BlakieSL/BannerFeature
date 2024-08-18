@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class BannerSummaryDto {
     private Integer codeBanner;
     private LocalDate dateCreate;

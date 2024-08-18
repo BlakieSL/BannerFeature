@@ -14,8 +14,6 @@ import java.util.Set;
 @Table(name = "group_client", schema = "pos")
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class GroupClient {
     @Id
     @Column(name = "code_group", nullable = false)
@@ -25,7 +23,7 @@ public class GroupClient {
     private String nameGroup;
 
     @Column(name = "code_parent_group", nullable = false)
-    private Integer codeParentGroup; //should be filled with some random data as for now
+    private Integer codeParentGroup;
 
     @OneToMany(mappedBy = "groupClient", cascade = CascadeType.REMOVE)
     private final Set<Client> clients = new HashSet<>();

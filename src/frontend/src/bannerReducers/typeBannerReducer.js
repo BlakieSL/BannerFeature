@@ -2,7 +2,7 @@ import { SET_TYPE_BANNERS } from "../constants/ActionTypes";
 
 const initialState = {
     typeBanners: [],
-};
+}
 
 const typeBannerReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -10,9 +10,9 @@ const typeBannerReducer = (state = initialState, action) => {
             return {
                 ...state,
                 typeBanners: action.payload,
-            };
+            }
         default:
             return state;
     }
-};
+}
 export default typeBannerReducer;

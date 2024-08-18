@@ -24,7 +24,7 @@ const DefaultDataGrid: FC<DefaultDataGridProps> = ({
             return 'row-ready';
         }
         return '';
-    };
+    }
 
     return (
         <DataGrid
@@ -59,6 +59,6 @@ const DefaultDataGrid: FC<DefaultDataGridProps> = ({
             }}
         />
     );
-};
+}
 
 export default DefaultDataGrid;

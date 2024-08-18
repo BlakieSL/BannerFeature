@@ -1,8 +1,12 @@
 package com.web.invoice.primarydb.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.web.invoice.primarydb.dto.DetailData;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -17,6 +21,7 @@ import java.util.Set;
 @Table(name = "banner", schema = "pos")
 @Getter
 @Setter
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Banner {
     private static final int TITLE_MAX_LENGTH = 100;
 
@@ -38,7 +43,7 @@ public class Banner {
     private LocalDateTime plannedDate;
 
     @Column(name = "status")
-    private short status; // 0 - чернетка, 1 - заплановано, 2 - готово до відправки, 3 - відправлено
+    private Short status;
 
     @Column(name = "send_result")
     private String sendResult;
@@ -72,11 +77,21 @@ public class Banner {
     @Column(name = "date_end")
     private LocalDateTime dateEnd;
 
-    @Column(name = "sign_activity", nullable = false)
-    private short signActivity;
+    @Column(name = "sign_activity")
+    private Short signActivity;
 
     @OneToMany(mappedBy = "banner",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
             orphanRemoval = true)
     private final Set<SetBanner> setBanners = new HashSet<>();
+
+    @Column(name = "client_title")
+    private String clientTitle;
+
+    @Column(name = "channel")
+    private Short channel;
+
+    @Type(type = "jsonb")
+    @Column(name = "detail_data", columnDefinition = "jsonb")
+    private DetailData detailData;
 }

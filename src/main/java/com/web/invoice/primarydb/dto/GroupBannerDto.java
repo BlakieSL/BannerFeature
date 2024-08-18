@@ -7,8 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class GroupBannerDto {
     private Integer codeGroupBanner;
     private String name;

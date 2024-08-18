@@ -1,5 +1,5 @@
 .actionsContainer {
-  margin-top: 100px;
+  margin-top: 50px;
   display: flex;
   justify-content: center;
   gap: 16px;
@@ -19,8 +19,10 @@
 
 .bannerContent {
   border: 1px solid #cccccc;
-  height: 600px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-bottom: 50px;
 }
 
 .buttonsContainer {
@@ -38,4 +40,11 @@
 .customAsterisk {
   color: red;
   margin-left: 5px;
+}
+
+.errorText {
+  color: red;
+  text-align: center;
+  margin: 16px 0;
+  font-weight: bold;
 }

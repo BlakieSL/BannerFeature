@@ -29,6 +29,6 @@ const CustomTextField: FC<CustomTextFieldProps> = ({ label, name, value, onChang
             />
         </Box>
     );
-};
+}
 
 export default CustomTextField;

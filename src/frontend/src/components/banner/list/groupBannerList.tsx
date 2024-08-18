@@ -7,6 +7,7 @@ import { GridRowParams } from '@mui/x-data-grid';
 import { RootState } from '../../../types';
 import GroupBannerModal from '../modals/groupBannerModal';
 import GroupBannerDataGrid from '../helperComponents/GroupBannerDataGrid';
+import Loader from "../../loader/Loader";
 
 const GroupBannerList = () => {
     const dispatch = useDispatch();
@@ -29,16 +30,16 @@ const GroupBannerList = () => {
     const handleRowClick = (params: GridRowParams) => {
         const groupBanner = params.row;
         navigate(`/banners/group/${groupBanner.codeGroupBanner}`);
-    };
+    }
 
     const handleViewAllBanners = () => {
         navigate(`/banners/all`);
-    };
+    }
 
     const handleAddGroupBanner = async (group: { name: string }) => {
         await dispatch(addGroupBanner(group));
         setIsModalOpen(false);
-    };
+    }
 
     const handleEditGroupBanner = async (group: { name: string }) => {
         if (selectedGroup) {
@@ -47,23 +48,23 @@ const GroupBannerList = () => {
             setIsModalOpen(false);
             setSelectedGroup(null);
         }
-    };
+    }
 
     const handleEditClick = (event: React.MouseEvent, group: { codeGroupBanner: number, name: string }) => {
         event.stopPropagation();
         setSelectedGroup(group);
         setIsEditing(true);
         setIsModalOpen(true);
-    };
+    }
 
     const handleModalClose = () => {
         setIsModalOpen(false);
         setIsEditing(false);
         setSelectedGroup(null);
-    };
+    }
 
     if (loading) {
-        return <CircularProgress />;
+        return <Loader />;
     }
 
     return (
@@ -72,19 +73,13 @@ const GroupBannerList = () => {
                 <Typography variant='h4'>
                     Групи банерів
                 </Typography>
-                <Box className='listsActions'>
-                    <Button variant='contained' onClick={() => setIsModalOpen(true)}>
-                        НОВА ГРУПА
-                    </Button>
-                    <Button variant='contained' onClick={handleViewAllBanners}>
-                        ВСІ НОВИНИ
-                    </Button>
-                </Box>
             </Box>
             <GroupBannerDataGrid
                 groupBanners={groupBanners}
                 onRowClick={handleRowClick}
                 onEditClick={handleEditClick}
+                onAddNewGroupClick={() => setIsModalOpen(true)}
+                onViewAllBannersClick={handleViewAllBanners}
             />
             <GroupBannerModal
                 open={isModalOpen}
@@ -98,3 +93,13 @@ const GroupBannerList = () => {
 }
 
 export default GroupBannerList;
+/*
+                <Box className='listsActions'>
+                    <Button variant='contained' onClick={() => setIsModalOpen(true)}>
+                        НОВА ГРУПА
+                    </Button>
+                    <Button variant='contained' onClick={handleViewAllBanners}>
+                        ВСІ НОВИНИ
+                    </Button>
+                </Box>
+ */

@@ -31,6 +31,6 @@ const ErrorModal: FC<ErrorModalProps> = ({ open, errorMessage, onClose }) => {
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default ErrorModal;

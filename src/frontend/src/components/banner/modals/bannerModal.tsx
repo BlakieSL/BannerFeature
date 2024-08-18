@@ -1,29 +1,19 @@
 import React, {ChangeEvent, FC, useEffect, useState} from 'react';
 import {
     Button,
-    TextField,
     Box,
     Typography,
-    Select,
     Modal,
-    MenuItem,
-    Checkbox,
-    FormControlLabel, IconButton,
 } from '@mui/material';
-import {
-    TabPanel,
-    TabContext,
-} from '@mui/lab/';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import {
     BannerDto,
     BannerDtoRequest,
-    BannerType, GroupBanner,
+    GroupBanner,
     RootState,
     SimplifiedClientDto,
     SimplifiedGroupClientDto
 } from '../../../types';
-import { SelectChangeEvent } from '@mui/material/Select';
 import GroupClientModal from '../modals/groupClientModal';
 import ClientModal from './clientsModal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,19 +25,16 @@ import {
     updateBanner
 } from '../../../actions/bannerActions';
 import ErrorModal from './errorModal';
-import StyledTabList from '../helperComponents/StyledTabList';
 import classes from '../styles/bannerModal.module.scss';
-import { fetchTypeBanners } from '../../../actions/typeBannerActions';
-import CustomTextField from '../helperComponents/CustomTextField';
 import SelectGroupBannerModal from './selectGroupBannerModal';
 import ConfirmDialog from './confirmModal';
-import DefaultDataGrid from '../helperComponents/DefaultDataGrid';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
+import BannerTabContent from "../helperComponents/BannerContent";
 
 interface BannerModalProps {
     open: boolean;
     onClose: () => void;
-    initialData: BannerDto | null;
+    initialData?: BannerDto;
     groupBannerDetails: GroupBanner;
     title: string;
 }
@@ -55,6 +42,8 @@ interface BannerModalProps {
 const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBannerDetails, title }) => {
     const dispatch = useDispatch();
     const typeBanners = useSelector((state: RootState) => state.typeBannerReducer.typeBanners);
+    const statuses = useSelector((state: RootState) => state.statusListReducer.statuses);
+    const channels = useSelector((state: RootState) => state.channelListReducer.channels);
     const [tabIndex, setTabIndex] = useState(0);
     const [isGroupClientModalOpen, setIsGroupClientModalOpen] = useState(false);
     const [isClientModalOpen, setIsClientModalOpen] = useState(false);
@@ -70,34 +59,93 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         codeGroupBanner: groupBannerDetails.codeGroupBanner,
     };
     const [banner, setBanner] = useState<BannerDto>(initialData || initialBannerState);
+    const [bannerCopy, setBannerCopy] = useState<BannerDto | null> (null);
 
     useEffect(() => {
         (async () => {
             if (initialData) {
                 setBanner(initialData);
+                setBannerCopy(initialData);
             } else {
                 setBanner(initialBannerState);
             }
-            await dispatch(fetchTypeBanners());
         })();
     }, [initialData, groupBannerDetails, dispatch, open]);
 
+    const getChangedFields = (): Partial<BannerDtoRequest> => {
+        const changedFields: Partial<BannerDtoRequest> = {};
+
+        if (bannerCopy) {
+            (Object.keys(banner) as Array<keyof BannerDto>).forEach((key) => {
+                if (banner[key] !== bannerCopy[key]) {
+                    if (key === 'groupClients') {
+                        changedFields.groupClients = banner.groupClients
+                            ? Array.from(banner.groupClients).map(gc => gc.codeGroup)
+                            : [];
+                    } else if (key === 'singleClients') {
+                        changedFields.singleClients = banner.singleClients
+                            ? Array.from(banner.singleClients).map(sc => sc.codeClient)
+                            : [];
+                    } else {
+                        changedFields[key as keyof BannerDtoRequest] = banner[key] !== undefined
+                            ? banner[key] as any
+                            : null;
+                    }
+                }
+            });
+        }
+
+        return changedFields;
+    };
+
+    const convertBannerToRequest = (banner: BannerDto): BannerDtoRequest => {
+        console.log(banner)
+        if (!banner.title || !banner.codeTypeBanner || !banner.clientTitle) {
+            throw new Error('Required fields are missing');
+        }
+
+        const bannerRequest: BannerDtoRequest = {
+            title: banner.title,
+            codeTypeBanner: banner.codeTypeBanner,
+            codeGroupBanner: banner.codeGroupBanner,
+            clientTitle: banner.clientTitle,
+            groupClients: [],
+            singleClients: []
+        }
+
+        if (banner.codeBanner) bannerRequest.codeBanner = banner.codeBanner;
+        if (banner.body) bannerRequest.body = banner.body;
+        if (banner.plannedDate) bannerRequest.plannedDate = banner.plannedDate;
+        if (banner.status) bannerRequest.status = banner.status;
+        if (banner.sendResult) bannerRequest.sendResult = banner.sendResult;
+        if (banner.externalId) bannerRequest.externalId = Number(banner.externalId);
+        if (banner.note) bannerRequest.note = banner.note;
+        if (banner.channel) bannerRequest.channel = banner.channel;
+        if (banner.link) bannerRequest.link = banner.link;
+        if (banner.barcode) bannerRequest.barcode = banner.barcode;
+
+        bannerRequest.groupClients = banner.groupClients ? Array.from(banner.groupClients).map(gc => gc.codeGroup) : [];
+        bannerRequest.singleClients = banner.singleClients ? Array.from(banner.singleClients).map(sc => sc.codeClient) : [];
+
+        console.log(bannerRequest)
+        return bannerRequest;
+    }
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
-    };
+    }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setBanner({ ...banner, [name]: value || undefined });
         setHasChanges(true);
-    };
+    }
 
-    const handleSingleSelectChange = (event: SelectChangeEvent<number>, key: keyof BannerDto) => {
+    const handleSingleSelectChange = (event: any, key: keyof BannerDto) => {
         const value = event.target.value as number;
         setBanner({ ...banner, [key]: value || undefined });
         setHasChanges(true);
-    };
+    }
 
     const handleRemoveSelectedClients = () => {
         setBanner((prevBanner) => ({
@@ -115,40 +163,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         }));
         setSelectedRows([]);
         setHasChanges(true);
-    };
-
-    const convertBannerToRequest = (banner: BannerDto): BannerDtoRequest => {
-        if (!banner.title || !banner.codeTypeBanner) {
-            throw new Error('Required fields are missing');
-        }
-
-        const bannerRequest: BannerDtoRequest = {
-            title: banner.title,
-            codeTypeBanner: banner.codeTypeBanner,
-            codeGroupBanner: banner.codeGroupBanner,
-        };
-
-        if (banner.codeBanner !== undefined) bannerRequest.codeBanner = banner.codeBanner;
-        if (banner.body) bannerRequest.body = banner.body;
-        if (banner.plannedDate) bannerRequest.plannedDate = banner.plannedDate;
-        if (banner.status !== undefined) bannerRequest.status = banner.status;
-        if (banner.sendResult) bannerRequest.sendResult = banner.sendResult;
-        if (banner.externalId !== undefined) bannerRequest.externalId = Number(banner.externalId);
-        if (banner.note) bannerRequest.note = banner.note;
-
-        if(banner.codeBanner !== undefined) {
-            bannerRequest.groupClients = banner.groupClients ? Array.from(banner.groupClients).map(gc => gc.codeGroup) : [];
-            bannerRequest.singleClients = banner.singleClients ? Array.from(banner.singleClients).map(sc => sc.codeClient) : [];
-        } else {
-            if (banner.groupClients && banner.groupClients.size > 0) {
-                bannerRequest.groupClients = Array.from(banner.groupClients).map(gc => gc.codeGroup);
-            }
-            if (banner.singleClients && banner.singleClients.size > 0) {
-                bannerRequest.singleClients = Array.from(banner.singleClients).map(sc => sc.codeClient);
-            }
-        }
-        return bannerRequest;
-    };
+    }
 
     const handleGroupClientsSave = (selectedGroups: SimplifiedGroupClientDto[]) => {
         setBanner((prevBanner) => ({
@@ -159,7 +174,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
             ])
         }));
         setHasChanges(true);
-    };
+    }
 
     const handleClientsSave = (selectedClients: SimplifiedClientDto[]) => {
         setBanner((prevBanner) => ({
@@ -170,22 +185,33 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
             ])
         }));
         setHasChanges(true);
-    };
+    }
 
     const handleSave = async () => {
         try {
-            const bannerRequest = convertBannerToRequest(banner);
             if (initialData) {
-                await updateBanner(bannerRequest.codeBanner, bannerRequest);
+                const changedFields = getChangedFields();
+                console.log(bannerCopy);
+                console.log(changedFields);
+                if (Object.keys(changedFields).length > 0) {
+                    await updateBanner(banner.codeBanner!, changedFields);
+                }
             } else {
+                const bannerRequest = convertBannerToRequest(banner);
                 await createBanner(bannerRequest);
             }
             onClose();
         } catch (error: any) {
-            setError(error.response.data || 'Error saving banner');
+            if (error.response) {
+                console.error("Error response:", error.response.data);
+                setError(error.response.data || 'Error saving banner');
+            } else {
+                console.error("Error:", error.message);
+                setError('An unexpected error occurred: ' + error.message);
+            }
             setIsErrorModalOpen(true);
         }
-    };
+    }
 
     const handleDelete = async () => {
         try {
@@ -197,11 +223,11 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
             setError(error.response.data || 'Error deleting banner');
             setIsErrorModalOpen(true);
         }
-    };
+    }
 
     const handleCloseErrorModal = () => {
         setIsErrorModalOpen(false);
-    };
+    }
 
     const handleCancel = () => {
         if (initialData) {
@@ -215,20 +241,13 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const handleOpenSelectGroupModal = (type: 'copy' | 'move') => {
         setActionType(type);
         setIsSelectGroupOpen(true);
-    };
+    }
 
     const handleGroupSelected = (group: GroupBanner) => {
         setSelectedGroup(group);
         setIsSelectGroupOpen(false);
         setIsConfirmOpen(true);
-    };
-
-    const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const isChecked = event.target.checked;
-        setBanner({ ...banner, status: isChecked ? 2 : undefined });
-        setHasChanges(true);
-    };
-
+    }
 
     const handleConfirmAction = async () => {
         try {
@@ -245,11 +264,9 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         }
         setIsConfirmOpen(false);
         onClose();
-    };
+    }
 
-    const isFormValid = () => {
-        return banner.title && banner.codeTypeBanner && banner.codeGroupBanner;
-    };
+    const isFormValid = () => !!(banner.title && banner.codeTypeBanner && banner.codeGroupBanner && banner.clientTitle);
 
     const columns: GridColDef[] = [
         {
@@ -293,6 +310,23 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         })),
     ];
 
+    function toolbar() {
+        return quickSearchToolbar(
+            [
+                {
+                    func: () => { setIsGroupClientModalOpen(true); },
+                    text: 'ВИБІР ГРУП',
+                    disabled: false
+                },
+                {
+                    func: () => { setIsClientModalOpen(true); },
+                    text: 'ВИБІР КЛІЄНТІВ',
+                    disabled: false
+                }
+            ]
+        );
+    }
+
     return (
         <>
             <Modal
@@ -308,161 +342,28 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                         {title}
                     </Typography>
                     <Box className={classes.bannerContent}>
-                        <TabContext value={tabIndex.toString()}>
-                            <StyledTabList
-                                onChange={handleTabChange}
-                                tabs={[
-                                    { label: 'Основні', value: '0' },
-                                    { label: 'Дата', value: '1' },
-                                    { label: 'Клієнти', value: '2' },
-                                    { label: 'Додатково', value: '3' },
-                                ]}
-                            />
-                            <TabPanel value='0'>
-                                <CustomTextField
-                                    label='Назва'
-                                    name='title'
-                                    value={banner.title ?? ''}
-                                    onChange={handleInputChange}
-                                    required={true}
-                                />
-                                <CustomTextField
-                                    label='Опис'
-                                    name='body'
-                                    value={banner.body ?? ''}
-                                    onChange={handleInputChange}
-                                />
-                                <Box className={classes.customBox}>
-                                    <Typography variant='body1' className='label'>
-                                        Тип банера
-                                        <span className={classes.customAsterisk}>*</span>
-                                    </Typography>
-                                    <Select
-                                        className='text'
-                                        value={banner.codeTypeBanner ?? ''}
-                                        onChange={(e) => handleSingleSelectChange(e, 'codeTypeBanner')}
-                                        name='codeTypeBanner'
-                                        fullWidth
-                                    >
-                                        {typeBanners.map((type: BannerType) => (
-                                            <MenuItem key={type.codeTypeBanner} value={type.codeTypeBanner}>
-                                                {type.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </Box>
-                                <CustomTextField
-                                    label='Група банера'
-                                    value={groupBannerDetails.name ?? ''}
-                                    onChange={handleInputChange}
-                                    disabled={true}
-                                    required={true}
-                                />
-                                {!isFormValid() && (
-                                    <Typography color='error' align='center' margin='normal'>
-                                        Заповніть всі поля позначені *
-                                    </Typography>
-                                )}
-                                {hasChanges && (
-                                    <Box className={classes.actionsContainer}>
-                                        <Button variant='contained' onClick={handleSave} disabled={!isFormValid()}>
-                                            ЗБЕРЕГТИ
-                                        </Button>
-                                        <Button variant='contained' onClick={handleCancel}>
-                                            СКАСУВАТИ
-                                        </Button>
-                                    </Box>
-                                )}
-                            </TabPanel>
-                            <TabPanel value='1'>
-                                <TextField
-                                    fullWidth
-                                    label='Запланована дата'
-                                    type='datetime-local'
-                                    name='plannedDate'
-                                    value={banner.plannedDate ?? ''}
-                                    onChange={handleInputChange}
-                                    margin='normal'
-                                    InputLabelProps={{ shrink: true }}
-                                />
-                            </TabPanel>
-                            <TabPanel value='2'>
-                                <Box className={classes.buttonsContainer}>
-                                    <Button variant='contained' onClick={() => setIsGroupClientModalOpen(true)}>
-                                        ВИБІР ГРУП
-                                    </Button>
-                                    <Button variant='contained' onClick={() => setIsClientModalOpen(true)}>
-                                        ВИБІР КЛІЄНТІВ
-                                    </Button>
-                                </Box>
-                                {rows.length > 0 && (
-                                    <>
-                                        {selectedRows.length > 0 && (
-                                            <Box className='selectedItemsContainer'>
-                                                <Box className='textContainer'>
-                                                    <Typography variant='body1'>
-                                                        {selectedRows.length} вибрано
-                                                    </Typography>
-                                                </Box>
-                                                <Box className='deleteIcon'>
-                                                    <IconButton aria-label='delete' onClick={handleRemoveSelectedClients}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </Box>
-                                            </Box>
-                                        )}
-                                        <Box>
-                                            <DefaultDataGrid
-                                                rows={rows}
-                                                columns={columns}
-                                                onSelectionModelChange={(newSelectionModel) => setSelectedRows(newSelectionModel)}
-                                                checkboxSelection={true}
-                                            />
-                                        </Box>
-                                    </>
-                                )}
-                            </TabPanel>
-                            <TabPanel value='3'>
-                                {initialData && (
-                                    <CustomTextField
-                                        label='Дата створення'
-                                        value={banner.dateCreate ?? ''}
-                                        disabled={true}
-                                    />
-                                )}
-                                <CustomTextField
-                                    label='Код зовнішньої системи'
-                                    name='externalId'
-                                    value={banner.externalId ?? ''}
-                                    onChange={handleInputChange}
-                                />
-                                <CustomTextField
-                                    label='Примітка'
-                                    name='note'
-                                    value={banner.note ?? ''}
-                                    onChange={handleInputChange}
-                                />
-                                <CustomTextField
-                                    label='Результат відправки'
-                                    name='sendResult'
-                                    value={banner.sendResult ?? ''}
-                                    onChange={handleInputChange}
-                                />
-                                {!initialData && (
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={banner.status === 2}
-                                                onChange={handleCheckboxChange}
-                                            />
-                                        }
-                                        label='Готово до відправки:'
-                                        labelPlacement='start'
-                                        className='label'
-                                    />
-                                )}
-                            </TabPanel>
-                        </TabContext>
+                        <BannerTabContent
+                            tabIndex={tabIndex}
+                            banner={banner}
+                            handleTabChange={handleTabChange}
+                            handleInputChange={handleInputChange}
+                            handleSingleSelectChange={handleSingleSelectChange}
+                            isFormValid={isFormValid}
+                            hasChanges={hasChanges}
+                            handleSave={handleSave}
+                            handleCancel={handleCancel}
+                            columns={columns}
+                            rows={rows}
+                            selectedRows={selectedRows}
+                            handleRemoveSelectedClients={handleRemoveSelectedClients}
+                            toolbar={toolbar}
+                            channels={channels}
+                            statuses={statuses}
+                            typeBanners={typeBanners}
+                            groupBannerDetails={groupBannerDetails}
+                            setSelectedRows={setSelectedRows}
+                            initialData={initialData}
+                        />
                     </Box>
                     <Box className={classes.footerActions}>
                         {initialData && (
@@ -512,6 +413,42 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
             />
         </>
     );
-};
+}
 
-export default BannerModal;
+export default React.memo(BannerModal);
+
+/*
+<Box className={classes.buttonsContainer}>
+    <Button variant='contained' onClick={() => setIsGroupClientModalOpen(true)}>
+        ВИБІР ГРУП
+    </Button>
+    <Button variant='contained' onClick={() => setIsClientModalOpen(true)}>
+        ВИБІР КЛІЄНТІВ
+    </Button>
+</Box>
+
+
+ {rows.length > 0 && (
+    <>
+        {selectedRows.length > 0 && (
+            <Box className='selectedItemsContainer'>
+                <Box className='textContainer'>
+                    <Typography variant='body1'>
+                        {selectedRows.length} вибрано
+                    </Typography>
+                </Box>
+                <Box className='deleteIcon'>
+                    <IconButton aria-label='delete' onClick={handleRemoveSelectedClients}>
+                        <DeleteIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+        )}
+        <DefaultDataGrid
+            rows={rows}
+            columns={columns}
+            onSelectionModelChange={(newSelectionModel) => setSelectedRows(newSelectionModel)}
+            checkboxSelection={true}
+        />
+    </>
+ */

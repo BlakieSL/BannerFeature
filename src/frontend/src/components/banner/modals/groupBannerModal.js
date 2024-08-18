@@ -21,7 +21,7 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
     const handleSave = () => {
         onSave({ name });
         setName('');
-    };
+    }
 
     const handleDelete = async () => {
         const errorMessage = await dispatch(deleteGroupBanner(initialData.codeGroupBanner));
@@ -31,11 +31,11 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
         } else {
             onClose();
         }
-    };
+    }
 
     const handleCloseErrorModal = () => {
         setIsErrorModalOpen(false);
-    };
+    }
 
     return (
         <>
@@ -80,6 +80,6 @@ const GroupBannerModal = ({ open, onClose, onSave, initialData, title }) => {
             />
         </>
     );
-};
+}
 
 export default GroupBannerModal;

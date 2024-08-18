@@ -17,6 +17,10 @@ export interface BannerDtoRequest {
     externalId?: number;
     note?: string;
     codeGroupBanner: number;
+    clientTitle?: string;
+    channel?: string;
+    link?: string;
+    barcode?: string;
     groupClients?: number[];
     singleClients?: number[];
 }
@@ -44,6 +48,10 @@ export interface BannerDto {
     externalId?: number;
     note?: string;
     codeGroupBanner: number;
+    clientTitle?: string;
+    channel?: string;
+    link?: string;
+    barcode?: string;
     groupClients?: Set<SimplifiedGroupClientDto>;
     singleClients?: Set<SimplifiedClientDto>;
 }

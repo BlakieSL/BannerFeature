@@ -10,7 +10,7 @@ interface CustomTableParams {
     columns: Array<any>;
     rows: Array<any>;
     rowId?: any;
-    toolbar: any;
+    toolbar?: any;
     onRowDoubleClick?: any;
     loading?: boolean;
     getRowId?: any;

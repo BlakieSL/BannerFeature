@@ -17,7 +17,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import ClearIcon from "@material-ui/icons/Clear";
 import TextField from "@mui/material/TextField";
 
-function quickSearchToolbar(buttons: Array<any>, singleSelectArr: Array<any> = [], additionalBar: any = undefined) {
+function quickSearchToolbar(buttons: Array<any> = [], singleSelectArr: Array<any> = [], additionalBar: any = undefined) {
     return (
         <Box
             sx={{

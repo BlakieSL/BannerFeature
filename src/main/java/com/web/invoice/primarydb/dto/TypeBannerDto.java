@@ -7,8 +7,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class TypeBannerDto {
     private Integer codeTypeBanner;
     private String name;

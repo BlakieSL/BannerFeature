@@ -10,11 +10,12 @@ import {
     TextField,
     MenuItem,
     Select,
-    FormControl,
+    FormControl, CircularProgress,
 } from '@mui/material';
 import { GridColDef, GridRowSelectionModel} from '@mui/x-data-grid';
 import classes from '../styles/clientModal.module.scss';
-import DefaultDataGrid from '../helperComponents/DefaultDataGrid';
+import {customTable} from "../../standart-element/DynamicElement";
+import Loader from "../../loader/Loader";
 
 interface ClientSearchModalProps {
     open: boolean;
@@ -23,6 +24,7 @@ interface ClientSearchModalProps {
 }
 
 const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }) => {
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
     const clients = useSelector((state: RootState) => state.clientReducer.clients);
     const [searchType, setSearchType] = useState<'barcode' | 'phone'>('barcode');
@@ -41,12 +43,14 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
 
 
     const handleSearch = async () => {
+        setLoading(true);
         if (searchType === 'phone') {
             await dispatch(findClientByPhone({ phone: searchQuery }));
         } else {
             await dispatch(findClientsByBarcodes({ barcodes: searchQuery }));
         }
-    };
+        setLoading(false);
+    }
 
     const handleSave = () => {
         const selectedClients = clients.filter((client : SimplifiedClientDto ) =>
@@ -54,7 +58,7 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
         );
         onSave(selectedClients);
         onClose();
-    };
+    }
     const columns: GridColDef[] = [
         {
             field: 'codeClient',
@@ -116,14 +120,18 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
                         ПОШУК
                     </Button>
                 </Box>
-                <Box className={classes.dataGridContainer}>
-                    <DefaultDataGrid
-                        rows={clients}
-                        columns={columns}
-                        getRowId={(row) => row.codeClient}
-                        onSelectionModelChange={(newSelection) => setSelectedRows(newSelection)}
-                        checkboxSelection={true}
-                    />
+                <Box className='dataGridContainer'>
+                    {loading ? <Loader/> : (
+                        customTable({
+                            height: '100%',
+                            columns: columns,
+                            rows: clients,
+                            loading: false,
+                            getRowId: (row: any) => row.codeClient,
+                            onSelectionChange: (newSelectionModel) => setSelectedRows(newSelectionModel),
+                            checkboxSelection: true,
+                        })
+                    )}
                 </Box>
                 <Box className='actionsContainer'>
                     {selectedRows.length > 0 &&(
@@ -138,6 +146,17 @@ const ClientModal: React.FC<ClientSearchModalProps> = ({ open, onClose, onSave }
             </Box>
         </Modal>
     );
-};
+}
 
 export default ClientModal;
+/*
+<Box className={classes.dataGridContainer}>
+    <DefaultDataGrid
+        rows={clients}
+        columns={columns}
+        getRowId={(row) => row.codeClient}
+        onSelectionModelChange={(newSelection) => setSelectedRows(newSelection)}
+        checkboxSelection={true}
+    />
+</Box>
+ */

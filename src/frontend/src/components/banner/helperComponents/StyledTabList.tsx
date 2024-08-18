@@ -22,6 +22,6 @@ const StyledTabList: FC<StyledTabListProps> = ({ tabs, ...props }) => {
             ))}
         </TabList>
     );
-};
+}
 
 export default StyledTabList;

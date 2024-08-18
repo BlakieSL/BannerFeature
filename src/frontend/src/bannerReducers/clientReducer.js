@@ -6,7 +6,7 @@ import {
 
 const initialState = {
     clients: [],
-};
+}
 
 const clientReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -14,17 +14,17 @@ const clientReducer = (state = initialState, action) => {
             return {
                 ...state,
                 clients: action.payload,
-            };
+            }
         case SET_CLIENT_BY_PHONE:
             return {
                 ...state,
                 clients: [action.payload],
-            };
+            }
         case SET_CLIENTS_BY_BARCODES:
             return {
                 ...state,
                 clients: action.payload,
-            };
+            }
         case CLEAR_CLIENTS:
             return {
                 ...state,
@@ -33,6 +33,6 @@ const clientReducer = (state = initialState, action) => {
         default:
             return state;
     }
-};
+}
 
 export default clientReducer;

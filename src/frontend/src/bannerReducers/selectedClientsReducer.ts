@@ -10,7 +10,7 @@ type SelectedClientsActionTypes = SetClientAction;
 
 const initialState: SelectedClientsState = {
     clients: [],
-};
+}
 
 const selectedClientsReducer = (
     state = initialState,
@@ -21,7 +21,7 @@ const selectedClientsReducer = (
             return {
                 ...state,
                 clients: [...state.clients, action.payload],
-            };
+            }
         default:
             return state;
     }

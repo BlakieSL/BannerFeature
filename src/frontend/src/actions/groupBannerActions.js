@@ -11,7 +11,7 @@ export const fetchGroupBanners = () => async dispatch => {
     } catch (error) {
         console.error('Error fetching group banners:', error);
     }
-};
+}
 
 export const fetchGroupBannerById = (id) => async dispatch => {
     try {
@@ -29,7 +29,7 @@ export const addGroupBanner = (groupBanner) => async dispatch => {
     } catch (error) {
         console.error('Error adding group banner:', error);
     }
-};
+}
 
 export const updateGroupBanner = (id, patch) => async dispatch => {
     try {
@@ -38,7 +38,7 @@ export const updateGroupBanner = (id, patch) => async dispatch => {
     } catch (error) {
         console.error('Error updating group banner:', error);
     }
-};
+}
 
 export const deleteGroupBanner = (id) => async dispatch => {
     try {
@@ -47,4 +47,4 @@ export const deleteGroupBanner = (id) => async dispatch => {
     } catch (error) {
         return error.response.data || 'Error deleting group banner';
     }
-};
+}

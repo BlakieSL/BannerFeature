@@ -8,8 +8,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class BannerDetailedDto {
     private Integer codeBanner;
     private String title;
@@ -22,6 +20,10 @@ public class BannerDetailedDto {
     private String note;
     private LocalDate dateCreate;
     private Integer codeGroupBanner;
+    private String clientTitle;
+    private short channel;
+    private String barcode;
+    private String link;
     private Set<SimplifiedGroupClientDto> groupClients;
     private Set<SimplifiedClientDto> singleClients;
 }

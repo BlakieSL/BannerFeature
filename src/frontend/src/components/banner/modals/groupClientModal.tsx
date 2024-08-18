@@ -16,6 +16,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import classes from '../styles/groupClientModal.module.scss';
+import Loader from "../../loader/Loader";
 
 interface GroupClientModalProps {
     open: boolean;
@@ -32,6 +33,7 @@ interface GroupClient {
 }
 
 const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, selectedGroupClients = [] }) => {
+    const [loading, setLoading] = useState(false)
     const dispatch = useDispatch();
     const groupClients = useSelector((state: RootState) => state.groupClientReducer.groupClients);
     const [selectedGroups, setSelectedGroups] = useState<SimplifiedGroupClientDto[]>(selectedGroupClients);
@@ -39,8 +41,10 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
     useEffect(() => {
         (async () => {
             if (open) {
+                setLoading(true);
                 await dispatch(fetchGroupClients());
                 setSelectedGroups(selectedGroupClients);
+                setLoading(false);
             }
         })();
     }, [dispatch, open, selectedGroupClients]);
@@ -53,12 +57,12 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
         } else {
             setSelectedGroups(prev => [...prev, { codeGroup: group.codeGroup, nameGroup: group.nameGroup }]);
         }
-    };
+    }
 
     const handleSave = () => {
         onSave(selectedGroups);
         onClose();
-    };
+    }
 
     const renderTree = (nodes: GroupClient) => (
         <TreeItem
@@ -98,15 +102,19 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
             <Box className='groupClientModal'>
                 <Typography variant='h6'>Вибір груп клієнтів</Typography>
                 <Box className={classes.treeContainer}>
-                    {groupClients.length > 0 ? (
-                        <TreeView
-                            defaultCollapseIcon={<ExpandMoreIcon sx={{ fontSize: 16 }} />}
-                            defaultExpandIcon={<ChevronRightIcon sx={{ fontSize: 16 }} />}
-                        >
-                            {groupClients.map((group: GroupClient) => renderTree(group))}
-                        </TreeView>
-                    ) : (
-                        <Typography>Немає даних для відображення.</Typography>
+                    {loading ? <Loader/> : (
+                      <>
+                          {groupClients.length > 0 ? (
+                              <TreeView
+                                  defaultCollapseIcon={<ExpandMoreIcon sx={{ fontSize: 16 }} />}
+                                  defaultExpandIcon={<ChevronRightIcon sx={{ fontSize: 16 }} />}
+                              >
+                                  {groupClients.map((group: GroupClient) => renderTree(group))}
+                              </TreeView>
+                          ) : (
+                              <Typography>Немає даних для відображення.</Typography>
+                          )}
+                      </>
                     )}
                 </Box>
                 <Box className={classes.textContainer}>
@@ -134,6 +142,6 @@ const GroupClientModal: FC<GroupClientModalProps> = ({ open, onClose, onSave, se
             </Box>
         </Modal>
     );
-};
+}
 
 export default GroupClientModal;

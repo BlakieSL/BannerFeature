@@ -62,3 +62,7 @@ export const CLEAR_CLIENTS = 'CLEAR_CLIENTS';
 //GroupClient Action Types
 export const SET_GROUP_CLIENTS = 'SET_GROUP_CLIENTS';
 export const SET_GROUP_CLIENT = 'SET_GROUP_CLIENT';
+
+//Designation Action Types
+export const SET_STATUSES = 'SET_STATUSES';
+export const SET_CHANNELS = 'SET_CHANNELS';
