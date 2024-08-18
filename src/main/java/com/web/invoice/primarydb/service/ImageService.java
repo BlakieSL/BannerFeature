@@ -8,7 +8,6 @@ import com.web.invoice.primarydb.model.Image;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -32,20 +31,8 @@ public class ImageService {
     @Transactional
     public void saveImage(ImageDtoRequest dto) {
         validator.validate(dto);
-        //Image image = imageMapper.toEntity(dto);
-        Image image = new Image();
-
-        try {
-            image.setImage( dto.getImageFile().getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        image.setTypeValue( dto.getTypeValue() );
-        image.setCodeValue( dto.getCodeValue() );
-        image.setDescription( dto.getDescription() );
-        image.setTypeRef( dto.getTypeRef() );
-        Integer maxNum = imageRepository.findTopByTypeValueAndCodeValueOrderByNumDesc(dto.getTypeValue(), dto.getCodeValue())
-                .orElse(1);
+        Image image = imageMapper.toEntity(dto);
+        Integer maxNum = imageRepository.findTopNumByTypeValueAndCodeValueOrderByNumDesc(dto.getTypeValue(), dto.getCodeValue()) + 1;
         image.setNum(maxNum);
         imageRepository.save(image);
     }

@@ -44,18 +44,19 @@ public class ImageController {
             @RequestParam("typeValue") Integer typeValue,
             @RequestParam("codeValue") Integer codeValue,
             @RequestParam("typeRef") Integer typeRef,
-            @RequestParam("description") String description,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam("imageFile") MultipartFile imageFile) {
 
         ImageDtoRequest dto = new ImageDtoRequest();
         dto.setTypeValue(typeValue);
         dto.setCodeValue(codeValue);
         dto.setTypeRef(typeRef);
-        dto.setDescription(description);
+        if (description != null) dto.setDescription(description);
         dto.setImageFile(imageFile);
 
         imageService.saveImage(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
 
 }
