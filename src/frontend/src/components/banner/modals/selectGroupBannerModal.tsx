@@ -51,6 +51,7 @@ const SelectGroupBannerModal: React.FC<SelectGroupBannerModalProps> = ({ open, o
                             groupBanners={groupBanners}
                             onRowClick={handleRowClick}
                             showEditColumn={false}
+                            showButtons={false}
                         />
                     )}
                 </DialogContent>

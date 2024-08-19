@@ -51,6 +51,7 @@ export const Navbar = () => {
                 >
                     {workplaceStatus()}
                     {groupBanners()}
+                    {images()}
                 </Menu>
             </div>
         );
@@ -91,6 +92,18 @@ export const Navbar = () => {
                 </NavLink>
             </MenuItem>;
     };
+
+    const images = () => {
+        return checkAccessEvent(173) &&
+            <MenuItem onClick={handleCloseRef}>
+                <NavLink
+                    to="/images/all"
+                    exact
+                >
+                    Зображення
+                </NavLink>
+            </MenuItem>
+    }
 
     return (
         <nav className="navbar navbar-dark navbar-expand-lg bg-dark">

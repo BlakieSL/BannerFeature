@@ -2,6 +2,7 @@ package com.web.invoice.primarydb.controller;
 
 import com.web.invoice.primarydb.dto.ImageDto;
 import com.web.invoice.primarydb.dto.ImageDtoRequest;
+import com.web.invoice.primarydb.dto.MultipleImagesDtoRequest;
 import com.web.invoice.primarydb.exception.ValidationException;
 import com.web.invoice.primarydb.service.ImageService;
 import org.springframework.http.HttpStatus;
@@ -39,22 +40,15 @@ public class ImageController {
         return ResponseEntity.ok(images);
     }
 
-    @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Void> createImage(
-            @RequestParam("typeValue") Integer typeValue,
-            @RequestParam("codeValue") Integer codeValue,
-            @RequestParam("typeRef") Integer typeRef,
-            @RequestParam(value = "description", required = false) String description,
-            @RequestParam("imageFile") MultipartFile imageFile) {
-
-        ImageDtoRequest dto = new ImageDtoRequest();
-        dto.setTypeValue(typeValue);
-        dto.setCodeValue(codeValue);
-        dto.setTypeRef(typeRef);
-        if (description != null) dto.setDescription(description);
-        dto.setImageFile(imageFile);
-
+    @PostMapping()
+    public ResponseEntity<Void> createImage(@ModelAttribute @Valid ImageDtoRequest dto) {
         imageService.saveImage(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/multiple")
+    public ResponseEntity<Void> createMultipleImages(@ModelAttribute @Valid MultipleImagesDtoRequest dto) {
+        imageService.saveMultipleImages(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

@@ -35,6 +35,12 @@
   width: 400px;
 }
 
+.imageModal {
+  @extend .modalContainerBase;
+  width: 960px;
+  height: 765px;
+}
+
 .actionBase {
   margin-top: 16px;
   display: flex;
@@ -81,5 +87,4 @@
   flex-grow: 1;
   margin-top: 16px;
   margin-bottom: 16px;
-
 }

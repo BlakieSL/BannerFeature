@@ -13,6 +13,7 @@ interface GroupBannerDataGridProps {
     showEditColumn?: boolean;
     onAddNewGroupClick?: () => void;
     onViewAllBannersClick?: () => void;
+    showButtons?: boolean;
 }
 
 const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({
@@ -21,7 +22,8 @@ const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({
                                                                onEditClick,
                                                                showEditColumn = true,
                                                                onAddNewGroupClick,
-                                                               onViewAllBannersClick
+                                                               onViewAllBannersClick,
+                                                               showButtons = true
                                                            }) => {
     const baseColumns: GridColDef[] = [
         {
@@ -62,10 +64,13 @@ const GroupBannerDataGrid: FC<GroupBannerDataGridProps> = ({
     const columns = showEditColumn ? [editColumn, ...baseColumns] : baseColumns;
 
     function toolbar() {
-        return quickSearchToolbar([
-            { func: onAddNewGroupClick, text: 'Нова група', disabled: false },
-            { func: onViewAllBannersClick, text: 'Всі новини', disabled: false }
-        ]);
+        return quickSearchToolbar(showButtons
+            ? [
+                { func: onAddNewGroupClick, text: 'Нова група', disabled: false },
+                { func: onViewAllBannersClick, text: 'Всі новини', disabled: false }
+             ]
+            : []
+        );
     }
 
     return customTable({

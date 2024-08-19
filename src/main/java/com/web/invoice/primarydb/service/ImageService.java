@@ -3,9 +3,11 @@ package com.web.invoice.primarydb.service;
 import com.web.invoice.primarydb.dao.ImageRepository;
 import com.web.invoice.primarydb.dto.ImageDto;
 import com.web.invoice.primarydb.dto.ImageDtoRequest;
+import com.web.invoice.primarydb.dto.MultipleImagesDtoRequest;
 import com.web.invoice.primarydb.mapper.ImageMapper;
 import com.web.invoice.primarydb.model.Image;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -35,6 +37,22 @@ public class ImageService {
         Integer maxNum = imageRepository.findTopNumByTypeValueAndCodeValueOrderByNumDesc(dto.getTypeValue(), dto.getCodeValue()) + 1;
         image.setNum(maxNum);
         imageRepository.save(image);
+    }
+
+    @Transactional
+    public void saveMultipleImages(MultipleImagesDtoRequest dto) {
+        validator.validate(dto);
+
+        ImageDtoRequest singleDto = new ImageDtoRequest();
+        singleDto.setTypeValue(dto.getTypeValue());
+        singleDto.setCodeValue(dto.getCodeValue());
+        singleDto.setTypeRef(dto.getTypeRef());
+        singleDto.setDescription(dto.getDescription());
+
+        for (MultipartFile imageFile : dto.getImageFiles()) {
+            singleDto.setImageFile(imageFile);
+            saveImage(singleDto);
+        }
     }
 
     public List<ImageDto> getAllImagesByTypeValue(int typeValue) {

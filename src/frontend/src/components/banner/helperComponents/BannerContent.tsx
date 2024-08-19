@@ -9,6 +9,8 @@ import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import {BannerDto, BannerType, GroupBanner} from '../../../types';
 import classes from '../styles/bannerModal.module.scss';
 import {customTable} from "../../standart-element/DynamicElement";
+import ImageList from "../image/imageList";
+import ImageDataGrid from "./ImageDataGrid";
 
 interface BannerTabContentProps {
     tabIndex: number;
@@ -31,6 +33,8 @@ interface BannerTabContentProps {
     groupBannerDetails: GroupBanner;
     setSelectedRows: (newSelectionModel: GridRowSelectionModel) => void;
     initialData?: BannerDto;
+    images: any[];
+    onAddNewImageClick: () => void;
 }
 
 const BannerTabContent: React.FC<BannerTabContentProps> = ({
@@ -54,6 +58,8 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                                                                groupBannerDetails,
                                                                setSelectedRows,
                                                                initialData,
+                                                               images,
+                                                               onAddNewImageClick
                                                            }) => {
     return (
         <TabContext value={tabIndex.toString()}>
@@ -62,8 +68,9 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                 tabs={[
                     { label: 'Основні', value: '0' },
                     { label: 'Дата', value: '1' },
-                    { label: 'Клієнти', value: '2' },
-                    { label: 'Додатково', value: '3' },
+                    { label: 'Зображення', value: '2'},
+                    { label: 'Клієнти', value: '3' },
+                    { label: 'Додатково', value: '4' },
                 ]}
             />
             <TabPanel value="0">
@@ -146,6 +153,15 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
             </TabPanel>
             <TabPanel value="2">
                 <Box className="dataGridContainer">
+                    <ImageDataGrid
+                        height='500px'
+                        images={images}
+                        onAddNewImageClick={onAddNewImageClick}
+                    />
+                </Box>
+            </TabPanel>
+            <TabPanel value="3">
+                <Box className="dataGridContainer">
                     {selectedRows.length > 0 && (
                         <Box className="selectedItemsContainer">
                             <Box className="textContainer">
@@ -161,7 +177,7 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                         </Box>
                     )}
                     {customTable({
-                        height: '100%',
+                        height: '500px',
                         columns: columns,
                         rows: rows,
                         toolbar: toolbar,
@@ -172,7 +188,7 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                     })}
                 </Box>
             </TabPanel>
-            <TabPanel value="3">
+            <TabPanel value="4">
                 {initialData && (
                     <CustomTextField
                         label="Дата створення"

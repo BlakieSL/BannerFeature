@@ -30,6 +30,8 @@ import SelectGroupBannerModal from './selectGroupBannerModal';
 import ConfirmDialog from './confirmModal';
 import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 import BannerTabContent from "../helperComponents/BannerContent";
+import ImageModal from "./imageModal";
+import {createMultipleImages, fetchBannerImages} from "../../../actions/imageActions";
 
 interface BannerModalProps {
     open: boolean;
@@ -44,22 +46,24 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const typeBanners = useSelector((state: RootState) => state.typeBannerReducer.typeBanners);
     const statuses = useSelector((state: RootState) => state.statusListReducer.statuses);
     const channels = useSelector((state: RootState) => state.channelListReducer.channels);
-    const [tabIndex, setTabIndex] = useState(0);
-    const [isGroupClientModalOpen, setIsGroupClientModalOpen] = useState(false);
-    const [isClientModalOpen, setIsClientModalOpen] = useState(false);
-    const [error, setError] = useState('');
-    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
-    const [isSelectGroupOpen, setIsSelectGroupOpen] = useState(false);
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
-    const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
-    const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+    const images = useSelector((state: RootState) => state.imageListReducer.bannerImages);
     const initialBannerState: BannerDto = {
         codeGroupBanner: groupBannerDetails.codeGroupBanner,
     };
     const [banner, setBanner] = useState<BannerDto>(initialData || initialBannerState);
     const [bannerCopy, setBannerCopy] = useState<BannerDto | null> (null);
+    const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
+    const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
+    const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+    const [tabIndex, setTabIndex] = useState(0);
+    const [error, setError] = useState('');
+    const [hasChanges, setHasChanges] = useState(false);
+    const [isGroupClientModalOpen, setIsGroupClientModalOpen] = useState(false);
+    const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [isSelectGroupOpen, setIsSelectGroupOpen] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -164,6 +168,23 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         setSelectedRows([]);
         setHasChanges(true);
     }
+
+    const handleImagesSave = async (selectedImages: any[]) => {
+        try {
+            const typeValue = 10;
+            const codeValue = banner.codeBanner;
+            const typeRef = 0;
+
+            const files = selectedImages.map(i => i.file);
+            await createMultipleImages(typeValue, codeValue, typeRef, files);
+            dispatch(fetchBannerImages(banner.codeBanner))
+
+            setHasChanges(true);
+        } catch (error) {
+            setError('Помилка завантаження зображень.');
+            setIsErrorModalOpen(true);
+        }
+    };
 
     const handleGroupClientsSave = (selectedGroups: SimplifiedGroupClientDto[]) => {
         setBanner((prevBanner) => ({
@@ -363,6 +384,8 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                             groupBannerDetails={groupBannerDetails}
                             setSelectedRows={setSelectedRows}
                             initialData={initialData}
+                            images={images}
+                            onAddNewImageClick={() => setIsImageModalOpen(true)}
                         />
                     </Box>
                     <Box className={classes.footerActions}>
@@ -394,6 +417,11 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                         open={isClientModalOpen}
                         onClose={() => setIsClientModalOpen(false)}
                         onSave={handleClientsSave}
+                    />
+                    <ImageModal
+                        open={isImageModalOpen}
+                        onClose={() => setIsImageModalOpen(false)}
+                        onSave={handleImagesSave}
                     />
                 </Box>
             </Modal>

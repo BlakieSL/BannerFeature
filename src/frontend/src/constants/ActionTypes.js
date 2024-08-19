@@ -66,3 +66,8 @@ export const SET_GROUP_CLIENT = 'SET_GROUP_CLIENT';
 //Designation Action Types
 export const SET_STATUSES = 'SET_STATUSES';
 export const SET_CHANNELS = 'SET_CHANNELS';
+
+//Image Action Types
+export const SET_IMAGES = 'SET_IMAGES';
+export const SET_BANNER_IMAGES = 'SET_BANNER_IMAGES';
+export const CLEAR_IMAGES = 'CLEAR_IMAGES';

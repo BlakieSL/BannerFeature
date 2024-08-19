@@ -20,6 +20,7 @@ import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 import {fetchChannels, fetchStatuses} from "../../../actions/designationActions";
 import Loader from "../../loader/Loader";
 import {fetchTypeBanners} from "../../../actions/typeBannerActions";
+import {clearImages, fetchBannerImages} from "../../../actions/imageActions";
 
 const BannerList = () => {
     const dispatch = useDispatch();
@@ -92,6 +93,7 @@ const BannerList = () => {
     const handleRowClick = async (params: any) => {
         setLoading(true);
         await dispatch(fetchBannerById(params.row.codeBanner));
+        await dispatch(fetchBannerImages(params.row.codeBanner));
         setLoading(false);
         setIsEditing(true);
         setIsModalOpen(true);
@@ -102,6 +104,7 @@ const BannerList = () => {
             await dispatch(fetchBannersByGroup(groupId))
         }
         dispatch(clearBanner());
+        dispatch(clearImages());
         setIsModalOpen(false);
         setIsEditing(false);
     }
@@ -184,7 +187,7 @@ const BannerList = () => {
     ];
 
     if (loading) {
-        return <Loader/>;
+        return <Loader/>
     }
 
     function toolbar() {

@@ -19,6 +19,7 @@ interface CustomTableParams {
     getRowClassName?: (params: GridRowParams) => string;
     getCellClassName?: (params: GridCellParams) => string;
     onRowClick?: (params: GridRowParams) => void; //added
+    rowHeight?: number; // added
 }
 
 const StyledDataGrid = styled(DataGrid)(({theme}) => ({
@@ -127,6 +128,7 @@ const customTable = (params: CustomTableParams) => {
                     getRowClassName={params.getRowClassName}
                     getCellClassName={params.getCellClassName}
                     onRowClick={params.onRowClick}
+                    rowHeight={params.rowHeight}
                 />
             </ThemeProvider>
         </Box>
