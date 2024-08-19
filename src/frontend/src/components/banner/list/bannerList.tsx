@@ -254,7 +254,7 @@ const BannerList = () => {
                 onClose={handleModalClose}
                 {...(isEditing && { initialData: currentBanner })}
                 groupBannerDetails={groupBannerDetails}
-                title={isEditing ? 'Оновити новину' : 'Додати новину'}
+                title={isEditing ? 'Редагувати новину' : 'Додати новину'}
             />
             <FilterModal
                 open={isFilterModalOpen}

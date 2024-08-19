@@ -2,6 +2,7 @@ package com.web.invoice.primarydb.controller;
 
 import com.web.invoice.primarydb.dto.ImageDto;
 import com.web.invoice.primarydb.dto.ImageDtoRequest;
+import com.web.invoice.primarydb.dto.MultipleImagesDeleteDto;
 import com.web.invoice.primarydb.dto.MultipleImagesDtoRequest;
 import com.web.invoice.primarydb.exception.ValidationException;
 import com.web.invoice.primarydb.service.ImageService;
@@ -52,5 +53,9 @@ public class ImageController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
+    @DeleteMapping
+    public ResponseEntity<Void> deleteImages(@RequestBody MultipleImagesDeleteDto dto) {
+        imageService.deleteMultipleImages(dto);
+        return ResponseEntity.noContent().build();
+    }
 }

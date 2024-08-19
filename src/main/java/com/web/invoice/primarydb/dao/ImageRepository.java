@@ -16,5 +16,4 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
             " WHERE image.typeValue = :typeValue AND image.codeValue = :codeValue")
     Integer findTopNumByTypeValueAndCodeValueOrderByNumDesc(@Param("typeValue") int typeValue, @Param("codeValue") int codeValue);
 
-
 }

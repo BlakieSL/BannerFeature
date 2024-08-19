@@ -35,6 +35,9 @@ interface BannerTabContentProps {
     initialData?: BannerDto;
     images: any[];
     onAddNewImageClick: () => void;
+    onSelectionChange?: (selection: Array<any>) => void;
+    selectedImages: GridRowSelectionModel;
+    handleDeleteSelectedImage: () => void;
 }
 
 const BannerTabContent: React.FC<BannerTabContentProps> = ({
@@ -59,7 +62,10 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                                                                setSelectedRows,
                                                                initialData,
                                                                images,
-                                                               onAddNewImageClick
+                                                               onAddNewImageClick,
+                                                               onSelectionChange,
+                                                               selectedImages,
+                                                               handleDeleteSelectedImage
                                                            }) => {
     return (
         <TabContext value={tabIndex.toString()}>
@@ -153,10 +159,27 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
             </TabPanel>
             <TabPanel value="2">
                 <Box className="dataGridContainer">
+                    {selectedImages.length > 0 && (
+                        <Box className="selectedItemsContainer">
+                            <Box className="textContainer">
+                                <Typography variant="body1">
+                                    {selectedImages.length} вибрано
+                                </Typography>
+                            </Box>
+                            <Box className="deleteIcon">
+                                <IconButton aria-label="delete" onClick={handleDeleteSelectedImage}>
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Box>
+                        </Box>
+                    )}
                     <ImageDataGrid
                         height='500px'
                         images={images}
+                        disableButton={initialData ? false : true}
                         onAddNewImageClick={onAddNewImageClick}
+                        onSelectionChange={onSelectionChange}
+                        checkboxSelection={true}
                     />
                 </Box>
             </TabPanel>

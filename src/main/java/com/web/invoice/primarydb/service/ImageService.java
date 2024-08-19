@@ -3,6 +3,7 @@ package com.web.invoice.primarydb.service;
 import com.web.invoice.primarydb.dao.ImageRepository;
 import com.web.invoice.primarydb.dto.ImageDto;
 import com.web.invoice.primarydb.dto.ImageDtoRequest;
+import com.web.invoice.primarydb.dto.MultipleImagesDeleteDto;
 import com.web.invoice.primarydb.dto.MultipleImagesDtoRequest;
 import com.web.invoice.primarydb.mapper.ImageMapper;
 import com.web.invoice.primarydb.model.Image;
@@ -52,6 +53,21 @@ public class ImageService {
         for (MultipartFile imageFile : dto.getImageFiles()) {
             singleDto.setImageFile(imageFile);
             saveImage(singleDto);
+        }
+    }
+
+    @Transactional
+    public void deleteImage(int codeImage) {
+        Image image = imageRepository.findById(codeImage)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Image with id: " + codeImage + " not found"));
+        imageRepository.delete(image);
+    }
+
+    @Transactional
+    public void deleteMultipleImages(MultipleImagesDeleteDto dto) {
+        for (Integer codeImage : dto.getCodeImages()) {
+            deleteImage(codeImage);
         }
     }
 

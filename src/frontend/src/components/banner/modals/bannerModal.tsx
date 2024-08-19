@@ -31,7 +31,7 @@ import ConfirmDialog from './confirmModal';
 import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 import BannerTabContent from "../helperComponents/BannerContent";
 import ImageModal from "./imageModal";
-import {createMultipleImages, fetchBannerImages} from "../../../actions/imageActions";
+import {createMultipleImages, deleteImages, fetchBannerImages} from "../../../actions/imageActions";
 
 interface BannerModalProps {
     open: boolean;
@@ -64,6 +64,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const [isSelectGroupOpen, setIsSelectGroupOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [selectedImages, setSelectedImages] = useState<GridRowSelectionModel>([]);
 
     useEffect(() => {
         (async () => {
@@ -167,6 +168,20 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         }));
         setSelectedRows([]);
         setHasChanges(true);
+    }
+
+    const handleDeleteSelectedImage = async () => {
+        if(selectedImages.length > 0) {
+            try{
+                const ids = selectedImages.map(id => Number(id));
+                await deleteImages(ids);
+                setSelectedImages([]);
+                await dispatch(fetchBannerImages(banner.codeBanner));
+            } catch (error : any) {
+                setError(error.response.data || 'Error deleting images');
+                setIsErrorModalOpen(true);
+            }
+        }
     }
 
     const handleImagesSave = async (selectedImages: any[]) => {
@@ -386,6 +401,9 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                             initialData={initialData}
                             images={images}
                             onAddNewImageClick={() => setIsImageModalOpen(true)}
+                            onSelectionChange={(newSelectionModel) => setSelectedImages(newSelectionModel)}
+                            selectedImages={selectedImages}
+                            handleDeleteSelectedImage={handleDeleteSelectedImage}
                         />
                     </Box>
                     <Box className={classes.footerActions}>

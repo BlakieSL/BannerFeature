@@ -9,6 +9,9 @@ interface ImageDataGridProps {
     images: any[];
     onAddNewImageClick?: () => void;
     showButtons?: boolean;
+    disableButton?: boolean;
+    onSelectionChange?: (selection: Array<any>) => void;
+    checkboxSelection?: boolean
 }
 
 const ImageDataGrid: React.FC<ImageDataGridProps> = ({
@@ -16,6 +19,9 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
                                                          height,
                                                          onAddNewImageClick,
                                                          showButtons = true,
+                                                         disableButton = false,
+                                                         onSelectionChange,
+                                                         checkboxSelection
                                                      }) => {
 
     const handleRowClick = (params: GridRowParams) => {
@@ -45,7 +51,7 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
                     component="img"
                     src={`data:image/jpeg;base64,${params.row.image}`}
                     alt="banner"
-                    sx={{ width: '130px'}}
+                    sx={{ width: '100px'}}
                 />
             )
         }
@@ -54,7 +60,7 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
     function toolbar() {
         return quickSearchToolbar(showButtons
             ? [
-                { func: onAddNewImageClick, text: 'Вибір зображення', disabled: false },
+                { func: onAddNewImageClick, text: 'Вибір зображення', disabled: disableButton },
             ]
             : []
         );
@@ -62,13 +68,15 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
 
     return customTable({
         height: height,
+        rowHeight: 100,
         columns: columns,
         rows: images,
         loading: false,
         toolbar: toolbar,
         getRowId: (row : any) => row.codeImage,
         onRowClick: handleRowClick,
-        rowHeight: 130
+        onSelectionChange: onSelectionChange,
+        checkboxSelection: checkboxSelection
     })
 };
 

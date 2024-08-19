@@ -69,6 +69,11 @@ export const createMultipleImages = async (typeValue, codeValue, typeRef, imageF
         });
 };
 
+export const deleteImages = async(ids) => {
+    const payload = { codeImages: ids }
+    await axios.delete('/api/images', { data: payload })
+}
+
 export const clearImages = () => ({
     type: CLEAR_IMAGES
 })

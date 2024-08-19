@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.web.invoice.primarydb.component.JsonPatchHelper;
+import com.web.invoice.primarydb.dao.ImageRepository;
 import com.web.invoice.primarydb.dto.*;
 import com.web.invoice.primarydb.dao.BannerRepository;
 import com.web.invoice.primarydb.dao.GroupBannerRepository;
@@ -11,10 +12,12 @@ import com.web.invoice.primarydb.exception.BannerAlreadySentException;
 import com.web.invoice.primarydb.mapper.BannerMapper;
 import com.web.invoice.primarydb.model.Banner;
 import com.web.invoice.primarydb.model.GroupBanner;
+import com.web.invoice.primarydb.model.Image;
 import org.springframework.stereotype.Service;
 
 
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -27,19 +30,22 @@ public class BannerService {
     private final JsonPatchHelper jsonPatchHelper;
     private final BannerRepository bannerRepository;
     private final GroupBannerRepository groupBannerRepository;
+    private final ImageRepository imageRepository;
 
     public BannerService(
             ValidationHelper validator,
             BannerMapper bannerMapper,
             JsonPatchHelper jsonPatchHelper,
             BannerRepository bannerRepository,
-            GroupBannerRepository groupBannerRepository
+            GroupBannerRepository groupBannerRepository,
+            ImageRepository imageRepository
     ) {
         this.validator = validator;
         this.bannerMapper = bannerMapper;
         this.jsonPatchHelper = jsonPatchHelper;
         this.bannerRepository = bannerRepository;
         this.groupBannerRepository = groupBannerRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Transactional
@@ -80,6 +86,14 @@ public class BannerService {
                     "Новина вже відправлена(статус відправлено (3)). Видалення заборонено");
         }
         bannerRepository.delete(banner);
+        removeAssociatedImages(codeBanner);
+    }
+
+    @Transactional
+    public void removeAssociatedImages(int codeBanner) {
+        List<Image> images = imageRepository.findByTypeValueAndCodeValue(10, codeBanner)
+                .orElse(Collections.emptyList());
+        imageRepository.deleteAll(images);
     }
 
     @Transactional
@@ -112,7 +126,7 @@ public class BannerService {
     }
 
     @Transactional
-    public void deleteBanners(final BannersDeletionDto dto) {
+    public void deleteBanners(BannersDeletionDto dto) {
         for(Integer codeBanner: dto.getCodeBanners()) {
             try {
                 deleteBanner(codeBanner);

@@ -87,7 +87,7 @@ public class BannerController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteBanner(@RequestBody BannersDeletionDto dto) {
+    public ResponseEntity<Void> deleteBanners(@RequestBody BannersDeletionDto dto) {
         bannerService.deleteBanners(dto);
         return ResponseEntity.noContent().build();
     }
