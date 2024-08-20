@@ -9,8 +9,9 @@ import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import {BannerDto, BannerType, GroupBanner} from '../../../types';
 import classes from '../styles/bannerModal.module.scss';
 import {customTable} from "../../standart-element/DynamicElement";
-import ImageList from "../image/imageList";
+import ImageList from "../list/imageList";
 import ImageDataGrid from "./ImageDataGrid";
+import {checkAccessEvent} from "../../navbar/Navbar";
 
 interface BannerTabContentProps {
     tabIndex: number;
@@ -110,11 +111,12 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                     value={banner.status ?? ''}
                     name="status"
                     options={statuses.map((status: any) => ({
-                        value: status.shortValue,
+                        value: String(status.shortValue),
                         label: status.description,
                     }))}
                     onChange={handleSingleSelectChange}
-                    required={false}
+                    required={true}
+                    disabled={!checkAccessEvent(219)}
                 />
                 <CustomTextField
                     label="Група банера"
@@ -176,7 +178,6 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                     <ImageDataGrid
                         height='500px'
                         images={images}
-                        disableButton={initialData ? false : true}
                         onAddNewImageClick={onAddNewImageClick}
                         onSelectionChange={onSelectionChange}
                         checkboxSelection={true}
@@ -222,9 +223,9 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                 <CustomSelectField
                     label="Канал відправки"
                     value={banner.channel ?? ''}
-                    name="status"
+                    name="channel"
                     options={channels.map((channel: any) => ({
-                        value: channel.shortValue,
+                        value: String(channel.shortValue),
                         label: channel.description,
                     }))}
                     onChange={handleSingleSelectChange}

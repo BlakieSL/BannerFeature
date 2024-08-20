@@ -82,7 +82,7 @@ export const Navbar = () => {
     };
 
     const groupBanners = () => {
-        return checkAccessEvent(173) &&
+        return checkAccessEvent(217) &&
             <MenuItem onClick={handleCloseRef}>
                 <NavLink
                     to="/group-banners"
@@ -94,7 +94,7 @@ export const Navbar = () => {
     };
 
     const images = () => {
-        return checkAccessEvent(173) &&
+        return checkAccessEvent(217) &&
             <MenuItem onClick={handleCloseRef}>
                 <NavLink
                     to="/images/all"

@@ -6,7 +6,7 @@ import Login from './components/login/Login';
 import WorkplaceStatusList from "./components/workplace-status/list";
 import GroupBannerList from "./components/banner/list/groupBannerList";
 import BannerList from "./components/banner/list/bannerList";
-import ImageList from "./components/banner/image/imageList";
+import ImageList from "./components/banner/list/imageList";
 
 const App = () => {
     const router = () => {

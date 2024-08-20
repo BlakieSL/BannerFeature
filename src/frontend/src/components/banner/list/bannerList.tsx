@@ -21,6 +21,7 @@ import {fetchChannels, fetchStatuses} from "../../../actions/designationActions"
 import Loader from "../../loader/Loader";
 import {fetchTypeBanners} from "../../../actions/typeBannerActions";
 import {clearImages, fetchBannerImages} from "../../../actions/imageActions";
+import {checkAccessEvent} from "../../navbar/Navbar";
 
 const BannerList = () => {
     const dispatch = useDispatch();
@@ -100,6 +101,7 @@ const BannerList = () => {
     }
 
     const handleModalClose = async () => {
+        setLoading(true);
         if(groupId){
             await dispatch(fetchBannersByGroup(groupId))
         }
@@ -107,6 +109,7 @@ const BannerList = () => {
         dispatch(clearImages());
         setIsModalOpen(false);
         setIsEditing(false);
+        setLoading(false)
     }
 
     const handleFilterModalClose = () => {
@@ -248,14 +251,15 @@ const BannerList = () => {
                 onSelectionChange: (newSelectionModel) => setSelectedRows(newSelectionModel),
                 checkboxSelection: groupOperationsEnabled,
             })}
-
-            <BannerModal
-                open={isModalOpen}
-                onClose={handleModalClose}
-                {...(isEditing && { initialData: currentBanner })}
-                groupBannerDetails={groupBannerDetails}
-                title={isEditing ? 'Редагувати новину' : 'Додати новину'}
-            />
+            {checkAccessEvent(218) && (
+                <BannerModal
+                    open={isModalOpen}
+                    onClose={handleModalClose}
+                    {...(isEditing && { initialData: currentBanner })}
+                    groupBannerDetails={groupBannerDetails}
+                    title={isEditing ? 'Редагувати новину' : 'Додати новину'}
+                />
+            )}
             <FilterModal
                 open={isFilterModalOpen}
                 onClose={handleFilterModalClose}

@@ -6,12 +6,17 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.web.invoice.primarydb.dto.GroupBannerDtoRequest;
 import com.web.invoice.primarydb.dto.GroupBannerDto;
 import com.web.invoice.primarydb.exception.ValidationException;
+import com.web.invoice.primarydb.model.ConnectionData;
+import com.web.invoice.primarydb.model.UserPos;
 import com.web.invoice.primarydb.service.GroupBannerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -19,11 +24,13 @@ import java.util.List;
 @RequestMapping(path = "/api/group-banners")
 public class GroupBannerController {
     private final GroupBannerService groupBannerService;
+
     public GroupBannerController(
             GroupBannerService groupBannerService
     ) {
         this.groupBannerService = groupBannerService;
     }
+
 
     @GetMapping
     public ResponseEntity<List<GroupBannerDto>> getAllGroupBanners() {

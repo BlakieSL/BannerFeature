@@ -8,9 +8,10 @@ interface SelectFieldProps {
     options: { value: string | number; label: string }[];
     onChange: any
     required?: boolean;
+    disabled?: boolean;
 }
 
-const CustomSelectField: React.FC<SelectFieldProps> = ({ label, value, name, options, onChange, required = false }) => {
+const CustomSelectField: React.FC<SelectFieldProps> = ({ label, value, name, options, onChange, required = false, disabled = false }) => {
     return (
         <Box className={classes.customBox}>
             <Typography variant='body1' className='label'>
@@ -23,6 +24,7 @@ const CustomSelectField: React.FC<SelectFieldProps> = ({ label, value, name, opt
                 onChange={(e) => onChange(e, name)}
                 name={name}
                 fullWidth
+                disabled={disabled}
             >
                 {options.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -33,5 +35,6 @@ const CustomSelectField: React.FC<SelectFieldProps> = ({ label, value, name, opt
         </Box>
     );
 };
+
 
 export default CustomSelectField;

@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useEffect, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
     Button,
     Box,
@@ -31,7 +31,14 @@ import ConfirmDialog from './confirmModal';
 import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 import BannerTabContent from "../helperComponents/BannerContent";
 import ImageModal from "./imageModal";
-import {createMultipleImages, deleteImages, fetchBannerImages} from "../../../actions/imageActions";
+import {
+    clearPendingImages,
+    createMultipleImages,
+    deleteImages,
+    fetchBannerImages, markImagesForDeletion,
+    removePendingImages
+} from "../../../actions/imageActions";
+import Loader from "../../loader/Loader";
 
 interface BannerModalProps {
     open: boolean;
@@ -47,14 +54,18 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const statuses = useSelector((state: RootState) => state.statusListReducer.statuses);
     const channels = useSelector((state: RootState) => state.channelListReducer.channels);
     const images = useSelector((state: RootState) => state.imageListReducer.bannerImages);
+    const pendingImages = useSelector((state: RootState) => state.pendingImagesReducer.pendingImages);
+    const combinedImages = [...images, ...pendingImages];
     const initialBannerState: BannerDto = {
         codeGroupBanner: groupBannerDetails.codeGroupBanner,
+        status: 0,
     };
     const [banner, setBanner] = useState<BannerDto>(initialData || initialBannerState);
     const [bannerCopy, setBannerCopy] = useState<BannerDto | null> (null);
     const [selectedGroup, setSelectedGroup] = useState<GroupBanner | null>(null);
     const [actionType, setActionType] = useState<'copy' | 'move' | null>(null);
     const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
+    const [imagesToDelete, setImagesToDelete] = useState<number[]>([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [error, setError] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
@@ -65,8 +76,12 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [selectedImages, setSelectedImages] = useState<GridRowSelectionModel>([]);
+    const [loading, setLoading] = useState(false);
+    const isFormValid = () => !!(banner.title && banner.codeTypeBanner && banner.codeGroupBanner && banner.clientTitle);
 
     useEffect(() => {
+        console.log(statuses);
+        console.log(channels);
         (async () => {
             if (initialData) {
                 setBanner(initialData);
@@ -172,11 +187,28 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
 
     const handleDeleteSelectedImage = async () => {
         if(selectedImages.length > 0) {
+
+            const pendingImageIds = selectedImages.filter(id => {
+                const image = pendingImages.find(img => img.codeImage === id);
+                return image?.isPending;
+            });
+            const savedImageIds = selectedImages.filter(id => {
+                const image = pendingImages.find(img => img.codeImage === id);
+                return !image?.isPending;
+            });
+
             try{
-                const ids = selectedImages.map(id => Number(id));
-                await deleteImages(ids);
+                if (pendingImageIds.length > 0) {
+                    dispatch(removePendingImages(pendingImageIds));
+                }
+
+                if (savedImageIds.length > 0) {
+                    dispatch(markImagesForDeletion(savedImageIds));
+                    setImagesToDelete(prevState => [...prevState, ...savedImageIds.map(id => Number(id))]);
+                }
+
                 setSelectedImages([]);
-                await dispatch(fetchBannerImages(banner.codeBanner));
+                setHasChanges(true);
             } catch (error : any) {
                 setError(error.response.data || 'Error deleting images');
                 setIsErrorModalOpen(true);
@@ -184,22 +216,23 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         }
     }
 
-    const handleImagesSave = async (selectedImages: any[]) => {
+    const handleImagesSave = async (codeBanner : number) => {
         try {
             const typeValue = 10;
-            const codeValue = banner.codeBanner;
+            const codeValue = codeBanner;
             const typeRef = 0;
 
-            const files = selectedImages.map(i => i.file);
+            const files = pendingImages.map(i => i.file);
             await createMultipleImages(typeValue, codeValue, typeRef, files);
-            dispatch(fetchBannerImages(banner.codeBanner))
-
-            setHasChanges(true);
         } catch (error) {
             setError('Помилка завантаження зображень.');
             setIsErrorModalOpen(true);
         }
     };
+
+    const handlePendingImagesSave = () => {
+        setHasChanges(true);
+    }
 
     const handleGroupClientsSave = (selectedGroups: SimplifiedGroupClientDto[]) => {
         setBanner((prevBanner) => ({
@@ -225,17 +258,28 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
 
     const handleSave = async () => {
         try {
+            let codeBanner: number | undefined = banner.codeBanner;
+
             if (initialData) {
                 const changedFields = getChangedFields();
-                console.log(bannerCopy);
-                console.log(changedFields);
                 if (Object.keys(changedFields).length > 0) {
                     await updateBanner(banner.codeBanner!, changedFields);
                 }
             } else {
                 const bannerRequest = convertBannerToRequest(banner);
-                await createBanner(bannerRequest);
+                codeBanner = await createBanner(bannerRequest);
             }
+
+            if (pendingImages.length > 0 && codeBanner) {
+                await handleImagesSave(codeBanner);
+                await dispatch(fetchBannerImages(codeBanner))
+            }
+
+            if (imagesToDelete.length > 0) {
+                await deleteImages(imagesToDelete);
+                setImagesToDelete([]);
+            }
+
             onClose();
         } catch (error: any) {
             if (error.response) {
@@ -271,6 +315,16 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         } else {
             setBanner(initialBannerState);
         }
+
+        if(pendingImages.length > 0) {
+            dispatch(clearPendingImages());
+        }
+
+        if (banner.codeBanner) {
+            dispatch(fetchBannerImages(banner.codeBanner));
+        }
+
+        setImagesToDelete([]);
         setHasChanges(true);
     }
 
@@ -301,8 +355,6 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         setIsConfirmOpen(false);
         onClose();
     }
-
-    const isFormValid = () => !!(banner.title && banner.codeTypeBanner && banner.codeGroupBanner && banner.clientTitle);
 
     const columns: GridColDef[] = [
         {
@@ -363,6 +415,10 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         );
     }
 
+    if (loading) {
+        return <Loader/>
+    }
+
     return (
         <>
             <Modal
@@ -399,7 +455,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                             groupBannerDetails={groupBannerDetails}
                             setSelectedRows={setSelectedRows}
                             initialData={initialData}
-                            images={images}
+                            images={combinedImages}
                             onAddNewImageClick={() => setIsImageModalOpen(true)}
                             onSelectionChange={(newSelectionModel) => setSelectedImages(newSelectionModel)}
                             selectedImages={selectedImages}
@@ -439,7 +495,7 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
                     <ImageModal
                         open={isImageModalOpen}
                         onClose={() => setIsImageModalOpen(false)}
-                        onSave={handleImagesSave}
+                        onSave={handlePendingImagesSave}
                     />
                 </Box>
             </Modal>

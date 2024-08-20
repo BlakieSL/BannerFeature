@@ -1,5 +1,11 @@
 import axios from "axios";
-import {CLEAR_IMAGES, SET_BANNER_IMAGES, SET_IMAGES} from "../constants/ActionTypes";
+import {
+    ADD_PENDING_IMAGE,
+    CLEAR_IMAGES, CLEAR_PENDING_IMAGES, MARK_IMAGES_FOR_DELETION,
+    REMOVE_PENDING_IMAGE,
+    SET_BANNER_IMAGES,
+    SET_IMAGES
+} from "../constants/ActionTypes";
 
 export const fetchAllBannersImages = () => async dispatch => {
     try{
@@ -77,3 +83,22 @@ export const deleteImages = async(ids) => {
 export const clearImages = () => ({
     type: CLEAR_IMAGES
 })
+
+export const clearPendingImages = () => ({
+    type: CLEAR_PENDING_IMAGES
+})
+export const addPendingImage = (image) => ({
+    type: ADD_PENDING_IMAGE,
+    payload: image,
+});
+
+export const removePendingImages = (codeImages) => ({
+    type: REMOVE_PENDING_IMAGE,
+    payload: codeImages,
+});
+
+
+export const markImagesForDeletion = (codeImages) => ({
+    type: MARK_IMAGES_FOR_DELETION,
+    payload: codeImages,
+});

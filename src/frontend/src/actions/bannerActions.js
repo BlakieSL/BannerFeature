@@ -57,7 +57,8 @@ export const filterBanners = (filter) => async dispatch => {
 }
 
 export const createBanner = async (banner) => {
-    await axios.post('/api/banners', banner);
+    const response = await axios.post('/api/banners', banner);
+    return response.data;
 }
 
 export const updateBanner = async (id, patch) => {

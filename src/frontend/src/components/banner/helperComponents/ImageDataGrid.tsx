@@ -51,7 +51,7 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
                     component="img"
                     src={`data:image/jpeg;base64,${params.row.image}`}
                     alt="banner"
-                    sx={{ width: '100px'}}
+                    sx={{ width: '80px'}}
                 />
             )
         }
@@ -68,7 +68,7 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
 
     return customTable({
         height: height,
-        rowHeight: 100,
+        rowHeight: 80,
         columns: columns,
         rows: images,
         loading: false,

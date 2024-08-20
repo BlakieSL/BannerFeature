@@ -51,6 +51,7 @@ import typeBannerReducer from "../bannerReducers/typeBannerReducer";
 import statusListReducer from "../bannerReducers/statusListReducer";
 import channelListReducer from "../bannerReducers/channelListReducer";
 import imageListReducer from "../bannerReducers/imageListReducer";
+import pendingImagesReducer from "../bannerReducers/pendingImagesReducer";
 
 const rootReducer = combineReducers({
     activeWindow,
@@ -104,6 +105,7 @@ const rootReducer = combineReducers({
     statusListReducer: statusListReducer,
     channelListReducer: channelListReducer,
     imageListReducer: imageListReducer,
+    pendingImagesReducer: pendingImagesReducer,
 })
 
 export default rootReducer

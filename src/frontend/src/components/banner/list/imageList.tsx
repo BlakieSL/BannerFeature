@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {fetchAllBannersImages} from "../../../actions/imageActions";
 import Loader from "../../loader/Loader";
 import {GridColDef, GridRowParams} from "@mui/x-data-grid";
-import {Box} from "@mui/material";
+import {Box, Checkbox, FormControlLabel, Typography} from "@mui/material";
 import {customTable} from "../../standart-element/DynamicElement";
 import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 import ImageDataGrid from "../helperComponents/ImageDataGrid";
@@ -28,6 +28,9 @@ const ImageList = () => {
 
     return (
         <Box>
+            <Box className='headerContainerBase'>
+                <Typography variant='h4'>Зображення банерів</Typography>
+            </Box>
            <ImageDataGrid
                images={images}
                height='calc(100vh - 56px)'

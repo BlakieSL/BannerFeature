@@ -8,16 +8,19 @@ import {
     Typography
 } from "@mui/material";
 import ImageDataGrid from "../helperComponents/ImageDataGrid";
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+import { addPendingImage } from "../../../actions/imageActions";
 
 interface ImageModalProps {
     open: boolean;
     onClose: () => void;
-    onSave: (uploadedImages: any[]) => void;
+    onSave: () => void;
 }
 
 const ImageModal: FC<ImageModalProps> = ({ open, onClose, onSave }) => {
-    const [uploadedImages, setUploadedImages] = useState<any[]>([]);
+    const dispatch = useDispatch();
+    const [uploadedImages, setUploadedImages] = useState<{ codeImage: number; image: string; file: File }[]>([]);
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
     const [fileInputKey, setFileInputKey] = useState(0);
 
@@ -29,10 +32,11 @@ const ImageModal: FC<ImageModalProps> = ({ open, onClose, onSave }) => {
             reader.onloadend = () => {
                 const newImage = {
                     codeImage: uploadedImages.length + 1,
-                    image: reader.result?.toString().split(',')[1],
+                    image: reader.result?.toString().split(',')[1]!,
                     file: file,
+                    isPending: true,
                 };
-                setUploadedImages((prev) => [...prev, newImage]);
+                setUploadedImages((prevImages) => [...prevImages, newImage]);
             };
 
             reader.readAsDataURL(file);
@@ -40,13 +44,14 @@ const ImageModal: FC<ImageModalProps> = ({ open, onClose, onSave }) => {
     };
 
     const handleRemoveSelectedImages = () => {
-        setUploadedImages((prev) => prev.filter((image) => !selectedRows.includes(image.codeImage)));
+        setUploadedImages((prevImages) => prevImages.filter(image => !selectedRows.includes(image.codeImage)));
         setSelectedRows([]);
         setFileInputKey(prevKey => prevKey + 1);
     };
 
     const handleSave = () => {
-        onSave(uploadedImages);
+        uploadedImages.forEach(image => dispatch(addPendingImage(image)));
+        onSave();
         handleClose();
     };
 

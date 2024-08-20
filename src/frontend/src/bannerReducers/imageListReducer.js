@@ -1,4 +1,11 @@
-import {CLEAR_IMAGES, SET_BANNER_IMAGES, SET_BANNERS, SET_IMAGES} from "../constants/ActionTypes";
+import {
+    ADD_PENDING_IMAGE,
+    CLEAR_IMAGES, MARK_IMAGES_FOR_DELETION,
+    REMOVE_PENDING_IMAGE,
+    SET_BANNER_IMAGES,
+    SET_BANNERS,
+    SET_IMAGES
+} from "../constants/ActionTypes";
 
 const initialState = {
     allImages: [],
@@ -21,6 +28,11 @@ const imageListReducer = (state = initialState, action) => {
             return {
                 ...state,
                 bannerImages: [],
+            }
+        case MARK_IMAGES_FOR_DELETION:
+            return {
+                ...state,
+                bannerImages: state.bannerImages.filter(img => !action.payload.includes(img.codeImage)),
             }
         default:
             return state;
