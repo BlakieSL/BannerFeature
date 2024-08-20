@@ -1,9 +1,6 @@
 package com.web.invoice.primarydb.mapper;
 
-import com.web.invoice.primarydb.dao.ClientRepository;
-import com.web.invoice.primarydb.dao.GroupBannerRepository;
-import com.web.invoice.primarydb.dao.GroupClientRepository;
-import com.web.invoice.primarydb.dao.TypeBannerRepository;
+import com.web.invoice.primarydb.dao.*;
 import com.web.invoice.primarydb.dto.*;
 import com.web.invoice.primarydb.model.*;
 import org.mapstruct.*;
@@ -17,6 +14,9 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", imports = { LocalDate.class, LocalDateTime.class, DateTimeFormatter.class })
 public abstract class BannerMapper {
+    @Autowired
+    private BannerRepository bannerRepository;
+
     @Autowired
     private TypeBannerRepository typeBannerRepository;
 
@@ -39,6 +39,8 @@ public abstract class BannerMapper {
     public abstract BannerDetailedDto toDetailedDto(Banner banner);
 
     @Mapping(source = "typeBanner", target = "codeTypeBanner", qualifiedByName = "mapTypeBannerToCode")
+    @Mapping(target = "lastUserCode", ignore = true)
+    @Mapping(target = "lastUserFio", ignore = true)
     public abstract BannerSummaryDto toSummaryDto(Banner banner);
 
     @Mapping(source = "codeTypeBanner", target = "typeBanner", qualifiedByName = "mapTypeBanner")
@@ -128,6 +130,18 @@ public abstract class BannerMapper {
         dto.setSingleClients(singleClients);
 
         mapDetailDataToDto(banner, dto);
+    }
+
+    @AfterMapping
+    protected void mapLastUser(@MappingTarget BannerSummaryDto dto, Banner banner) {
+        Optional<List<Object[]>> result = bannerRepository.findLastUserThatWorkedOnBannerNative(banner.getCodeBanner());
+
+        if (result.isPresent() && !result.get().isEmpty()) {
+            Object[] userData = result.get().get(0);
+
+            dto.setLastUserCode((Integer) userData[0]);
+            dto.setLastUserFio((String) userData[1]);
+        }
     }
 
 

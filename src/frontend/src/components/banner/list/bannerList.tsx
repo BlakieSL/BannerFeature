@@ -73,7 +73,6 @@ const BannerList = () => {
         }
     }, [groupBannerDetails, groupId]);
 
-
     const handleDeleteSelected = async () => {
         if (selectedRows.length > 0) {
             try {
@@ -186,7 +185,17 @@ const BannerList = () => {
             headerAlign: 'left',
             align: 'left',
             valueGetter: (params) => getStatusDescription(params.row.status),
-        }
+        },
+        {
+            field: 'lastUser',
+            headerName: 'Останній користувач',
+            type: 'string',
+            flex: 1,
+            disableColumnMenu: true,
+            headerAlign: 'left',
+            align: 'left',
+            valueGetter: (params) => `${params.row.lastUserCode || ''} ${params.row.lastUserFio || ''}`.trim(),
+        },
     ];
 
     if (loading) {
