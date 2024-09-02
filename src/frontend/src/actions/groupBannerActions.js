@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {
     SET_GROUP_BANNERS,
-    SET_GROUP_BANNER
+    SET_GROUP_BANNER, SET_BANNERS
 } from '../constants/ActionTypes';
 
 export const fetchGroupBanners = () => async dispatch => {
@@ -9,7 +9,11 @@ export const fetchGroupBanners = () => async dispatch => {
         const response = await axios.get('/api/group-banners');
         dispatch({ type: SET_GROUP_BANNERS, payload: response.data });
     } catch (error) {
-        console.error('Error fetching group banners:', error);
+        if (error.response && error.response.status === 404) {
+            dispatch({ type: SET_GROUP_BANNERS, payload: [] });
+        } else {
+            console.error('Error fetching group banners:', error);
+        }
     }
 }
 

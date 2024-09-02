@@ -34,5 +34,6 @@ public class BarcodeClient {
     private String pincode;
 
     @Column(name = "add_info")
+    @Transient
     private String addInfo;
 }

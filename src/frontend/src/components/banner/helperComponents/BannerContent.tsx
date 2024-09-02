@@ -113,11 +113,13 @@ const BannerTabContent: React.FC<BannerTabContentProps> = ({
                     options={statuses.map((status: any) => ({
                         value: String(status.shortValue),
                         label: status.description,
+                        disabled: String(status.shortValue) === '3' && !checkAccessEvent(220),
                     }))}
                     onChange={handleSingleSelectChange}
                     required={true}
                     disabled={!checkAccessEvent(219)}
                 />
+
                 <CustomTextField
                     label="Група банера"
                     value={groupBannerDetails.name ?? ''}

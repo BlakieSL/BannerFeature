@@ -84,18 +84,23 @@ public class Client {
     private Short typeCard;
 
     @Column(name = "id_external")
+    @Transient
     private String idExternal;
 
     @Column(name = "phone")
+    @Transient
     private String phone;
 
     @Column(name = "email")
+    @Transient
     private String email;
 
     @Column(name = "address")
+    @Transient
     private String address;
 
     @Column(name = "add_info")
+    @Transient
     private String addInfo;
 
     @OneToMany(mappedBy = "client",cascade = CascadeType.REMOVE)

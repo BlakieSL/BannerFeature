@@ -5,7 +5,7 @@ interface SelectFieldProps {
     label: string;
     value: string | number;
     name: string;
-    options: { value: string | number; label: string }[];
+    options: { value: string | number; label: string; disabled?: boolean; }[];
     onChange: any
     required?: boolean;
     disabled?: boolean;
@@ -27,7 +27,7 @@ const CustomSelectField: React.FC<SelectFieldProps> = ({ label, value, name, opt
                 disabled={disabled}
             >
                 {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
+                    <MenuItem key={option.value} value={option.value} disabled={option.disabled}>
                         {option.label}
                     </MenuItem>
                 ))}

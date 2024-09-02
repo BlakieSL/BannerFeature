@@ -22,6 +22,7 @@ import Loader from "../../loader/Loader";
 import {fetchTypeBanners} from "../../../actions/typeBannerActions";
 import {clearImages, fetchBannerImages} from "../../../actions/imageActions";
 import {checkAccessEvent} from "../../navbar/Navbar";
+import ConfirmDialog from "../modals/confirmModal";
 
 const BannerList = () => {
     const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const BannerList = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
     const [loading, setLoading] = useState(true);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [groupOperationsEnabled, setGroupOperationsEnabled] = useState(false);
     const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
@@ -74,6 +76,7 @@ const BannerList = () => {
     }, [groupBannerDetails, groupId]);
 
     const handleDeleteSelected = async () => {
+        setIsConfirmOpen(false);
         if (selectedRows.length > 0) {
             try {
                 const ids = selectedRows.map(id => Number(id));
@@ -184,11 +187,15 @@ const BannerList = () => {
             disableColumnMenu: true,
             headerAlign: 'left',
             align: 'left',
-            valueGetter: (params) => getStatusDescription(params.row.status),
+            valueGetter: (params) => {
+                const statusDescription = getStatusDescription(params.row.status);
+                const sendResult = params.row.sendResult !== null ? params.row.sendResult : 'невідомо';
+                return `${statusDescription} (${sendResult})`;
+            }
         },
         {
             field: 'lastUser',
-            headerName: 'Останній користувач',
+            headerName: 'Автор',
             type: 'string',
             flex: 1,
             disableColumnMenu: true,
@@ -220,61 +227,69 @@ const BannerList = () => {
     }
 
     return (
-        <Box>
-            <Link to='/group-banners'>назад до груп</Link>
-            <Box className='headerContainerBase'>
-                <Typography variant='h4'>{title}</Typography>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={groupOperationsEnabled}
-                            onChange={() => setGroupOperationsEnabled(!groupOperationsEnabled)}
-                        />
-                    }
-                    label='Групові операції: '
-                    labelPlacement='start'
+        <>
+            <Box>
+                <Link to='/group-banners'>назад до груп</Link>
+                <Box className='headerContainerBase'>
+                    <Typography variant='h4'>{title}</Typography>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={groupOperationsEnabled}
+                                onChange={() => setGroupOperationsEnabled(!groupOperationsEnabled)}
+                            />
+                        }
+                        label='Групові операції: '
+                        labelPlacement='start'
+                    />
+                </Box>
+                {groupOperationsEnabled && selectedRows.length > 0 && (
+                    <Box className='selectedItemsContainer'>
+                        <Box className='textContainer'>
+                            <Typography variant='body1'>
+                                {selectedRows.length} вибрано
+                            </Typography>
+                        </Box>
+                        <Box className='deleteIcon'>
+                            <IconButton aria-label='delete' onClick={() => setIsConfirmOpen(true)}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                )}
+                {customTable({
+                    height: 'calc(100vh - 204px)',
+                    columns: columns,
+                    rows: banners,
+                    toolbar: toolbar,
+                    loading: false,
+                    getRowId: (row : any) => row.codeBanner,
+                    onRowClick: handleRowClick,
+                    onSelectionChange: (newSelectionModel) => setSelectedRows(newSelectionModel),
+                    checkboxSelection: groupOperationsEnabled,
+                })}
+                {checkAccessEvent(218) && (
+                    <BannerModal
+                        open={isModalOpen}
+                        onClose={handleModalClose}
+                        {...(isEditing && { initialData: currentBanner })}
+                        groupBannerDetails={groupBannerDetails}
+                        title={isEditing ? 'Редагувати новину' : 'Додати новину'}
+                    />
+                )}
+                <FilterModal
+                    open={isFilterModalOpen}
+                    onClose={handleFilterModalClose}
+                    codeGroupBanner={groupId ? parseInt(groupId) : undefined}
                 />
             </Box>
-            {groupOperationsEnabled && selectedRows.length > 0 && (
-                <Box className='selectedItemsContainer'>
-                    <Box className='textContainer'>
-                        <Typography variant='body1'>
-                            {selectedRows.length} вибрано
-                        </Typography>
-                    </Box>
-                    <Box className='deleteIcon'>
-                        <IconButton aria-label='delete' onClick={handleDeleteSelected}>
-                            <DeleteIcon />
-                        </IconButton>
-                    </Box>
-                </Box>
-            )}
-            {customTable({
-                height: 'calc(100vh - 204px)',
-                columns: columns,
-                rows: banners,
-                toolbar: toolbar,
-                loading: false,
-                getRowId: (row : any) => row.codeBanner,
-                onRowClick: handleRowClick,
-                onSelectionChange: (newSelectionModel) => setSelectedRows(newSelectionModel),
-                checkboxSelection: groupOperationsEnabled,
-            })}
-            {checkAccessEvent(218) && (
-                <BannerModal
-                    open={isModalOpen}
-                    onClose={handleModalClose}
-                    {...(isEditing && { initialData: currentBanner })}
-                    groupBannerDetails={groupBannerDetails}
-                    title={isEditing ? 'Редагувати новину' : 'Додати новину'}
-                />
-            )}
-            <FilterModal
-                open={isFilterModalOpen}
-                onClose={handleFilterModalClose}
-                codeGroupBanner={groupId ? parseInt(groupId) : undefined}
+            <ConfirmDialog
+                open={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={handleDeleteSelected}
+                description='Ви впевнені, що хочете видалити вибрані новини?'
             />
-        </Box>
+        </>
     );
 }
 

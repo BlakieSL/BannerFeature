@@ -29,7 +29,7 @@ const ImageList = () => {
     return (
         <Box>
             <Box className='headerContainerBase'>
-                <Typography variant='h4'>Зображення банерів</Typography>
+                <Typography variant='h4'>Зображення новин</Typography>
             </Box>
            <ImageDataGrid
                images={images}

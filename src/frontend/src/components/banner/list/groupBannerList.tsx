@@ -71,7 +71,7 @@ const GroupBannerList = () => {
         <Box>
             <Box className='headerContainerBase'>
                 <Typography variant='h4'>
-                    Групи банерів
+                    Групи новин
                 </Typography>
             </Box>
             <GroupBannerDataGrid

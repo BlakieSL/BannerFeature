@@ -48,7 +48,7 @@ class AuthenticationService {
 
     registerSuccessfulLoginForJwt(username, token) {
         sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
-        this.setupAxiosInterceptors(this.createJWTToken(token))
+        this.  setupAxiosInterceptors(this.createJWTToken(token))
     }
 
     createJWTToken(token) {

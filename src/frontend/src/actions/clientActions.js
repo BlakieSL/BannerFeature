@@ -1,18 +1,9 @@
 import axios from 'axios';
 import {
-    SET_CLIENTS,
     SET_CLIENT_BY_PHONE,
-    SET_CLIENTS_BY_BARCODES, SET_CLIENT, CLEAR_CLIENTS
+    SET_CLIENTS_BY_BARCODES,
+    CLEAR_CLIENTS
 } from '../constants/ActionTypes';
-
-export const fetchClients = () => async dispatch => {
-    try {
-        const response = await axios.get('/api/clients');
-        dispatch({ type: SET_CLIENTS, payload: response.data });
-    } catch (error) {
-        console.error('Error fetching clients:', error);
-    }
-}
 
 export const findClientByPhone = (phoneDto) => async dispatch => {
     try {
@@ -29,15 +20,6 @@ export const findClientsByBarcodes = (barcodeDto) => async dispatch => {
         dispatch({ type: SET_CLIENTS_BY_BARCODES, payload: response.data });
     } catch (error) {
         console.error('Error finding clients by barcodes:', error);
-    }
-}
-
-export const fetchClient = (id) => async dispatch => {
-    try{
-        const response = await axios.get(`/api/clients/${id}`);
-        dispatch({type: SET_CLIENT, payload: response.data });
-    } catch(error) {
-        console.log('Error fetching groupClient:', error);
     }
 }
 

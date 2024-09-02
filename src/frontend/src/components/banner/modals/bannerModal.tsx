@@ -80,8 +80,6 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     const isFormValid = () => !!(banner.title && banner.codeTypeBanner && banner.codeGroupBanner && banner.clientTitle);
 
     useEffect(() => {
-        console.log(statuses);
-        console.log(channels);
         (async () => {
             if (initialData) {
                 setBanner(initialData);
@@ -119,7 +117,6 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     };
 
     const convertBannerToRequest = (banner: BannerDto): BannerDtoRequest => {
-        console.log(banner)
         if (!banner.title || !banner.codeTypeBanner || !banner.clientTitle) {
             throw new Error('Required fields are missing');
         }
@@ -147,7 +144,6 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
         bannerRequest.groupClients = banner.groupClients ? Array.from(banner.groupClients).map(gc => gc.codeGroup) : [];
         bannerRequest.singleClients = banner.singleClients ? Array.from(banner.singleClients).map(sc => sc.codeClient) : [];
 
-        console.log(bannerRequest)
         return bannerRequest;
     }
 
@@ -217,17 +213,12 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
     }
 
     const handleImagesSave = async (codeBanner : number) => {
-        try {
-            const typeValue = 10;
-            const codeValue = codeBanner;
-            const typeRef = 0;
+        const typeValue = 10;
+        const codeValue = codeBanner;
+        const typeRef = 0;
 
-            const files = pendingImages.map(i => i.file);
-            await createMultipleImages(typeValue, codeValue, typeRef, files);
-        } catch (error) {
-            setError('Помилка завантаження зображень.');
-            setIsErrorModalOpen(true);
-        }
+        const files = pendingImages.map(i => i.file);
+        await createMultipleImages(typeValue, codeValue, typeRef, files);
     };
 
     const handlePendingImagesSave = () => {
@@ -272,7 +263,8 @@ const BannerModal: FC<BannerModalProps> = ({ open, onClose, initialData, groupBa
 
             if (pendingImages.length > 0 && codeBanner) {
                 await handleImagesSave(codeBanner);
-                await dispatch(fetchBannerImages(codeBanner))
+                await dispatch(fetchBannerImages(codeBanner));
+                dispatch(clearPendingImages());
             }
 
             if (imagesToDelete.length > 0) {

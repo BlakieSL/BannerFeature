@@ -33,28 +33,6 @@ export const fetchBannerImages = (id) => async dispatch => {
     }
 }
 
-export const createImage = async (typeValue, codeValue, typeRef, imageFile, description = "") => {
-    try {
-        const formData = new FormData();
-        formData.append("typeValue", typeValue);
-        formData.append("codeValue", codeValue);
-        formData.append("typeRef", typeRef);
-        formData.append("imageFile", imageFile);
-        if (description) {
-            formData.append("description", description);
-        }
-
-       await axios.post('/api/images', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-
-    } catch (error) {
-        console.log('Error creating image:', error);
-    }
-};
-
 export const createMultipleImages = async (typeValue, codeValue, typeRef, imageFiles, description = "") => {
         const formData = new FormData();
         formData.append("typeValue", typeValue);

@@ -44,7 +44,7 @@ const SelectGroupBannerModal: React.FC<SelectGroupBannerModalProps> = ({ open, o
             }}
             fullWidth maxWidth='lg'
         >
-                <DialogTitle>Виберіть групу банерів</DialogTitle>
+                <DialogTitle>Виберіть групу новин</DialogTitle>
                 <DialogContent>
                     {loading ? <Loader/> : (
                         <GroupBannerDataGrid

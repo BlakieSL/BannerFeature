@@ -16,7 +16,6 @@ import java.util.List;
 @Table(name = "user_pos", schema = "pos")
 @Data
 public class UserPos implements UserDetails {
-
     @Id
     private int codeUser;
 
@@ -32,7 +31,9 @@ public class UserPos implements UserDetails {
     private String fio;
     private int codeShop;
     private short signActivity;
+
     private String cardNumber;
+
     @Transient
     private String originalCardNumber;
 

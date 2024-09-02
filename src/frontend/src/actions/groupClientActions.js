@@ -9,12 +9,3 @@ export const fetchGroupClients = () => async dispatch => {
         console.error('Error fetching groupClients:', error);
     }
 }
-
-export const fetchGroupClient = (id) => async dispatch => {
-    try{
-        const response = await axios.get(`/api/group-clients/${id}`);
-        dispatch({type: SET_GROUP_CLIENT, payload: response.data });
-    } catch(error) {
-        console.log('Error fetching groupClient:', error);
-    }
-}

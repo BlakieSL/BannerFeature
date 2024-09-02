@@ -31,9 +31,10 @@ public class ClientController {
         ClientDto client = clientService.getClientById(id);
         return ResponseEntity.ok(client);
     }
+
     @PostMapping("/find-by-phone")
     public ResponseEntity<ClientDto> findByPhone(@RequestBody ClientFindByPhoneDto dto) {
-        ClientDto client = clientService.findByPhone(dto);
+        ClientDto client = clientService.findTest(dto);
         return ResponseEntity.ok(client);
     }
 

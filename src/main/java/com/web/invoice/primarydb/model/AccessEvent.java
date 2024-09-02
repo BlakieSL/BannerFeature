@@ -22,7 +22,9 @@ public class AccessEvent {
 
     @Transient
     private LinkedHashMap<String, Object> detailAccess;
+
     @Column(name = "detail_access")
+    @Transient
     private String detailAccessText;
 
     @Override

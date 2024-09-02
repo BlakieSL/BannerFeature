@@ -26,10 +26,6 @@ export const fetchBannerById = (id) => async dispatch => {
     }
 }
 
-export const clearBanner = () => ({
-    type: CLEAR_BANNER,
-})
-
 export const fetchBannersByGroup = (codeGroupBanner) => async dispatch => {
     try {
         const response = await axios.get(`/api/banners/group/${codeGroupBanner}`);
@@ -55,6 +51,10 @@ export const filterBanners = (filter) => async dispatch => {
         }
     }
 }
+
+export const clearBanner = () => ({
+    type: CLEAR_BANNER,
+})
 
 export const createBanner = async (banner) => {
     const response = await axios.post('/api/banners', banner);

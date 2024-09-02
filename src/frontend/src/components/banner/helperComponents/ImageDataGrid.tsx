@@ -1,17 +1,25 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import { GridColDef, GridRowParams } from '@mui/x-data-grid';
+import {GridColDef, GridColumnVisibilityModel, GridRowParams} from '@mui/x-data-grid';
 import { customTable } from '../../standart-element/DynamicElement';
 import {quickSearchToolbar} from "../../standart-element/SearchToolbar";
 
 interface ImageDataGridProps {
     height: string;
-    images: any[];
+    images: {
+        codeImage: number;
+        codeValue?: number;
+        image: string;
+        width: number;
+        height: number;
+        fileSize: number;
+    }[];
     onAddNewImageClick?: () => void;
     showButtons?: boolean;
     disableButton?: boolean;
     onSelectionChange?: (selection: Array<any>) => void;
-    checkboxSelection?: boolean
+    checkboxSelection?: boolean;
+    displayBannerCode?: boolean;
 }
 
 const ImageDataGrid: React.FC<ImageDataGridProps> = ({
@@ -21,11 +29,12 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
                                                          showButtons = true,
                                                          disableButton = false,
                                                          onSelectionChange,
-                                                         checkboxSelection
+                                                         checkboxSelection,
+                                                         displayBannerCode = true,
                                                      }) => {
 
-    const handleRowClick = (params: GridRowParams) => {
-        const imageUrl = `data:image/jpeg;base64,${params.row.image}`;
+    const handleImageClick = (imageBase64: string) => {
+        const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
         window.open(imageUrl, '_blank');
     };
 
@@ -37,7 +46,26 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
             maxWidth: 75,
             disableColumnMenu: true,
             headerAlign: 'left',
-            align: 'left'
+            align: 'left',
+            renderCell: (params) => (
+                params.row.codeImage !== undefined
+                    ? params.row.codeImage
+                    : '-'
+            ),
+        },
+        {
+            field: 'codeValue',
+            headerName: 'Код банера',
+            type: 'number',
+            maxWidth: 75,
+            disableColumnMenu: true,
+            headerAlign: 'left',
+            align: 'left',
+            renderCell: (params) => (
+                params.row.codeValue !== undefined
+                    ? params.row.codeValue
+                    : '-'
+            ),
         },
         {
             field: 'image',
@@ -51,12 +79,46 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
                     component="img"
                     src={`data:image/jpeg;base64,${params.row.image}`}
                     alt="banner"
-                    sx={{ width: '80px'}}
+                    sx={{ width: '80px', cursor: 'pointer' }}
+                    onClick={() => handleImageClick(params.row.image)}
                 />
             )
+        },
+        {
+            field: 'imageSizePixels',
+            headerName: 'Розмір (пікселі)',
+            flex: 1,
+            disableColumnMenu: true,
+            headerAlign: 'left',
+            align: 'left',
+            renderCell: (params) => {
+                return params.row.width && params.row.height
+                    ? `${params.row.width} x ${params.row.height}`
+                    : 'Невідомо';
+            }
+        },
+        {
+            field: 'imageFileSize',
+            headerName: 'Розмір файлу (KB)',
+            flex: 1,
+            disableColumnMenu: true,
+            headerAlign: 'left',
+            align: 'left',
+            renderCell: (params) => {
+                return params.row.fileSize
+                    ? `${(params.row.fileSize / 1024).toFixed(2)} kb`
+                    : '0';
+            }
         }
     ];
 
+    const columnVisibilityModel: GridColumnVisibilityModel = {
+        codeImage: true,
+        codeValue: displayBannerCode,
+        image: true,
+        imageSizePixels: true,
+        imageFileSize: true,
+    };
     function toolbar() {
         return quickSearchToolbar(showButtons
             ? [
@@ -74,9 +136,9 @@ const ImageDataGrid: React.FC<ImageDataGridProps> = ({
         loading: false,
         toolbar: toolbar,
         getRowId: (row : any) => row.codeImage,
-        onRowClick: handleRowClick,
         onSelectionChange: onSelectionChange,
-        checkboxSelection: checkboxSelection
+        checkboxSelection: checkboxSelection,
+        columnVisibilityModel: columnVisibilityModel
     })
 };
 

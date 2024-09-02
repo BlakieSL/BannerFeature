@@ -15,7 +15,6 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class Image {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqcodeimage_generator")
     @SequenceGenerator(name = "seqcodeimage_generator", sequenceName = "pos.seqcodeimage", allocationSize = 1)
@@ -51,14 +50,4 @@ public class Image {
     @Size(max = 250)
     @Column(name = "type_usage", length = 250)
     private String typeUsage;
-
-    @NotNull
-    @Column(name = "version_row", nullable = false)
-    private Long versionRow = 0L;
-
-    @PrePersist
-    @PreUpdate
-    public void prePersist() {
-        this.versionRow++;
-    }
 }

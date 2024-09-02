@@ -14,6 +14,7 @@ public class BannerSummaryDto {
     private Integer codeTypeBanner;
     private LocalDateTime plannedDate;
     private short status;
+    private String sendResult;
     private Integer lastUserCode;
     private String lastUserFio;
 }

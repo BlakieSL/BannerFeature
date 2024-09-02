@@ -16,7 +16,6 @@ public interface ImageMapper {
     ImageDto toDto(Image image);
 
     @Mapping(target = "image", source = "imageFile", qualifiedByName = "mapImageFile")
-    @Mapping(target = "versionRow", ignore = true)
     @Mapping(target = "typeUsage", ignore = true)
     @Mapping(target = "num", ignore = true)
     @Mapping(target = "codeImage", ignore = true)
